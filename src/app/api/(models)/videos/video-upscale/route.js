@@ -1,18 +1,19 @@
-import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { Videos } from "@/models/videos.models";
-import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, dimensions } = await req.json();
+    const { id, model, resolution, video } = await req.json();
 
     //Check if user id is available
     if (!id) {
-      return NextResponse.json({ success: false, error: "Unauthorized access" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
     }
 
     //Check if access token is available
@@ -26,16 +27,12 @@ export const POST = async (req) => {
       auth: process.env.REPLICATE_API_TOKEN,
     });
     const output = await replicate.run(
-      "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816fd4af51f3149fa7a9e0b5ffcf1b8172438",
+      "lucataco/real-esrgan-video:c23768236472c41b7a121ee735c8073e29080c01b32907740cfada61bff75320",
       {
         input: {
-          cond_aug: 0.02,
-          decoding_t: 7,
-          input_image: image,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 8,
+          model,
+          resolution,
+          video_path: video,
         },
       }
     );
@@ -44,8 +41,7 @@ export const POST = async (req) => {
       userId: id,
       url: output,
       miscData: {
-        modelName: "Stable Diffusion",
-        dimensions,
+        modelName: model,
       },
     });
 

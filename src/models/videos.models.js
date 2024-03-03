@@ -20,7 +20,6 @@ const videoSchema = new Schema(
     miscData: {
       dimensions: {
         type: String,
-        required: true,
       },
       modelName: {
         type: String,

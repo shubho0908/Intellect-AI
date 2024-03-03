@@ -8,11 +8,13 @@ import Replicate from "replicate";
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, dimensions } = await req.json();
-
+    const { id, video } = await req.json();
     //Check if user id is available
     if (!id) {
-      return NextResponse.json({ success: false, error: "Unauthorized access" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
     }
 
     //Check if access token is available
@@ -26,16 +28,11 @@ export const POST = async (req) => {
       auth: process.env.REPLICATE_API_TOKEN,
     });
     const output = await replicate.run(
-      "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816fd4af51f3149fa7a9e0b5ffcf1b8172438",
+      "arielreplicate/robust_video_matting:73d2128a371922d5d1abf0712a1d974be0e4e2358cc1218e4e34714767232bac",
       {
         input: {
-          cond_aug: 0.02,
-          decoding_t: 7,
-          input_image: image,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 8,
+          input_video: video,
+          output_type: "green-screen",
         },
       }
     );
@@ -44,8 +41,7 @@ export const POST = async (req) => {
       userId: id,
       url: output,
       miscData: {
-        modelName: "Stable Diffusion",
-        dimensions,
+        modelName: "Robust video matting",
       },
     });
 

@@ -12,7 +12,10 @@ export const POST = async (req) => {
     const { id, image, prompt } = await req.json();
     //Check if user id is available
     if (!id) {
-      return NextResponse.json("Unauthorized access", { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
     }
 
     //Check if access token is available
@@ -56,22 +59,17 @@ export const POST = async (req) => {
     await newImage.save();
 
     const library = await Library.findOne({ userId: id });
-
-    //Not possible still checking
-    if (!library) {
-      const newLibrary = new Library({
-        userId: id,
-        images: [newImage._id],
-      });
-      await newLibrary.save();
-      return NextResponse.json("Image saved!", { status: 201 });
-    }
-
     library.images.push(newImage._id);
     await library.save();
 
-    return NextResponse.json(newImage, { status: 201 });
+    return NextResponse.json(
+      { success: true, data: newImage },
+      { status: 201 }
+    );
   } catch (error) {
-    return NextResponse.json(error.message, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 };

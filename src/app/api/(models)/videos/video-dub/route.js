@@ -1,14 +1,12 @@
-import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { Videos } from "@/models/videos.models";
-import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, dimensions } = await req.json();
+    const { id, face, audio } = await req.json();
 
     //Check if user id is available
     if (!id) {
@@ -26,16 +24,11 @@ export const POST = async (req) => {
       auth: process.env.REPLICATE_API_TOKEN,
     });
     const output = await replicate.run(
-      "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816fd4af51f3149fa7a9e0b5ffcf1b8172438",
+      "cjwbw/video-retalking:db5a650c807b007dc5f9e5abe27c53e1b62880d1f94d218d27ce7fa802711d67",
       {
         input: {
-          cond_aug: 0.02,
-          decoding_t: 7,
-          input_image: image,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 8,
+          face,
+          input_audio: audio,
         },
       }
     );
@@ -44,13 +37,13 @@ export const POST = async (req) => {
       userId: id,
       url: output,
       miscData: {
-        modelName: "Stable Diffusion",
-        dimensions,
+        modelName: "Video Retalking",
       },
     });
 
     await newVideo.save();
     const library = await Library.findOne({ userId: id });
+
     library.videos.push(newVideo._id);
     await library.save();
     return NextResponse.json(

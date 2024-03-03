@@ -1,14 +1,21 @@
-import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { Videos } from "@/models/videos.models";
-import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, dimensions } = await req.json();
+    const {
+      id,
+      video,
+      font,
+      color,
+      position,
+      highlightColor,
+      stroke,
+      isTranslate,
+    } = await req.json();
 
     //Check if user id is available
     if (!id) {
@@ -26,26 +33,33 @@ export const POST = async (req) => {
       auth: process.env.REPLICATE_API_TOKEN,
     });
     const output = await replicate.run(
-      "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816fd4af51f3149fa7a9e0b5ffcf1b8172438",
+      "fictions-ai/autocaption:18a45ff0d95feb4449d192bbdc06b4a6df168fa33def76dfc51b78ae224b599b",
       {
         input: {
-          cond_aug: 0.02,
-          decoding_t: 7,
-          input_image: image,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 8,
+          font,
+          color,
+          kerning: -5,
+          opacity: 0,
+          MaxChars: 20,
+          fontsize: 7,
+          translate: isTranslate,
+          output_video: true,
+          stroke_color: stroke,
+          stroke_width: 2.6,
+          right_to_left: false,
+          subs_position: position,
+          highlight_color: highlightColor,
+          video_file_input: video,
+          output_transcript: true,
         },
       }
     );
 
     const newVideo = new Videos({
       userId: id,
-      url: output,
+      url: output[0],
       miscData: {
-        modelName: "Stable Diffusion",
-        dimensions,
+        modelName: "Autocaption",
       },
     });
 
