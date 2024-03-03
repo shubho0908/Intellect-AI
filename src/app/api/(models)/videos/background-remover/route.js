@@ -1,7 +1,9 @@
 import { ConnectDB } from "@/database";
+import { UploadVideo } from "@/lib/cloudinary";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { Videos } from "@/models/videos.models";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
@@ -20,7 +22,8 @@ export const POST = async (req) => {
     //Check if access token is available
     const accessToken = cookies().get("accessToken");
     if (!accessToken) {
-      generateAccessToken({ id }, "1h");
+      const { accessToken } = generateAccessToken({ id }, "1h");
+      cookies().set("accessToken", accessToken);
     }
 
     //Generate video
@@ -37,9 +40,12 @@ export const POST = async (req) => {
       }
     );
 
+    // Save image to Cloudinary
+    const result = await UploadVideo(output);
+
     const newVideo = new Videos({
       userId: id,
-      url: output,
+      url: result.url,
       miscData: {
         modelName: "Robust video matting",
       },

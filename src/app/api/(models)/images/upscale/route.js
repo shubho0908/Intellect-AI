@@ -1,15 +1,15 @@
-import { UploadVideo } from "@/lib/cloudinary";
+import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
+import { Images } from "@/models/images.models";
 import { Library } from "@/models/library.models";
-import { Videos } from "@/models/videos.models";
 import { cookies } from "next/headers";
-import Replicate from "replicate";
+import { NextResponse } from "next/server";
+import { UploadImage } from "@/lib/cloudinary";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, model, resolution, video } = await req.json();
-
+    const { id, image } = await req.json();
     //Check if user id is available
     if (!id) {
       return NextResponse.json(
@@ -25,38 +25,31 @@ export const POST = async (req) => {
       cookies().set("accessToken", accessToken);
     }
 
-    //Generate video
-    const replicate = new Replicate({
-      auth: process.env.REPLICATE_API_TOKEN,
-    });
-    const output = await replicate.run(
-      "lucataco/real-esrgan-video:c23768236472c41b7a121ee735c8073e29080c01b32907740cfada61bff75320",
-      {
-        input: {
-          model,
-          resolution,
-          video_path: video,
-        },
-      }
-    );
+    //Upscale Image using Cloudinary
+    const extract = image.split("upload/");
+    const upscaled = extract[0] + "upload/e_upscale/" + extract[1];
 
     // Save image to Cloudinary
-    const result = await UploadVideo(output[0]);
+    const result = await UploadImage(upscaled);
 
-    const newVideo = new Videos({
+    const newImage = new Images({
       userId: id,
       url: result.url,
+      prompt,
       miscData: {
-        modelName: model,
+        dimensions: `${width}x${height}`,
+        modelName: "Stable Diffusion XL",
       },
     });
 
-    await newVideo.save();
+    await newImage.save();
+
     const library = await Library.findOne({ userId: id });
-    library.videos.push(newVideo._id);
+    library.images.push(newImage._id);
     await library.save();
+
     return NextResponse.json(
-      { success: true, data: newVideo },
+      { success: true, data: newImage },
       { status: 201 }
     );
   } catch (error) {

@@ -1,4 +1,5 @@
 import { ConnectDB } from "@/database";
+import { UploadImage } from "@/lib/cloudinary";
 import { generateAccessToken } from "@/lib/token";
 import { Images } from "@/models/images.models";
 import { Library } from "@/models/library.models";
@@ -21,7 +22,8 @@ export const POST = async (req) => {
     //Check if access token is available
     const accessToken = cookies().get("accessToken");
     if (!accessToken) {
-      generateAccessToken({ id }, "1h");
+      const { accessToken } = generateAccessToken({ id }, "1h");
+      cookies().set("accessToken", accessToken);
     }
 
     //Generate image
@@ -46,9 +48,12 @@ export const POST = async (req) => {
       }
     );
 
+    // Save image to Cloudinary
+    const result = await UploadImage(output);
+
     const newImage = new Images({
       userId: id,
-      url: output,
+      url: result.url,
       prompt,
       miscData: {
         dimensions: `${width}x${height}`,
