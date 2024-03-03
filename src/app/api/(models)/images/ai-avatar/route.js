@@ -9,7 +9,7 @@ import Replicate from "replicate";
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, prompt } = await req.json();
+    const { id, image, prompt, height, width } = await req.json();
     //Check if user id is available
     if (!id) {
       return NextResponse.json(
@@ -33,8 +33,8 @@ export const POST = async (req) => {
       {
         input: {
           image,
-          width: 640,
-          height: 640,
+          width,
+          height,
           prompt,
           guidance_scale: 0,
           safety_checker: true,
@@ -51,7 +51,7 @@ export const POST = async (req) => {
       url: output,
       prompt,
       miscData: {
-        dimensions: "640 x 640",
+        dimensions: `${width}x${height}`,
         modelName: "Instant ID",
       },
     });

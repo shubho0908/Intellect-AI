@@ -10,7 +10,7 @@ const generateTokens = (payload, expiresIn) => {
   return { accessToken, refreshToken };
 };
 
-const generateAccessToken = (payload) => {
+const generateAccessToken = (payload, expiresIn) => {
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn,
   });
