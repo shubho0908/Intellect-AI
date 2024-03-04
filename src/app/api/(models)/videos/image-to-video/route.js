@@ -3,7 +3,7 @@ import { UploadVideo } from "@/lib/cloudinary";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { User } from "@/models/user.models";
-import { Videos } from "@/models/videos.models";
+import { Video } from "@/models/videos.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
@@ -59,7 +59,7 @@ export const POST = async (req) => {
     // Save image to Cloudinary
     const result = await UploadVideo(output);
 
-    const newVideo = new Videos({
+    const newVideo = new Video({
       userId: id,
       url: result.url,
       miscData: {

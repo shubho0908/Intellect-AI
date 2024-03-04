@@ -1,6 +1,6 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
-import { Images } from "@/models/images.models";
+import { Image } from "@/models/images.models";
 import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -42,7 +42,7 @@ export const POST = async (req) => {
     // Save image to Cloudinary
     const result = await UploadImage(upscaled);
 
-    const newImage = new Images({
+    const newImage = new Image({
       userId: id,
       url: result.url,
       prompt,

@@ -8,8 +8,13 @@ const collectionSchema = new Schema(
     },
     data: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Image",
+        postId: {
+          type: Schema.Types.ObjectId,
+          ref: "Images" || "Videos",
+        },
+        Type: {
+          type: String,
+        },
       },
     ],
     collectionName: {
@@ -26,5 +31,5 @@ const collectionSchema = new Schema(
   { timestamps: true }
 );
 
-export const Collections =
+export const Collection =
   mongoose.models.Collection || mongoose.model("Collection", collectionSchema);

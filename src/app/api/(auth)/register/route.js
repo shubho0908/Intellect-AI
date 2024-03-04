@@ -1,6 +1,6 @@
 import { ConnectDB } from "@/database";
 import { generateTokens } from "@/lib/token";
-import { Collections } from "@/models/collections.models";
+import { Collection } from "@/models/collections.models";
 import { Library } from "@/models/library.models";
 import { User } from "@/models/user.models";
 import bcrypt from "bcrypt";
@@ -53,7 +53,7 @@ export const POST = async (req) => {
     await user.save();
 
     const library = new Library({ userId: user._id });
-    const collections = new Collections({ userId: user._id });
+    const collections = new Collection({ userId: user._id });
     user.library = library._id;
     await user.save();
     await library.save();

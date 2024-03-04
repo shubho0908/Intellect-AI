@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 await ConnectDB();
-export async function POST(req) {
+export async function PUT(req) {
   try {
     const { id, name, username, profileImg, visibility, summary } =
       await req.json();

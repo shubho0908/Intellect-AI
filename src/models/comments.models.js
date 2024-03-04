@@ -39,7 +39,11 @@ const replySchema = new Schema(
   {
     commentID: {
       type: Schema.Types.ObjectId,
-      ref: "Comments",
+      ref: "Comment" || "Reply",
+    },
+    postID: {
+      type: Schema.Types.ObjectId,
+      ref: "Images" || "Videos",
     },
     reply: {
       type: String,
