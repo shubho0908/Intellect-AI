@@ -9,7 +9,7 @@ const collectionSchema = new Schema(
     data: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Images",
+        ref: "Image",
       },
     ],
     collectionName: {

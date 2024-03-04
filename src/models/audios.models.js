@@ -20,5 +20,5 @@ const audioSchema = new Schema(
   { timestamps: true }
 );
 
-export const Audios =
+export const Audio =
   mongoose.models.Audio || mongoose.model("Audio", audioSchema);

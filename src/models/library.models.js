@@ -10,19 +10,19 @@ const librarySchema = new Schema(
     images: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Images",
+        ref: "Image",
       },
     ],
     videos: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Videos",
+        ref: "Video",
       },
     ],
     audios: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Audios",
+        ref: "Audio",
       },
     ],
   },

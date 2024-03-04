@@ -6,6 +6,10 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+    postID: {
+      type: Schema.Types.ObjectId,
+      ref: "Images" || "Videos",
+    },
     comment: {
       type: String,
     },
@@ -24,12 +28,40 @@ const commentSchema = new Schema(
     reply: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Comments",
+        ref: "Reply",
       },
     ],
   },
   { timestamps: true }
 );
 
-export const Comments =
+const replySchema = new Schema(
+  {
+    commentID: {
+      type: Schema.Types.ObjectId,
+      ref: "Comments",
+    },
+    reply: {
+      type: String,
+    },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    dislikes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export const Comment =
   mongoose.models.Comment || mongoose.model("Comment", commentSchema);
+
+export const Reply =
+  mongoose.models.Reply || mongoose.model("Reply", replySchema);

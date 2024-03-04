@@ -5,7 +5,7 @@ const imageSchema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
     likes: [
       {
@@ -15,14 +15,17 @@ const imageSchema = new Schema(
     ],
     url: {
       type: String,
-      required: true
+      required: true,
     },
     prompt: {
       type: String,
-      required: true
+      required: true,
     },
     title: {
       type: String,
+    },
+    visibility: {
+      type: Boolean,
     },
     miscData: {
       dimensions: {
@@ -42,5 +45,5 @@ const imageSchema = new Schema(
   { timestamps: true }
 );
 
-export const Images =
+export const Image =
   mongoose.models.Image || mongoose.model("Image", imageSchema);

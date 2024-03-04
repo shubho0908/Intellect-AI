@@ -17,6 +17,9 @@ const videoSchema = new Schema(
       type: String,
       required: true,
     },
+    visibility: {
+      type: Boolean,
+    },
     miscData: {
       dimensions: {
         type: String,
@@ -36,5 +39,5 @@ const videoSchema = new Schema(
   { timestamps: true }
 );
 
-export const Videos =
+export const Video =
   mongoose.models.Video || mongoose.model("Video", videoSchema);

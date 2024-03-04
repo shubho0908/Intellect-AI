@@ -21,14 +21,14 @@ export const POST = async (req) => {
       );
     }
 
-        //Safety check
-        const isUserExists = await User.findById(id);
-        if (!isUserExists) {
-          return NextResponse.json(
-            { success: false, error: "Unauthorized access" },
-            { status: 404 }
-          );
-        }
+    //Safety check
+    const isUserExists = await User.findById(id);
+    if (!isUserExists) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
+    }
 
     //Check if access token is available
     const accessToken = cookies().get("accessToken");
