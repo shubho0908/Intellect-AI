@@ -38,4 +38,20 @@ const UploadVideo = async (data) => {
   });
 };
 
-export { UploadImage, UploadVideo };
+const UploadAudio = async (data) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      data,
+      { resource_type: "auto", public_id: `audios/${Date.now()}` },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+  });
+};
+
+export { UploadImage, UploadVideo, UploadAudio };

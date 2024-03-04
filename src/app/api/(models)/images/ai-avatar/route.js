@@ -3,6 +3,7 @@ import { UploadImage } from "@/lib/cloudinary";
 import { generateAccessToken } from "@/lib/token";
 import { Images } from "@/models/images.models";
 import { Library } from "@/models/library.models";
+import { User } from "@/models/user.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
@@ -18,6 +19,15 @@ export const POST = async (req) => {
         { status: 404 }
       );
     }
+
+        //Safety check
+        const isUserExists = await User.findById(id);
+        if (!isUserExists) {
+          return NextResponse.json(
+            { success: false, error: "Unauthorized access" },
+            { status: 404 }
+          );
+        }
 
     //Check if access token is available
     const accessToken = cookies().get("accessToken");

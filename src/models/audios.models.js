@@ -9,6 +9,13 @@ const audioSchema = new Schema(
     url: {
       type: String,
     },
+    //If model is subtitle generator
+    subtitle: {
+      type: String,
+    },
+    transcript: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

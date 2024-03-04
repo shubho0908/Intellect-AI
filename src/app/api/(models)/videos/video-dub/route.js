@@ -1,6 +1,7 @@
 import { UploadVideo } from "@/lib/cloudinary";
 import { generateAccessToken } from "@/lib/token";
 import { Library } from "@/models/library.models";
+import { User } from "@/models/user.models";
 import { Videos } from "@/models/videos.models";
 import { cookies } from "next/headers";
 import Replicate from "replicate";
@@ -12,6 +13,15 @@ export const POST = async (req) => {
 
     //Check if user id is available
     if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
+    }
+
+    //Safety check
+    const isUserExists = await User.findById(id);
+    if (!isUserExists) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 404 }

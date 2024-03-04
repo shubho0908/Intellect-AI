@@ -1,16 +1,16 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken } from "@/lib/token";
-import { Images } from "@/models/images.models";
+import { Audios } from "@/models/audios.models";
 import { Library } from "@/models/library.models";
+import { User } from "@/models/user.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { UploadImage } from "@/lib/cloudinary";
-import { User } from "@/models/user.models";
+import Replicate from "replicate";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image } = await req.json();
+    const { id, audio, task } = await req.json();
     //Check if user id is available
     if (!id) {
       return NextResponse.json(
@@ -35,32 +35,42 @@ export const POST = async (req) => {
       cookies().set("accessToken", accessToken);
     }
 
-    //Upscale Image using Cloudinary
-    const extract = image.split("upload/");
-    const upscaled = extract[0] + "upload/e_upscale/" + extract[1];
-
-    // Save image to Cloudinary
-    const result = await UploadImage(upscaled);
-
-    const newImage = new Images({
-      userId: id,
-      url: result.url,
-      prompt,
-      miscData: {
-        dimensions: `${width}x${height}`,
-        modelName: "Stable Diffusion XL",
-      },
+    //Generate audio
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
     });
 
-    await newImage.save();
+    const output = await replicate.run(
+      "vaibhavs10/incredibly-fast-whisper:3ab86df6c8f54c11309d4d1f930ac292bad43ace52d10c80d87eb258b3c9f79c",
+      {
+        input: {
+          task,
+          audio,
+          language: "None",
+          timestamp: "chunk",
+          batch_size: 64,
+          diarise_audio: false,
+        },
+      }
+    );
+
+    //Save all audios to database
+    const newAudio = new Audios({
+      userId: id,
+      url: audio,
+      transcript: output?.text,
+      subtitle: JSON.stringify(output?.chunks),
+    });
+
+    await newAudio.save();
 
     const library = await Library.findOne({ userId: id });
-    library.images.push(newImage._id);
+    library.audios.push(newAudio._id);
     await library.save();
 
     return NextResponse.json(
-      { success: true, data: newImage },
-      { status: 201 }
+      { success: true, data: newAudio },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
