@@ -37,10 +37,6 @@ export const POST = async (req) => {
 
     const HashedPassword = await bcrypt.hash(password, 11);
 
-    const { refreshToken, accessToken } = generateTokens({ email }, "1h");
-    cookies().set("accessToken", accessToken);
-    cookies().set("refreshToken", refreshToken);
-
     const username = email?.split("@")[0];
 
     const user = new User({
@@ -51,6 +47,13 @@ export const POST = async (req) => {
       refreshToken,
     });
     await user.save();
+
+    const { refreshToken, accessToken } = generateTokens(
+      { id: user._id },
+      "1h"
+    );
+    cookies().set("accessToken", accessToken);
+    cookies().set("refreshToken", refreshToken);
 
     const library = new Library({ userId: user._id });
     const collections = new Collection({ userId: user._id });

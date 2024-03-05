@@ -1,8 +1,11 @@
 import { ConnectDB } from "@/database";
+import { generateAccessToken } from "@/lib/token";
 import { Collection } from "@/models/collections.models";
 import { Comment, Reply } from "@/models/comments.models";
 import { Library } from "@/models/library.models";
+import { User } from "@/models/user.models";
 import { Video } from "@/models/videos.models";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 await ConnectDB();
@@ -16,6 +19,22 @@ export const DELETE = async (req) => {
         { success: false, message: "Invalid request" },
         { status: 400 }
       );
+    }
+
+    //Safety check
+    const isUserExists = await User.findById(id);
+    if (!isUserExists) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
+    }
+
+    //Check if access token is available
+    const accessToken = cookies().get("accessToken");
+    if (!accessToken) {
+      const { accessToken } = generateAccessToken({ id }, "1h");
+      cookies().set("accessToken", accessToken);
     }
 
     //Delete the video
