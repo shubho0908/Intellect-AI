@@ -43,16 +43,13 @@ export const POST = async (req) => {
       email,
       username,
       password: HashedPassword,
-      refreshToken,
     });
+
     await user.save();
 
-    const { refreshToken, accessToken } = generateTokens(
-      { id: user._id },
-      "1h"
-    );
-    cookies().set("accessToken", accessToken);
-    cookies().set("refreshToken", refreshToken);
+    const { refreshToken } = generateTokens({ id: user._id }, "1h");
+    user.refreshToken = refreshToken;
+    await user.save();
 
     const library = new Library({ userId: user._id });
     user.library = library._id;
