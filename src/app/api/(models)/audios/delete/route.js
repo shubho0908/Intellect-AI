@@ -8,13 +8,23 @@ export const DELETE = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
     const postId = searchParams.get("postId");
-    const id = searchParams.get("id");
-    if (!id) {
+    
+    //Check if access token is available
+    const token = cookies().get("accessToken");
+    const refreshToken = cookies().get("refreshToken");
+    if (!refreshToken || !refreshToken.value) {
       return NextResponse.json(
-        { success: false, message: "Invalid request" },
-        { status: 400 }
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
       );
     }
+    if (!token || !token.value) {
+      const payload = verifyToken(refreshToken);
+      generateAccessToken({ id: payload.id }, "1h");
+    }
+
+    const payload = verifyToken(token.value);
+    const { id } = payload;
 
     //Delete the audio
     await Audio.findByIdAndDelete(postId);

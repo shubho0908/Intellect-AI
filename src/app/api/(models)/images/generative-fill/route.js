@@ -1,39 +1,32 @@
 import { ConnectDB } from "@/database";
-import { generateAccessToken } from "@/lib/token";
+import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Image } from "@/models/images.models";
 import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { UploadImage } from "@/lib/cloudinary";
-import { User } from "@/models/user.models";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { id, image, ratio } = await req.json();
-    //Check if user id is available
-    if (!id) {
+    const { image, ratio } = await req.json();
+
+    //Check if access token is available
+    const token = cookies().get("accessToken");
+    const refreshToken = cookies().get("refreshToken");
+    if (!refreshToken || !refreshToken.value) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 404 }
       );
     }
-
-        //Safety check
-        const isUserExists = await User.findById(id);
-        if (!isUserExists) {
-          return NextResponse.json(
-            { success: false, error: "Unauthorized access" },
-            { status: 404 }
-          );
-        }
-
-    //Check if access token is available
-    const accessToken = cookies().get("accessToken");
-    if (!accessToken) {
-      const { accessToken } = generateAccessToken({ id }, "1h");
-      cookies().set("accessToken", accessToken);
+    if (!token || !token.value) {
+      const payload = verifyToken(refreshToken);
+      generateAccessToken({ id: payload.id }, "1h");
     }
+
+    const payload = verifyToken(token.value);
+    const { id } = payload;
 
     //Upscale Image using Cloudinary
     const extract = image.split("upload/");
@@ -46,7 +39,6 @@ export const POST = async (req) => {
     const newImage = new Image({
       userId: id,
       url: result.url,
-      prompt,
       miscData: {
         dimensions: ratio,
         modelName: "Generative Fill",

@@ -1,9 +1,8 @@
 import { ConnectDB } from "@/database";
-import { generateAccessToken } from "@/lib/token";
+import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Collection } from "@/models/collections.models";
 import { Comment, Reply } from "@/models/comments.models";
 import { Library } from "@/models/library.models";
-import { User } from "@/models/user.models";
 import { Video } from "@/models/videos.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -13,29 +12,23 @@ export const DELETE = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
     const postId = searchParams.get("postId");
-    const id = searchParams.get("id");
-    if (!id) {
-      return NextResponse.json(
-        { success: false, message: "Invalid request" },
-        { status: 400 }
-      );
-    }
 
-    //Safety check
-    const isUserExists = await User.findById(id);
-    if (!isUserExists) {
+    //Check if access token is available
+    const token = cookies().get("accessToken");
+    const refreshToken = cookies().get("refreshToken");
+    if (!refreshToken || !refreshToken.value) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 404 }
       );
     }
-
-    //Check if access token is available
-    const accessToken = cookies().get("accessToken");
-    if (!accessToken) {
-      const { accessToken } = generateAccessToken({ id }, "1h");
-      cookies().set("accessToken", accessToken);
+    if (!token || !token.value) {
+      const payload = verifyToken(refreshToken);
+      generateAccessToken({ id: payload.id }, "1h");
     }
+
+    const payload = verifyToken(token.value);
+    const { id } = payload;
 
     //Delete the video
     await Video.findByIdAndDelete(postId);
