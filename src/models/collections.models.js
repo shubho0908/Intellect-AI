@@ -8,12 +8,13 @@ const collectionSchema = new Schema(
     },
     data: [
       {
-        postId: {
+        imageID: {
           type: Schema.Types.ObjectId,
-          ref: "Images" || "Videos",
+          ref: "Images",
         },
-        Type: {
-          type: String,
+        videoID: {
+          type: Schema.Types.ObjectId,
+          ref: "Videos",
         },
       },
     ],

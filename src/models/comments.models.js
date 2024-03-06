@@ -6,9 +6,13 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    postID: {
+    imageID: {
       type: Schema.Types.ObjectId,
-      ref: "Images" || "Videos",
+      ref: "Images",
+    },
+    videoID: {
+      type: Schema.Types.ObjectId,
+      ref: "Videos",
     },
     comment: {
       type: String,
@@ -39,11 +43,19 @@ const replySchema = new Schema(
   {
     commentID: {
       type: Schema.Types.ObjectId,
-      ref: "Comment" || "Reply",
+      ref: "Comment",
     },
-    postID: {
+    replyID: {
       type: Schema.Types.ObjectId,
-      ref: "Images" || "Videos",
+      ref: "Reply",
+    },
+    imageID: {
+      type: Schema.Types.ObjectId,
+      ref: "Images",
+    },
+    videoID: {
+      type: Schema.Types.ObjectId,
+      ref: "Videos",
     },
     reply: {
       type: String,
