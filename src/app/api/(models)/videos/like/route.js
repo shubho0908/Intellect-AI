@@ -35,22 +35,22 @@ export const POST = async (req) => {
     }
 
     //Check if the video is already like by this user
-    const isLiked = video?.likes.find((userid) => userid === id);
+    const isLiked = video?.likes.includes(id);
     //If not liked then add the like
     if (!isLiked) {
       video?.likes.push(id);
+      await video.save();
     } else {
       //If already liked then dislike it
       const newLikes = video?.likes.filter((userid) => userid !== id);
       video.likes = newLikes;
+      await video.save();
+
+      return NextResponse.json(
+        { success: true, message: "Video liked" },
+        { status: 200 }
+      );
     }
-
-    await video.save();
-
-    return NextResponse.json(
-      { success: true, message: "Video liked" },
-      { status: 200 }
-    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },

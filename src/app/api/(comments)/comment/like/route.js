@@ -1,15 +1,15 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
-import { Image } from "@/models/images.models";
+import { Comment } from "@/models/comments.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 await ConnectDB();
 
-//Like or dislike an image
+//Like a comment
 export const POST = async (req) => {
   try {
-    const { imageId } = await req.json();
+    const { commentID } = await req.json();
 
     //Check if access token is available
     const token = cookies().get("accessToken");
@@ -28,32 +28,27 @@ export const POST = async (req) => {
     const payload = verifyToken(token.value);
     const { id } = payload;
 
-    const image = await Image.findById(imageId);
-    if (!image) {
-      return NextResponse.json(
-        { success: false, error: "Image not found" },
-        { status: 404 }
-      );
-    }
+    const comment = await Comment.findById(commentID);
 
-    //Check if the image is already like by this user
-    const isLiked = image?.likes.includes(id);
-    //If not liked then add the like
-    if (!isLiked) {
-      image?.likes.push(id);
-      await image.save();
+    //Check if the comment is already like by this user
+    const isCommentLiked = comment?.likes.includes(id);
+
+    if (isCommentLiked) {
+      const updatedLikes = comment?.likes.filter((userid) => userid !== id);
+      comment.likes = updatedLikes;
+
+      await comment.save();
     } else {
-      //If already liked then dislike it
-      const newLikes = image?.likes.filter((userid) => userid !== id);
-      image.likes = newLikes;
-
-      await image.save();
+      comment?.likes.push(id);
+      await comment.save();
 
       return NextResponse.json(
-        { success: true, message: "Image liked" },
+        { success: true, message: "Comment liked" },
         { status: 200 }
       );
     }
+
+    return NextResponse.json({ success: true, comment }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
@@ -62,26 +57,24 @@ export const POST = async (req) => {
   }
 };
 
-//Get total likes
+//Get total comment's likes
 export const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const imageId = searchParams.get("id");
+    const commentID = searchParams.get("id");
 
-    const image = await Image.findById(imageId);
-    if (!image) {
+    const comment = await Comment.findById(commentID);
+    if (!comment) {
       return NextResponse.json(
-        { success: false, error: "Image not found" },
+        { success: false, error: "Comment not found" },
         { status: 404 }
       );
     }
 
-    const totalLikes = image?.likes.length;
+    const totalCommentLikes = comment?.likes.length;
     return NextResponse.json(
-      { success: true, likes: totalLikes },
-      {
-        status: 200,
-      }
+      { success: true, data: totalCommentLikes },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
