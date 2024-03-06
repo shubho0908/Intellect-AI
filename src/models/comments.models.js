@@ -23,12 +23,7 @@ const commentSchema = new Schema(
         ref: "User",
       },
     ],
-    dislikes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+
     reply: [
       {
         type: Schema.Types.ObjectId,
@@ -49,6 +44,10 @@ const replySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Reply",
     },
+    userID: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     imageID: {
       type: Schema.Types.ObjectId,
       ref: "Image",
@@ -61,12 +60,6 @@ const replySchema = new Schema(
       type: String,
     },
     likes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    dislikes: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",

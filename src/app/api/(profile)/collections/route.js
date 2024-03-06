@@ -1,7 +1,6 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Collection } from "@/models/collections.models";
-import { User } from "@/models/user.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -41,17 +40,6 @@ export const POST = async (req) => {
     });
 
     await collection.save();
-
-    const user = await User.findById(id);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 404 }
-      );
-    }
-
-    user.collections.push(collection._id);
-    await user.save();
 
     return NextResponse.json(
       { success: true, message: "Collection created!", data: collection },
@@ -183,7 +171,7 @@ export const GET = async (req) => {
     const userId = searchParams.get("id");
 
     const collections = await Collection.find({ userId, visibility: true });
-    if (!collections) {
+    if (collections.length === 0) {
       return NextResponse.json(
         { success: false, error: "Collections not found" },
         { status: 404 }

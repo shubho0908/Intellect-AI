@@ -1,6 +1,7 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Comment } from "@/models/comments.models";
+import { Image } from "@/models/images.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -85,7 +86,7 @@ export const DELETE = async (req) => {
         { status: 404 }
       );
     }
-
+    await Image.
     await Comment.findByIdAndDelete(commentID);
 
     return NextResponse.json(
