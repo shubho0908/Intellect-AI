@@ -179,3 +179,29 @@ export const DELETE = async (req) => {
     );
   }
 };
+
+//Get collection data
+export const GET = async (req) => {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("id");
+
+    const collections = await Collection.find({ userId, visibility: true });
+    if (!collections) {
+      return NextResponse.json(
+        { success: false, error: "Collections not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, data: collections },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+};
