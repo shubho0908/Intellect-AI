@@ -10,11 +10,11 @@ const collectionSchema = new Schema(
       {
         imageID: {
           type: Schema.Types.ObjectId,
-          ref: "Images",
+          ref: "Image",
         },
         videoID: {
           type: Schema.Types.ObjectId,
-          ref: "Videos",
+          ref: "Video",
         },
       },
     ],

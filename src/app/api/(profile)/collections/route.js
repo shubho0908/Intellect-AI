@@ -29,14 +29,12 @@ export const POST = async (req) => {
     const payload = verifyToken(token.value);
     const { id } = payload;
 
+    const dataObj =
+      type === "image" ? { imageID: postId } : { videoID: postId };
+
     const collection = new Collection({
       userId: id,
-      data: [
-        {
-          postId,
-          Type: type,
-        },
-      ],
+      data: [dataObj],
       collectionName: name,
       description,
       visibility,
@@ -104,12 +102,10 @@ export const PUT = async (req) => {
       );
     }
 
-    const Data = {
-      postId,
-      Type: type,
-    };
+    const dataObj =
+      type === "image" ? { imageID: postId } : { videoID: postId };
 
-    userCollection.data.push(Data);
+    userCollection.data.push(dataObj);
     await userCollection.save();
     return NextResponse.json(
       {

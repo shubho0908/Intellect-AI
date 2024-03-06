@@ -8,11 +8,11 @@ const commentSchema = new Schema(
     },
     imageID: {
       type: Schema.Types.ObjectId,
-      ref: "Images",
+      ref: "Image",
     },
     videoID: {
       type: Schema.Types.ObjectId,
-      ref: "Videos",
+      ref: "Video",
     },
     comment: {
       type: String,
@@ -51,11 +51,11 @@ const replySchema = new Schema(
     },
     imageID: {
       type: Schema.Types.ObjectId,
-      ref: "Images",
+      ref: "Image",
     },
     videoID: {
       type: Schema.Types.ObjectId,
-      ref: "Videos",
+      ref: "Video",
     },
     reply: {
       type: String,
