@@ -1,9 +1,9 @@
-import Sidebar from "@/components/Sidebar";
 
 function Home() {
   return (
     <>
-      <Sidebar />
+      {/* <Sidebar /> */}
+      <h1>JAI SHREE RAAM</h1>
     </>
   );
 }

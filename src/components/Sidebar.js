@@ -28,53 +28,61 @@ function Sidebar() {
       <div
         className={`sidebar fixed overflow-auto bg-[#07060B] flex flex-col w-fit ${
           isDown.video && isDown.image && isDown.audio ? "h-full" : "h-[100vh]"
-        } p-6 px-12 ${poppins.className}`}
+        } p-6 md:px-12 ${poppins.className}`}
       >
-        <div className="logo-section">
+        <div className="logo-section hidden md:block">
           <Link href="/">
-            <Image src="/logo1.png" width={220} height={220} />
+            <Image src="/logo1.png" width={220} height={220} alt="Logo" />
           </Link>
         </div>
-        <div className="middle-section my-10 flex flex-col">
+        <div className="logo-section block md:hidden">
+          <Link href="/">
+            <Image src="/logo2.png" width={50} height={50} alt="Logo" />
+          </Link>
+        </div>
+        <div className="middle-section my-20 md:my-10 flex flex-col">
           <Link
             href="/"
             className={`hover:bg-[#475FFF] ${
               pathname === "/" && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all flex items-center my-1`}
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
           >
-            <GoHome fontSize={20} className="text-white mr-5" />
-            Home
+            <GoHome fontSize={23} className="text-white md:mr-5" />
+            <p className="hidden md:block">Home</p>
           </Link>
           <Link
             href="/"
             className={`hover:bg-[#475FFF] ${
               pathname === "/dashboard" && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all flex items-center my-1`}
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
           >
-            <LuLayoutDashboard fontSize={20} className="text-white mr-5" />
-            Dashboard
+            <LuLayoutDashboard fontSize={23} className="text-white md:mr-5" />
+            <p className="hidden md:block">Dashboard</p>
           </Link>
           <Link
             href="/"
             className={`hover:bg-[#475FFF] ${
-              pathname.includes("/video") && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all flex items-center justify-between my-1`}
+              pathname.includes("/video/") && "bg-[#475FFF]"
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, video: !isDown.video });
             }}
           >
             <div className="video-div flex items-center">
-              <IoVideocamOutline fontSize={20} className="text-white mr-5" />
-              Videos
+              <IoVideocamOutline fontSize={23} className="text-white mr-5" />
+              <p className="hidden md:block">Videos</p>
             </div>
             {isDown.video ? (
-              <FaAngleUp fontSize={16} className="text-white" />
+              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
             ) : (
-              <FaAngleDown fontSize={16} className="text-white" />
+              <FaAngleDown
+                fontSize={16}
+                className="text-white hidden md:block"
+              />
             )}
           </Link>
           {isDown.video ? (
-            <div className="video-tools flex flex-col py-5 relative left-10 leading-10">
+            <div className="hidden md:flex video-tools flex-col py-5 relative left-10 leading-10">
               <Link
                 href="/"
                 className={`${
@@ -114,24 +122,27 @@ function Sidebar() {
           <Link
             href="/"
             className={`hover:bg-[#475FFF] ${
-              pathname.includes("/image") && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all flex items-center justify-between my-1`}
+              pathname.includes("/image/") && "bg-[#475FFF]"
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, image: !isDown.image });
             }}
           >
             <div className="image-div flex items-center">
-              <IoImageOutline fontSize={20} className="text-white mr-5" />
-              Images
+              <IoImageOutline fontSize={23} className="text-white md:mr-5" />
+              <p className="hidden md:block">Images</p>
             </div>
             {isDown.image ? (
-              <FaAngleUp fontSize={16} className="text-white" />
+              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
             ) : (
-              <FaAngleDown fontSize={16} className="text-white" />
+              <FaAngleDown
+                fontSize={16}
+                className="text-white hidden md:block"
+              />
             )}
           </Link>
           {isDown.image ? (
-            <div className="image-tools flex flex-col py-5 relative left-10 leading-10">
+            <div className="hidden image-tools md:flex flex-col py-5 relative left-10 leading-10">
               <Link
                 href="/"
                 className="text-gray-400 hover:text-white transition-all"
@@ -148,7 +159,7 @@ function Sidebar() {
                 href="/"
                 className="text-gray-400 hover:text-white transition-all"
               >
-                Professional Headshots
+                AI Headshots
               </Link>
               <Link
                 href="/"
@@ -167,24 +178,27 @@ function Sidebar() {
           <Link
             href="/"
             className={`hover:bg-[#475FFF] ${
-              pathname.includes("/audio") && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all flex items-center justify-between my-1`}
+              pathname.includes("/audio/") && "bg-[#475FFF]"
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, audio: !isDown.audio });
             }}
           >
             <div className="audio-div flex items-center">
-              <PiWaveform fontSize={20} className="text-white mr-5" />
-              Audios
+              <PiWaveform fontSize={23} className="text-white md:mr-5" />
+              <p className="hidden md:block">Audios</p>
             </div>
             {isDown.audio ? (
-              <FaAngleUp fontSize={16} className="text-white" />
+              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
             ) : (
-              <FaAngleDown fontSize={16} className="text-white" />
+              <FaAngleDown
+                fontSize={16}
+                className="text-white hidden md:block"
+              />
             )}
           </Link>
           {isDown.audio ? (
-            <div className="image-tools flex flex-col py-5 relative left-10 leading-10">
+            <div className="hidden image-tools md:flex flex-col py-5 relative left-10 leading-10">
               <Link
                 href="/"
                 className="text-gray-400 hover:text-white transition-all"
@@ -203,11 +217,11 @@ function Sidebar() {
             href="/"
             className={`hover:bg-[#475FFF] ${
               pathname.includes("/collections") && "bg-[#475FFF]"
-            } py-3 px-6 rounded-lg transition-all my-1`}
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all my-1`}
           >
             <div className="collection-div flex items-center">
-              <GoFileDirectory fontSize={20} className="text-white mr-5" />
-              My Collections
+              <GoFileDirectory fontSize={23} className="text-white mr-5" />
+              <p className="hidden md:block"> My Collections</p>
             </div>
           </Link>
         </div>
