@@ -1,5 +1,5 @@
 {
-  "name": "content-buddy",
+  "name": "Intellect-AI",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,10 +13,12 @@
     "@apollo/experimental-nextjs-app-support": "^0.8.0",
     "@apollo/server": "^4.10.0",
     "@as-integrations/next": "^3.0.0",
+    "@nextui-org/react": "^2.2.10",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cloudinary": "^2.0.2",
     "cors": "^2.8.5",
+    "framer-motion": "^11.0.8",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.2",
