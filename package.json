@@ -27,6 +27,7 @@
     "nodemailer": "^6.9.11",
     "react": "^18",
     "react-dom": "^18",
+    "react-icons": "^5.0.1",
     "replicate": "^0.27.1",
     "validator": "^13.11.0"
   },
