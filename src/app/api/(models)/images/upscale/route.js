@@ -5,14 +5,14 @@ import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { UploadImage } from "@/lib/cloudinary";
+import Replicate from "replicate";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
     const { image } = await req.json();
-    
-    //Check if access token is available
-    const token = cookies().get("accessToken");
+
+    // Check if access token and refresh token are available
     const refreshToken = cookies().get("refreshToken");
     if (!refreshToken || !refreshToken.value) {
       return NextResponse.json(
@@ -20,41 +20,71 @@ export const POST = async (req) => {
         { status: 404 }
       );
     }
-    if (!token || !token.value) {
-      const payload = verifyToken(refreshToken);
-      generateAccessToken({ id: payload.id }, "1h");
+
+    //Check if the refreshToken is expired or not
+    try {
+      verifyToken(refreshToken.value);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: "Session expired" },
+        { status: 404 }
+      );
     }
 
-    const payload = verifyToken(token.value);
-    const { id } = payload;
+    let token = cookies().get("accessToken");
+    let id;
+    if (!token || !token.value) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 404 }
+      );
+    } else {
+      try {
+        const payload = verifyToken(token?.value);
+        id = payload.id;
+      } catch (error) {
+        const payload = verifyToken(refreshToken.value);
+        token = generateAccessToken({ id: payload.id }, "20s");
+        console.log("New token");
+      }
+    }
 
-    //Upscale Image using Cloudinary
-    const extract = image.split("upload/");
-    const upscaled = extract[0] + "upload/e_upscale/" + extract[1];
+    // // Upscale the image
+    // const replicate = new Replicate({
+    //   auth: process.env.REPLICATE_API_TOKEN,
+    // });
 
-    // Save image to Cloudinary
-    const result = await UploadImage(upscaled);
+    // const output = await replicate.run(
+    //   "lucataco/gfpgan:66a607f2c8ee93966fb2759b0bb93f48a707f46d2f75df5d66db73d3b5d8337d",
+    //   {
+    //     input: {
+    //       img: image,
+    //       scale: 2,
+    //       version: "v1.4",
+    //     },
+    //   }
+    // );
 
-    const newImage = new Image({
-      userId: id,
-      url: result.url,
-      prompt,
-      miscData: {
-        dimensions: `${width}x${height}`,
-        modelName: "Stable Diffusion XL",
-      },
-    });
+    // // Save image to Cloudinary
+    // const result = await UploadImage(output);
 
-    await newImage.save();
+    // const newImage = new Image({
+    //   userId: id,
+    //   url: result.url,
+    //   prompt,
+    //   miscData: {
+    //     dimensions: `${width}x${height}`,
+    //     modelName: "Stable Diffusion XL",
+    //   },
+    // });
 
-    const library = await Library.findOne({ userId: id });
-    library.images.push(newImage._id);
-    await library.save();
+    // await newImage.save();
 
-    return NextResponse.json(
-      { success: true, data: newImage },
-      { status: 201 }
-    );
+    // const library = await Library.findOne({ userId: id });
+    // library.images.push(newImage._id);
+    // await library.save();
+
+    return NextResponse.json({ success: true, data: id }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },

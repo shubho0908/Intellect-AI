@@ -16,7 +16,9 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>
           <Sidebar />
-          <div className="relative left-[360px] w-fit">{children}</div>
+          <div className="relative left-[130px] md:left-[360px] w-fit">
+            {children}
+          </div>
         </Providers>
       </body>
     </html>
