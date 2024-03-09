@@ -13,8 +13,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
-      <body>
+    <html lang="en" className="dark ">
+      <body className="bg-[#120f0f]">
         <Providers>
           <div className="main-div flex w-full">
             <div className="left">
@@ -22,10 +22,12 @@ export default function RootLayout({ children }) {
             </div>
             <div className="right w-full">
               <div className="right-content">
-                <div className="top">
+                <div className="top bg-[#120f0f] z-[4] fixed w-full">
                   <Navbar />
                 </div>
-                <div className="bottom">{children}</div>
+                <div className="bottom w-full">
+                  <div className="data relative top-[90px] w-full">{children}</div>
+                </div>
               </div>
             </div>
           </div>

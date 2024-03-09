@@ -26,7 +26,7 @@ function Sidebar() {
   return (
     <>
       <div
-        className={`sidebar fixed overflow-auto bg-[#07060B] flex flex-col w-fit ${
+        className={`sidebar border-r-2 z-[5] border-gray-800 fixed overflow-auto bg-[#120f0f] flex flex-col w-fit ${
           isDown.video && isDown.image && isDown.audio ? "h-full" : "h-[100vh]"
         } p-6 md:px-10 ${poppins.className}`}
       >
@@ -43,8 +43,8 @@ function Sidebar() {
         <div className="middle-section my-20 md:my-10 flex flex-col">
           <Link
             href="/"
-            className={`hover:bg-[#475FFF] ${
-              pathname === "/" && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] ${
+              pathname === "/" && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
           >
             <GoHome fontSize={23} className="text-white md:mr-5" />
@@ -52,16 +52,16 @@ function Sidebar() {
           </Link>
           <Link
             href="/"
-            className={`hover:bg-[#475FFF] ${
-              pathname === "/dashboard" && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] ${
+              pathname === "/dashboard" && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
           >
             <LuLayoutDashboard fontSize={23} className="text-white md:mr-5" />
             <p className="hidden md:block">Dashboard</p>
           </Link>
           <div
-            className={`hover:bg-[#475FFF] cursor-pointer ${
-              pathname.includes("/video/") && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] cursor-pointer ${
+              pathname.includes("/video/") && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, video: !isDown.video });
@@ -135,8 +135,8 @@ function Sidebar() {
             </div>
           ) : null}
           <div
-            className={`hover:bg-[#475FFF] cursor-pointer ${
-              pathname.includes("/image/") && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] cursor-pointer ${
+              pathname.includes("/image/") && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, image: !isDown.image });
@@ -208,8 +208,8 @@ function Sidebar() {
             </div>
           ) : null}
           <div
-            className={`hover:bg-[#475FFF] cursor-pointer ${
-              pathname.includes("/audio/") && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] cursor-pointer ${
+              pathname.includes("/audio/") && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
             onClick={() => {
               setIsDown({ ...isDown, audio: !isDown.audio });
@@ -254,8 +254,8 @@ function Sidebar() {
           ) : null}
           <Link
             href="/collections"
-            className={`hover:bg-[#475FFF] cursor-pointer ${
-              pathname.includes("/collections") && "bg-[#475FFF]"
+            className={`hover:bg-[#0266D9] cursor-pointer ${
+              pathname.includes("/collections") && "bg-[#0266D9]"
             } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all my-1`}
           >
             <div className="collection-div flex items-center">

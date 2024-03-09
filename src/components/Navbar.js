@@ -9,7 +9,7 @@ function Navbar() {
   return (
     <>
       <div
-        className={`navbar flex items-center justify-between p-6 ${poppins.className}`}
+        className={`navbar border-b-2 border-gray-800 flex items-center justify-between p-6 ${poppins.className}`}
       >
         <div className="left relative left-[120px] md:left-[320px]">
           <div className="flex flex-wrap md:flex-nowrap gap-4">
