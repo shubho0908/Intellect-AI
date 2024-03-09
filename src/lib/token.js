@@ -6,7 +6,7 @@ const generateTokens = (payload, expiresIn) => {
     expiresIn,
   });
   const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "2m",
+    expiresIn: "7d",
   });
   cookies().set("accessToken", accessToken);
   cookies().set("refreshToken", refreshToken);
@@ -25,5 +25,7 @@ const verifyToken = (token) => {
   const payload = jwt.verify(token, process.env.JWT_SECRET);
   return payload;
 };
+
+
 
 export { generateTokens, generateAccessToken, verifyToken };
