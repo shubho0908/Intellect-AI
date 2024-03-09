@@ -26,6 +26,4 @@ const verifyToken = (token) => {
   return payload;
 };
 
-
-
 export { generateTokens, generateAccessToken, verifyToken };
