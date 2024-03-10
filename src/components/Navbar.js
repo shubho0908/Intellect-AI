@@ -1,5 +1,6 @@
 import { Input, Avatar } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
+import Image from "next/image";
 
 const poppins = Poppins({
   weight: "400",
@@ -11,14 +12,15 @@ function Navbar() {
       <div
         className={`navbar border-b-2 border-gray-800 flex items-center justify-between p-6 ${poppins.className}`}
       >
-        <div className="left relative left-[120px] md:left-[320px]">
-          <div className="flex flex-wrap md:flex-nowrap gap-4">
+        <div className="left relative left-0 sm:left-[120px] md:left-[320px]">
+          <div className="sm:flex hidden flex-wrap md:flex-nowrap gap-4">
             <Input
               type="text"
               placeholder="Search for any model."
-              className="w-[30rem]"
+              className="xl2:w-[30rem] w-[15rem]"
             />
           </div>
+          <Image src="/logo2.png" alt="logo" className="sm:hidden block" width={50} height={50} />
         </div>
         <div className="right pr-6 flex items-center">
           <p> Hi, Shubho!</p>
@@ -30,6 +32,7 @@ function Navbar() {
           />
         </div>
       </div>
+
     </>
   );
 }

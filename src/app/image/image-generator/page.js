@@ -2,8 +2,17 @@ import { Poppins } from "next/font/google";
 import React from "react";
 import { IoDownloadOutline, IoShareSocial } from "react-icons/io5";
 import { GoCopy } from "react-icons/go";
-import { Textarea, Button, Image } from "@nextui-org/react";
+import {
+  Button,
+  Image,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@nextui-org/react";
 import { IoIosMore, IoIosRepeat } from "react-icons/io";
+import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
+import Playground from "@/components/Playground";
+import Modaal from "@/app/image/image-generator/Modaal";
 
 const poppins = Poppins({
   weight: "600",
@@ -18,52 +27,67 @@ function page() {
   return (
     <>
       <div className="image-gen flex items-start justify-between">
-        <div className="left p-6 relative ml-[120px] md:ml-[320px]">
+        <div className="left p-6 relative mt-5 ml-0 sm:mt-0 sm:ml-[120px] md:ml-[320px] border-r-0 xl2:border-r-2 xl2:border-gray-800">
           <div className="top ">
+            <Modaal title="Generate Image" data={<Playground />} />
+
             <h1 className={`${poppins.className} text-2xl`}>Generate Image</h1>
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
+                <Popover placement="right">
+                  <PopoverTrigger>
+                    <IoIosMore
+                      fontSize={35}
+                      className="absolute z-[2] bg-[#ffffffb1] text-black p-2 rounded-full cursor-pointer m-3"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className={`${litePoppins.className} relative  top-20 rounded-lg`}
+                  >
+                    <div className="btns py-2">
+                      <div className="download hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
+                        <IoDownloadOutline
+                          fontSize={22}
+                          className="text-white relative bottom-1 mr-2"
+                        />
+                        <p className="text-md">Download</p>
+                      </div>
+                      <div className="save hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
+                        <MdOutlineBookmarkAdd
+                          fontSize={22}
+                          className="text-white mr-2"
+                        />
+                        <p className="text-md">Save to collection</p>
+                      </div>
+                      <div className="share hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
+                        <IoShareSocial
+                          fontSize={22}
+                          className="text-white mr-2"
+                        />
+                        <p className="text-md">Share</p>
+                      </div>
+                      <div className="delete hover:bg-red-600 hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
+                        <MdDeleteOutline
+                          fontSize={22}
+                          className="text-white mr-2"
+                        />
+                        <p className="text-md">Delete</p>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Image
                   isZoomed
                   src="https://replicate.delivery/pbxt/JipAbQ9UAnZaAR1dlnf4aYDoOONnCgBtUATVoLUZtsecaRbSA/out-0.png"
                   alt="image"
                   width={500}
                   height={500}
-                  className="rounded-lg cursor-pointer z-[1]"
+                  className="cursor-pointer z-[1]"
                 />
-                {/* <div
-                  className={`${litePoppins.className} buttons pt-5 flex justify-between items-center`}
-                >
-                  <div className="left flex items-center">
-                    <div className="download flex items-center cursor-pointer">
-                      <IoDownloadOutline
-                        fontSize={24}
-                        className="text-white relative bottom-1 mr-2"
-                      />
-                      <p>Download</p>
-                    </div>
-                    <div className="copy flex items-center relative left-8 cursor-pointer">
-                      <GoCopy fontSize={22} className="text-white mr-2" />
-                      <p>Copy</p>
-                    </div>
-                  </div>
-                  <div className="right flex items-center cursor-pointer">
-                    <div className="share flex items-center">
-                      <IoShareSocial
-                        fontSize={24}
-                        className="text-white relative mr-2"
-                      />
-                      <p>Share</p>
-                    </div>
-
-                    <IoIosMore
-                      fontSize={24}
-                      className="text-white relative ml-3"
-                    />
-                  </div>
-                </div> */}
               </div>
-              <div className={`${litePoppins.className} right w-3/4 px-8`}>
+              <div
+                className={`${litePoppins.className} right  py-4 w-[100%] newXL:w-3/4 newXL:px-8 newXL:py-0`}
+              >
                 <div className="prompt">
                   <p className="text-gray-400">Prompt</p>
                   <p className="mt-2">
@@ -77,7 +101,10 @@ function page() {
                     variant="solid"
                     className="rounded-lg mr-3"
                   >
-                    <GoCopy fontSize={20} className="text-white" />
+                    <GoCopy
+                      fontSize={20}
+                      className="text-white xsm:block hidden"
+                    />
                     Copy Prompt
                   </Button>
                   <Button
@@ -85,11 +112,14 @@ function page() {
                     variant="solid"
                     className="rounded-lg"
                   >
-                    <IoIosRepeat fontSize={24} className="text-white" />
+                    <IoIosRepeat
+                      fontSize={24}
+                      className="text-white xsm:block hidden"
+                    />
                     Regenerate
                   </Button>
                 </div>
-                <div className="more-details border-t-2 border-gray-800 pt-4">
+                <div className="more-details border-t-2 border-gray-800 pt-4 ">
                   <div className="model">
                     <p className="text-gray-400">Model</p>
                     <p>Stable Diffusion XL</p>
@@ -102,71 +132,42 @@ function page() {
               </div>
             </div>
           </div>
-          <div className="bottom"></div>
+          <div className="bottom mt-4">
+            <div className="related-images">
+              <p className={`${poppins.className} text-2xl`}>Related Images</p>
+              <div className="images flex items-center justify-start flex-wrap newXL:flex-nowrap mt-8 gap-4">
+                <Image
+                  isZoomed
+                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
+                  alt="image"
+                  width={350}
+                  height={350}
+                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                />
+                <Image
+                  isZoomed
+                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
+                  alt="image"
+                  width={350}
+                  height={350}
+                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                />
+                <Image
+                  isZoomed
+                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
+                  alt="image"
+                  width={350}
+                  height={350}
+                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          className={`${litePoppins.className} right h-[100vh] p-6 w-[450px] border-l-2 border-gray-800`}
+          className={`${litePoppins.className}  hidden xl2:block right h-[100vh] p-6 w-[450px]`}
         >
-          <div className="playground">
-            <div className="prompt">
-              <p className="text-lg">Prompt</p>
-              <Textarea
-                variant="bordered"
-                labelPlacement="outside"
-                placeholder="Enter your prompt here"
-                className="w-full mt-4"
-              />
-              <Button
-                color="primary"
-                className="w-full mt-3 text-md"
-                variant="shadow"
-              >
-                Write with AI ✨
-              </Button>
-            </div>
-            <div className="ratio mt-10">
-              <p className="text-lg">Image Ratio</p>
-              <div className="all-ratios mt-5 bg-[#1D1E20] justify-between rounded-lg p-4 flex items-end">
-                <div className="four-by-five cursor-pointer rounded-lg h-[75px] w-[60px] bg-[#120f0f] flex items-center justify-center mr-2">
-                  <p className="text-sm">4:5</p>
-                </div>
-                <div className="two-by-three cursor-pointer rounded-lg h-[90px] w-[60px] bg-[#120f0f] flex items-center justify-center mr-2">
-                  <p className="text-sm">2:3</p>
-                </div>
-                <div className="one-by-one cursor-pointer rounded-lg h-[60px] w-[60px] bg-[#120f0f] flex items-center justify-center border-2 border-blue-500 mr-2">
-                  <p className="text-sm">1:1</p>
-                </div>
-
-                <div className="sixteen-by-nine cursor-pointer rounded-lg h-[60px] w-[100px] bg-[#120f0f] flex items-center justify-center">
-                  <p className="text-sm">16:9</p>
-                </div>
-              </div>
-            </div>
-            <div className="total-images mt-10">
-              <p className="text-xl">Number of image</p>
-              <div className="quantity flex items-center mt-3">
-                <p className="one cursor-pointer py-2 px-6 bg-[#1D1E20] rounded-lg w-fit">
-                  1
-                </p>
-                <p className="two cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit">
-                  2
-                </p>
-                <p className="three cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit">
-                  3
-                </p>
-                <p className="four cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit border-2 border-blue-500">
-                  4
-                </p>
-              </div>
-            </div>
-            <Button
-              color="primary"
-              variant="solid"
-              className="w-full relative top-10"
-            >
-              Generate Image
-            </Button>
-          </div>
+          <Playground />
         </div>
       </div>
     </>

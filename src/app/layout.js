@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
+import Sidebar2 from "@/components/Sidebar2";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,12 +14,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark ">
-      <body className="bg-[#120f0f]">
+    <html lang="en" className="dark bg-[#120f0f]">
+      <body className="">
         <Providers>
           <div className="main-div flex w-full">
             <div className="left">
-              <Sidebar />
+              <div className="web-sidebar hidden sm:block">
+                <Sidebar />
+              </div>
+              <div className="mob-sidebar block sm:hidden">
+                <Sidebar2 />
+              </div>
             </div>
             <div className="right w-full">
               <div className="right-content">
@@ -26,7 +32,9 @@ export default function RootLayout({ children }) {
                   <Navbar />
                 </div>
                 <div className="bottom w-full">
-                  <div className="data relative top-[90px] w-full">{children}</div>
+                  <div className="data relative top-[90px] w-full">
+                    {children}
+                  </div>
                 </div>
               </div>
             </div>
