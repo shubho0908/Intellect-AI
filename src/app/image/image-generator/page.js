@@ -13,6 +13,7 @@ import { IoIosMore, IoIosRepeat } from "react-icons/io";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 import Playground from "@/components/Playground";
 import Modaal from "@/app/image/image-generator/Modaal";
+import RelatedImages from "./RelatedImages";
 
 const poppins = Poppins({
   weight: "600",
@@ -133,35 +134,7 @@ function page() {
             </div>
           </div>
           <div className="bottom mt-4">
-            <div className="related-images">
-              <p className={`${poppins.className} text-2xl`}>Related Images</p>
-              <div className="images flex items-center justify-start flex-wrap newXL:flex-nowrap mt-8 gap-4">
-                <Image
-                  isZoomed
-                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
-                  alt="image"
-                  width={350}
-                  height={350}
-                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
-                />
-                <Image
-                  isZoomed
-                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
-                  alt="image"
-                  width={350}
-                  height={350}
-                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
-                />
-                <Image
-                  isZoomed
-                  src="https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png"
-                  alt="image"
-                  width={350}
-                  height={350}
-                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
-                />
-              </div>
-            </div>
+            <RelatedImages />
           </div>
         </div>
         <div

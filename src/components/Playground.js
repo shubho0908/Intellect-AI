@@ -1,6 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Textarea, Button } from "@nextui-org/react";
 function Playground() {
+  const [ratio, setRatio] = useState("1:1");
+
   return (
     <>
       <div className="playground">
@@ -23,17 +27,37 @@ function Playground() {
         <div className="ratio mt-10">
           <p className="text-lg">Image Ratio</p>
           <div className="all-ratios mt-5 bg-[#1D1E20] justify-between rounded-lg p-4 flex items-end">
-            <div className="four-by-five cursor-pointer rounded-lg h-[75px] w-[60px] bg-[#120f0f] flex items-center justify-center mr-2">
+            <div
+              onClick={() => setRatio("4:5")}
+              className={`four-by-five cursor-pointer rounded-lg h-[75px] w-[60px] bg-[#120f0f] ${
+                ratio === "4:5" ? "border-2 border-blue-500" : null
+              } flex items-center justify-center mr-2`}
+            >
               <p className="text-sm">4:5</p>
             </div>
-            <div className="two-by-three cursor-pointer rounded-lg h-[90px] w-[60px] bg-[#120f0f] flex items-center justify-center mr-2">
+            <div
+              onClick={() => setRatio("2:3")}
+              className={`two-by-three cursor-pointer rounded-lg h-[90px] w-[60px] bg-[#120f0f] ${
+                ratio === "2:3" ? "border-2 border-blue-500" : null
+              } flex items-center justify-center mr-2`}
+            >
               <p className="text-sm">2:3</p>
             </div>
-            <div className="one-by-one cursor-pointer rounded-lg h-[60px] w-[60px] bg-[#120f0f] flex items-center justify-center border-2 border-blue-500 mr-2">
+            <div
+              onClick={() => setRatio("1:1")}
+              className={`one-by-one cursor-pointer rounded-lg h-[60px] w-[60px] bg-[#120f0f] flex items-center justify-center ${
+                ratio === "1:1" ? "border-2 border-blue-500" : null
+              } mr-2`}
+            >
               <p className="text-sm">1:1</p>
             </div>
 
-            <div className="sixteen-by-nine cursor-pointer rounded-lg h-[60px] w-[100px] bg-[#120f0f] flex items-center justify-center">
+            <div
+              onClick={() => setRatio("16:9")}
+              className={`sixteen-by-nine cursor-pointer rounded-lg h-[60px] w-[100px] bg-[#120f0f] ${
+                ratio === "16:9" ? "border-2 border-blue-500" : null
+              } flex items-center justify-center`}
+            >
               <p className="text-sm">16:9</p>
             </div>
           </div>
@@ -55,11 +79,7 @@ function Playground() {
             </p>
           </div>
         </div>
-        <Button
-          color="primary"
-          variant="solid"
-          className="w-full mt-10 mb-5"
-        >
+        <Button color="primary" variant="solid" className="w-full mt-10 mb-5">
           Generate Image
         </Button>
       </div>
