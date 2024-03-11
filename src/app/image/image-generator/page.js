@@ -14,6 +14,8 @@ import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 import Playground from "@/components/Playground";
 import Modaal from "@/app/image/image-generator/Modaal";
 import RelatedImages from "./RelatedImages";
+import { RxUpload } from "react-icons/rx";
+import { PiMagicWand } from "react-icons/pi";
 
 const poppins = Poppins({
   weight: "600",
@@ -113,21 +115,28 @@ function page() {
                     variant="solid"
                     className="rounded-lg"
                   >
-                    <IoIosRepeat
-                      fontSize={24}
+                    <RxUpload
+                      fontSize={21}
                       className="text-white xsm:block hidden"
                     />
-                    Regenerate
+                    Publish
                   </Button>
                 </div>
-                <div className="more-details border-t-2 border-gray-800 pt-4 ">
+                <div className="more-details">
                   <div className="model">
                     <p className="text-gray-400">Model</p>
-                    <p>Stable Diffusion XL</p>
+                    <div className="model-name flex items-center">
+                      <PiMagicWand fontSize={22} className="text-white mr-2" />
+                      <p>Stable Diffusion XL</p>
+                    </div>
                   </div>
                   <div className="dimension mt-4">
-                    <p className="text-gray-400">Dimensions</p>
-                    <p>1024 x 1024</p>
+                    <p className="text-gray-400">Resolution</p>
+                    <p>1024 x 1024px</p>
+                  </div>
+                  <div className="created mt-4">
+                    <p className="text-gray-400">Created At</p>
+                    <p>Jan 1, 2022</p>
                   </div>
                 </div>
               </div>

@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.sidebar::-webkit-scrollbar{
+.sidebar::-webkit-scrollbar, .my-modal::-webkit-scrollbar, .modal-body::-webkit-scrollbar {
     display: none;
 }
