@@ -8,16 +8,18 @@ import {
   ModalBody,
   useDisclosure,
   Button,
-  Chip,
   Avatar,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
-import { GoCopy } from "react-icons/go";
+import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
 import { RxUpload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
+import ContextMenu from "./ContextMenu";
+import { IoIosMore } from "react-icons/io";
+import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 
 const poppins = Poppins({
   weight: "600",
@@ -34,6 +36,9 @@ function RelatedImages() {
   const [context, setContext] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const menuref = useRef();
 
   useEffect(() => {
     if (isCopied) {
@@ -42,6 +47,20 @@ function RelatedImages() {
       }, 2000);
     }
   }, [isCopied]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (!menuref?.current?.contains(e.target)) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.addEventListener("mousedown", handler);
+    };
+  }, []);
 
   const backdrops = "blur";
   const Images = [
@@ -53,6 +72,13 @@ function RelatedImages() {
   const handleOpen = (backdrop) => {
     setBackdrop(backdrop);
     onOpen();
+    if (loading) {
+      const timeoutId = setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
+    }
   };
 
   return (
@@ -80,7 +106,10 @@ function RelatedImages() {
             backdrop={backdrop}
             isOpen={isOpen}
             size="4xl"
-            onClose={onClose}
+            onClose={() => {
+              onClose();
+              setLoading(true);
+            }}
             className={`${litePoppins.className} my-modal`}
           >
             <ModalContent className="modal-body">
@@ -91,13 +120,32 @@ function RelatedImages() {
                     <div className="modal-body items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start">
                       <div className="left hidden md:block">
                         {context && (
-                          <Image
-                            src={context}
-                            alt="image"
-                            width={500}
-                            height={500}
-                            className="cursor-pointer z-[1]"
-                          />
+                          <>
+                            <IoIosMore
+                              fontSize={35}
+                              onClick={() => setOpenMenu(true)}
+                              className="absolute z-[2] bg-[#ffffffb1] text-black p-2 rounded-full cursor-pointer m-3"
+                            />
+                            {openMenu ? (
+                              <div
+                                ref={menuref}
+                                className="context fadein absolute z-10 top-20 left-20"
+                              >
+                                <ContextMenu />
+                              </div>
+                            ) : null}
+                            <Image
+                              src={context}
+                              alt="image"
+                              width={500}
+                              height={500}
+                              onContextMenu={(e) => {
+                                e.preventDefault();
+                              }}
+                              className="cursor-pointer z-[1]"
+                            />
+                          </>
+
                           //   <img
                           //     src={context}
                           //     alt="image"
@@ -143,29 +191,46 @@ function RelatedImages() {
                           )}
                         </div>
                         {context && (
-                          <Image
-                            src={context}
-                            alt="image"
-                            width={500}
-                            height={500}
-                            className="cursor-pointer block md:hidden mt-6 z-[1]"
-                          />
-                          //   <img
-                          //     src={context}
-                          //     alt="image"
-                          //     className="w-[400px] rounded-xl cursor-pointer z-[1]"
-                          //   />
+                          <>
+                            <Image
+                              src={context}
+                              alt="image"
+                              width={500}
+                              height={500}
+                              className="block md:hidden mt-6 z-[1] w-fit cursor-pointer rounded-xl"
+                            />
+
+                            <div className=" gap-4 items-center mt-4 flex md:hidden">
+                              <Button isIconOnly variant="faded">
+                                <GoDownload
+                                  fontSize={20}
+                                  className="text-white"
+                                />
+                              </Button>
+                              <Button isIconOnly variant="faded">
+                                <MdOutlineBookmarkAdd
+                                  fontSize={20}
+                                  className="text-white"
+                                />
+                              </Button>
+                              <Button isIconOnly color="danger" variant="faded">
+                                <MdDeleteOutline
+                                  fontSize={20}
+                                  className="text-white"
+                                />
+                              </Button>
+                            </div>
+                          </>
                         )}
                         <div className="prompt mt-6">
                           <div className="head flex items-center">
                             <p>Prompt details</p>
-                            <div className="cursor-pointer ml-4 rounded-lg">
+                            <div className="cursor-pointer rounded-lg">
                               <Button
                                 isIconOnly
-                                color="primary"
                                 variant="bordered"
                                 onClick={() => setIsCopied(true)}
-                                className="rounded-lg border-1 border-gray-600 text-white"
+                                className="rounded-lg ml-2 border-none text-white"
                               >
                                 {!isCopied ? (
                                   <GoCopy
@@ -187,7 +252,7 @@ function RelatedImages() {
                             waves, set against a backdrop of bright blues
                           </div>
                         </div>
-                        <div className="more-details px-2 mt-5">
+                        <div className="more-details py-6 px-2 ">
                           <div className="first flex items-center justify-between">
                             <div className="dimension">
                               <p className="text-sm text-gray-500">
@@ -215,9 +280,7 @@ function RelatedImages() {
                             </div>
                             <div className="category flex flex-col items-end">
                               <p className="text-sm text-gray-500">Category</p>
-                              <Chip color="primary" className="text-sm mt-2">
-                                Image tool
-                              </Chip>
+                              <p className="text-sm mt-2">Image tool</p>
                             </div>
                           </div>
                           <Button
@@ -225,10 +288,7 @@ function RelatedImages() {
                             variant="solid"
                             className="rounded-xl mt-10 w-full"
                           >
-                            <RxUpload
-                              fontSize={21}
-                              className="text-white"
-                            />
+                            <RxUpload fontSize={21} className="text-white" />
                             Publish
                           </Button>
                         </div>

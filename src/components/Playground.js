@@ -2,8 +2,18 @@
 
 import React, { useState } from "react";
 import { Textarea, Button } from "@nextui-org/react";
+import { prompts } from "@/others/Prompts";
+
 function Playground() {
   const [ratio, setRatio] = useState("1:1");
+  const [totalImages, setTotalImages] = useState(4);
+  const [useAi, setUseAi] = useState(false);
+  const [prompt, setPrompt] = useState(null);
+
+  const SelectPrompt = () => {
+    const index = Math.floor(Math.random() * prompts.length);
+    setPrompt(prompts[index].description);
+  };
 
   return (
     <>
@@ -14,15 +24,30 @@ function Playground() {
             variant="bordered"
             labelPlacement="outside"
             placeholder="Enter your prompt here"
-            className="w-full mt-4"
+            className="ai-textarea w-full mt-4"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
           />
-          <Button
-            color="primary"
-            className="w-full mt-3 text-md"
-            variant="shadow"
-          >
-            Write with AI ✨
-          </Button>
+          {!useAi ? (
+            <Button
+              color="primary"
+              className="w-full mt-3 text-md"
+              variant="shadow"
+              onClick={() => {
+                setUseAi(true);
+                setTimeout(() => {
+                  SelectPrompt();
+                  setUseAi(false);
+                }, 3000);
+              }}
+            >
+              Write with AI ✨
+            </Button>
+          ) : (
+            <Button color="primary" isLoading className="w-full mt-3 text-md">
+              Thinking...
+            </Button>
+          )}
         </div>
         <div className="ratio mt-10">
           <p className="text-lg">Image Ratio</p>
@@ -65,16 +90,36 @@ function Playground() {
         <div className="total-images mt-10">
           <p className="text-xl">Number of image</p>
           <div className="quantity flex items-center mt-3">
-            <p className="one cursor-pointer py-2 px-6 bg-[#1D1E20] rounded-lg w-fit">
+            <p
+              onClick={() => setTotalImages(1)}
+              className={`one ${
+                totalImages === 1 ? "border-2 border-blue-500" : null
+              } cursor-pointer py-2 px-6 bg-[#1D1E20] rounded-lg w-fit`}
+            >
               1
             </p>
-            <p className="two cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit">
+            <p
+              onClick={() => setTotalImages(2)}
+              className={`two ${
+                totalImages === 2 ? "border-2 border-blue-500" : null
+              } cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit`}
+            >
               2
             </p>
-            <p className="three cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit">
+            <p
+              onClick={() => setTotalImages(3)}
+              className={`three ${
+                totalImages === 3 ? "border-2 border-blue-500" : null
+              } cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit`}
+            >
               3
             </p>
-            <p className="four cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit border-2 border-blue-500">
+            <p
+              onClick={() => setTotalImages(4)}
+              className={`four ${
+                totalImages === 4 ? "border-2 border-blue-500" : null
+              } cursor-pointer py-2 ml-4 px-6 bg-[#1D1E20] rounded-lg w-fit`}
+            >
               4
             </p>
           </div>
@@ -82,6 +127,7 @@ function Playground() {
         <Button color="primary" variant="solid" className="w-full mt-10 mb-5">
           Generate Image
         </Button>
+        
       </div>
     </>
   );
