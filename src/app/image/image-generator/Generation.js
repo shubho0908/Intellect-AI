@@ -30,7 +30,7 @@ function page() {
   return (
     <>
       <div className="image-gen flex items-start justify-between">
-        <div className="left p-6 relative mt-5 ml-0 sm:mt-0 sm:ml-[120px] md:ml-[320px] border-r-0 xl2:border-r-2 xl2:border-gray-800">
+        <div className="left p-6 relative mt-0 ml-0 sm:ml-[120px] md:ml-[320px] border-r-0 xl2:border-r-2 xl2:border-gray-800">
           <div className="top ">
             <Modaal title="Generate Image" data={<Playground />} />
 
@@ -69,13 +69,6 @@ function page() {
                         />
                         <p className="text-md">Share</p>
                       </div>
-                      <div className="delete hover:bg-red-600 hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
-                        <MdDeleteOutline
-                          fontSize={22}
-                          className="text-white mr-2"
-                        />
-                        <p className="text-md">Delete</p>
-                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -98,18 +91,7 @@ function page() {
                     bright blues
                   </p>
                 </div>
-                <div className="buttons flex items-end py-6">
-                  <Button
-                    color="primary"
-                    variant="solid"
-                    className="rounded-lg mr-3"
-                  >
-                    <GoCopy
-                      fontSize={20}
-                      className="text-white xsm:block hidden"
-                    />
-                    Copy Prompt
-                  </Button>
+                <div className="buttons flex flex-wrap gap-4 items-end py-6">
                   <Button
                     color="primary"
                     variant="solid"
@@ -120,6 +102,14 @@ function page() {
                       className="text-white xsm:block hidden"
                     />
                     Publish
+                  </Button>
+                  <Button
+                    color="danger"
+                    variant="solid"
+                    className="rounded-lg bg-red-600"
+                  >
+                    <MdDeleteOutline fontSize={22} className="text-white" />
+                    Delete
                   </Button>
                 </div>
                 <div className="more-details">

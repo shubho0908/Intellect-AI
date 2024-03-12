@@ -8,7 +8,7 @@ function Playground() {
   const [ratio, setRatio] = useState("1:1");
   const [totalImages, setTotalImages] = useState(4);
   const [useAi, setUseAi] = useState(false);
-  const [prompt, setPrompt] = useState(null);
+  const [prompt, setPrompt] = useState("");
 
   const SelectPrompt = () => {
     const index = Math.floor(Math.random() * prompts.length);

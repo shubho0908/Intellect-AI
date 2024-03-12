@@ -87,9 +87,10 @@ function RelatedImages() {
         <p className={`${poppins.className} text-2xl`}>Related Images</p>
         <div className="images flex items-center justify-start flex-wrap mt-8 gap-4">
           <div className="flex flex-wrap gap-3">
-            {Images?.map((image) => (
+            {Images?.map((image, index) => (
               <Image
                 isZoomed
+                key={index}
                 src={image}
                 alt="image"
                 width={350}
