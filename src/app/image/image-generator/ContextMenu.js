@@ -1,3 +1,5 @@
+"use client"
+
 import { GoDownload } from "react-icons/go";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 import {

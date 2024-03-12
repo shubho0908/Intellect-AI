@@ -1,3 +1,5 @@
+"use client"
+
 import { Poppins } from "next/font/google";
 import React from "react";
 import { IoDownloadOutline, IoShareSocial } from "react-icons/io5";

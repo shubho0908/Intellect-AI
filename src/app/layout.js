@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark  bg-[#120f0f]">
       <body>
         <Providers>
-          <div className="fixed-div fixed top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%80%_at_50%-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+          <div className="fixed-div fixed top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_90%90%_at_50%-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
           <div className="main-div flex w-full">
             <div className="left">
               <div className="web-sidebar hidden sm:block">
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
             </div>
             <div className="right w-full">
               <div className="right-content">
-                <div className="top bg-[#120f0f70] backdrop-blur-xl z-[4] fixed w-full">
+                <div className="top bg-[#120f0f70] backdrop-blur-xl z-[4] fixed top-0 w-full">
                   <Navbar />
                 </div>
                 <div className="bottom w-full">
@@ -40,6 +40,7 @@ export default function RootLayout({ children }) {
               </div>
             </div>
           </div>
+          
         </Providers>
       </body>
     </html>

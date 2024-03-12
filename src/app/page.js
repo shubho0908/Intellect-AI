@@ -1,3 +1,4 @@
+"use client"
 function Home() {
   return (
     <>

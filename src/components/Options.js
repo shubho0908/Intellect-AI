@@ -1,3 +1,5 @@
+"use client"
+
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import React from "react";
 import { IoIosMore } from "react-icons/io";
