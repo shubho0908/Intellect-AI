@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Textarea, Button } from "@nextui-org/react";
+import { Textarea, Button, Select, SelectItem, Chip } from "@nextui-org/react";
 import { prompts } from "@/others/Prompts";
+import { Poppins } from "next/font/google";
 
+const litePoppins = Poppins({
+  weight: "400",
+  subsets: ["latin"],
+});
 function Playground() {
   const [ratio, setRatio] = useState("1:1");
   const [totalImages, setTotalImages] = useState(4);
@@ -15,16 +20,31 @@ function Playground() {
     setPrompt(prompts[index].description);
   };
 
+  const models = [
+    {
+      value: "Realvisxl2-lcm",
+      label: "Realvisxl2-lcm",
+    },
+    {
+      value: "Dreamshaper-xl-turbo",
+      label: "Dreamshaper-xl-turbo",
+    },
+    {
+      value: "Sdxl-lightning",
+      label: "Sdxl-lightning",
+    },
+  ];
+
   return (
     <>
       <div className="playground">
         <div className="prompt">
-          <p className="text-lg">Prompt</p>
+          <p className="text-md sm:text-lg">Prompt</p>
           <Textarea
             variant="bordered"
             labelPlacement="outside"
             placeholder="Enter your prompt here"
-            className="ai-textarea w-full mt-4"
+            className="ai-textarea w-full mt-4 scrollbar-hide"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
@@ -50,8 +70,8 @@ function Playground() {
           )}
         </div>
         <div className="ratio mt-10">
-          <p className="text-lg">Image Ratio</p>
-          <div className="all-ratios mt-5 bg-[#1D1E20] justify-between rounded-lg p-4 flex items-end">
+          <p className="text-md sm:text-lg">Image Ratio</p>
+          <div className="all-ratios mt-5 bg-[#27272A] justify-between rounded-lg p-4 flex items-end">
             <div
               onClick={() => setRatio("4:5")}
               className={`four-by-five cursor-pointer rounded-lg h-[75px] w-[60px] bg-[#120f0f] ${
@@ -88,7 +108,7 @@ function Playground() {
           </div>
         </div>
         <div className="total-images mt-10">
-          <p className="text-xl">Number of image</p>
+          <p className="text-md sm:text-xl">Number of image</p>
           <div className="quantity flex items-center mt-3">
             <p
               onClick={() => setTotalImages(1)}
@@ -124,10 +144,23 @@ function Playground() {
             </p>
           </div>
         </div>
+        <div className="choose-model mt-10">
+          <Select
+            items={models}
+            label="Select Model"
+            defaultSelectedKeys={[models[2]]}
+            className=""
+          >
+            {(model) => (
+              <SelectItem className={litePoppins.className} key={model.value}>
+                {model.label}
+              </SelectItem>
+            )}
+          </Select>
+        </div>
         <Button color="primary" variant="solid" className="w-full mt-10 mb-5">
           Generate Image
         </Button>
-        
       </div>
     </>
   );

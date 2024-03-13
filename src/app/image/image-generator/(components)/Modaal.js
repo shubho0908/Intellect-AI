@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalBody,
   useDisclosure,
+  ScrollShadow,
 } from "@nextui-org/react";
 import { useState } from "react";
 import { Poppins } from "next/font/google";
@@ -43,13 +44,17 @@ function Modaal({ data, title }) {
         backdrop={backdrop}
         isOpen={isOpen}
         onClose={onClose}
-        className={litePoppins.className}
+        className={`${litePoppins.className} h-[600px] overflow-scroll scrollbar-hide md:h-full`}
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 border-b-2 border-gray-800">{title}</ModalHeader>
-              <ModalBody className="mt-4">{data}</ModalBody>
+              <ModalHeader className="flex flex-col gap-1 border-b-2 border-gray-800">
+                {title}
+              </ModalHeader>
+              <ScrollShadow hideScrollBar className="h-[88%]">
+                <ModalBody className="mt-4">{data}</ModalBody>
+              </ScrollShadow>
             </>
           )}
         </ModalContent>
