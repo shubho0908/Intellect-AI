@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+body::-webkit-scrollbar,
 .sidebar::-webkit-scrollbar,
 .my-modal::-webkit-scrollbar,
 .modal-body::-webkit-scrollbar {
@@ -9,7 +10,7 @@
 }
 
 .fadein {
-  animation: fadein 0.2s ease-in-out;
+  animation: fadein 0.4s ease-in-out;
 }
 
 @keyframes fadein {

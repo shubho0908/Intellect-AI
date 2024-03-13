@@ -17,10 +17,8 @@ import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
 import { RxUpload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
-import ContextMenu from "./ContextMenu";
-import { IoIosMore } from "react-icons/io";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
-
+import Menu from "./Menu";
 const poppins = Poppins({
   weight: "600",
   subsets: ["latin"],
@@ -122,19 +120,7 @@ function RelatedImages() {
                       <div className="left hidden md:block">
                         {context && (
                           <>
-                            <IoIosMore
-                              fontSize={35}
-                              onClick={() => setOpenMenu(true)}
-                              className="absolute z-[2] bg-[#ffffffb1] text-black p-2 rounded-full cursor-pointer m-3"
-                            />
-                            {openMenu ? (
-                              <div
-                                ref={menuref}
-                                className="context fadein absolute z-10 top-20 left-20"
-                              >
-                                <ContextMenu />
-                              </div>
-                            ) : null}
+                            <Menu />
                             <Image
                               src={context}
                               alt="image"

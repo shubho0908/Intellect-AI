@@ -1,23 +1,15 @@
-"use client"
+"use client";
 
 import { Poppins } from "next/font/google";
-import React from "react";
-import { IoDownloadOutline, IoShareSocial } from "react-icons/io5";
-import { GoCopy } from "react-icons/go";
-import {
-  Button,
-  Image,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@nextui-org/react";
-import { IoIosMore } from "react-icons/io";
-import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { Button, Image, Skeleton } from "@nextui-org/react";
+import { MdDeleteOutline } from "react-icons/md";
 import Playground from "@/components/Playground";
 import Modaal from "@/app/image/image-generator/Modaal";
 import RelatedImages from "./RelatedImages";
 import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";
+import Menu from "./Menu";
 
 const poppins = Poppins({
   weight: "600",
@@ -29,6 +21,16 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 function page() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!isLoading) {
+        setIsLoading(true);
+      }
+    }, 2000);
+  }, [isLoading]);
+
   return (
     <>
       <div className="image-gen flex items-start justify-between">
@@ -36,52 +38,24 @@ function page() {
           <div className="top ">
             <Modaal title="Generate Image" data={<Playground />} />
 
-            <h1 className={`${poppins.className} text-2xl`}>Generate Image</h1>
+            <Skeleton isLoaded={isLoading} className="rounded-lg w-fit">
+              <h1 className={`${poppins.className} w-fit text-2xl`}>
+                Generate Image
+              </h1>
+            </Skeleton>
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
-                <Popover placement="right">
-                  <PopoverTrigger>
-                    <IoIosMore
-                      fontSize={35}
-                      className="absolute z-[2] bg-[#ffffffb1] text-black p-2 rounded-full cursor-pointer m-3"
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className={`${litePoppins.className} relative  top-20 rounded-lg`}
-                  >
-                    <div className="btns py-2">
-                      <div className="download hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
-                        <IoDownloadOutline
-                          fontSize={22}
-                          className="text-white relative bottom-1 mr-2"
-                        />
-                        <p className="text-md">Download</p>
-                      </div>
-                      <div className="save hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
-                        <MdOutlineBookmarkAdd
-                          fontSize={22}
-                          className="text-white mr-2"
-                        />
-                        <p className="text-md">Save to collection</p>
-                      </div>
-                      <div className="share hover:bg-[#313132] hover:rounded-lg transition-all cursor-pointer flex items-center p-2">
-                        <IoShareSocial
-                          fontSize={22}
-                          className="text-white mr-2"
-                        />
-                        <p className="text-md">Share</p>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                <Image
-                  isZoomed
-                  src="https://replicate.delivery/pbxt/JipAbQ9UAnZaAR1dlnf4aYDoOONnCgBtUATVoLUZtsecaRbSA/out-0.png"
-                  alt="image"
-                  width={500}
-                  height={500}
-                  className="cursor-pointer z-[1]"
-                />
+                <Menu />
+                <Skeleton isLoaded={isLoading} className="rounded-lg">
+                  <Image
+                    isZoomed
+                    src="https://replicate.delivery/pbxt/JipAbQ9UAnZaAR1dlnf4aYDoOONnCgBtUATVoLUZtsecaRbSA/out-0.png"
+                    alt="image"
+                    width={500}
+                    height={500}
+                    className="cursor-pointer z-[1]"
+                  />
+                </Skeleton>
               </div>
               <div
                 className={`${litePoppins.className} right  py-4 w-[100%] newXL:w-3/4 newXL:px-8 newXL:py-0`}

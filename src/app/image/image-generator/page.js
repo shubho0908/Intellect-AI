@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import Generation from "@/app/image/image-generator/Generation";
 import { Button, Image, Input } from "@nextui-org/react";
 import { PiMagicWand } from "react-icons/pi";
+import { useState } from "react";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -27,9 +28,21 @@ const allImages = [
 ];
 
 function page() {
+  const [prompt, setPrompt] = useState("");
+  const [isClicked, setIsClicked] = useState(false);
+
+  if (isClicked) {
+    return(
+      <>
+      <Generation/>
+      </>
+    )
+  }
+
+
   return (
     <>
-      <div className="image-generator mt-5 mb-[12rem] sm:mb-[8rem] sm:mt-0 sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4 p-4 flex flex-col items-center">
+      <div className="image-generator fadein mb-[12rem] sm:mb-[8rem] sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4 p-4 flex flex-col items-center">
         <div className="top mt-10">
           <div className="head flex flex-col items-center">
             <p
@@ -51,23 +64,42 @@ function page() {
               cols="50"
               className={` ${litePoppins.className} my-inp shadow-xl hidden lg:block scrollbar-hide resize-none p-4 h-[60px] w-full text-md text-gray-700 bg-gray-100 rounded-xl border border-gray-300  dark:bg-gray-100 dark:border-gray-600 dark:placeholder-gray-600  dark:text-gray-700`}
               placeholder="Write your prompt"
+              onChange={(e) => setPrompt(e.target.value)}
+              value={prompt}
             ></textarea>
             <Input
               variant="bordered"
               placeholder="Write your prompt"
               size="lg"
+              onChange={(e) => setPrompt(e.target.value)}
+              value={prompt}
               className={`${litePoppins.className} rounded-lg block lg:hidden`}
             />
-            <Button
-              color="primary"
-              className={`${litePoppins.className} rounded-xl xsm:rounded-lg mt-4 xsm:mt-0 xsm:ml-3 w-full xsm:w-fit lg:ml-0 lg:absolute lg:right-4`}
-            >
-              <PiMagicWand
-                fontSize={22}
-                className="text-white block xsm:hidden lg:block"
-              />
-              Generate
-            </Button>
+            {prompt === "" ? (
+              <Button
+                color="primary"
+                isDisabled
+                className={`${litePoppins.className} rounded-xl xsm:rounded-lg mt-4 xsm:mt-0 xsm:ml-3 w-full xsm:w-fit lg:ml-0 lg:absolute lg:right-4`}
+              >
+                <PiMagicWand
+                  fontSize={22}
+                  className="text-white block xsm:hidden lg:block"
+                />
+                Generate
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                onClick={() => setIsClicked(true)}
+                className={`${litePoppins.className} rounded-xl xsm:rounded-lg mt-4 xsm:mt-0 xsm:ml-3 w-full xsm:w-fit lg:ml-0 lg:absolute lg:right-4`}
+              >
+                <PiMagicWand
+                  fontSize={22}
+                  className="text-white block xsm:hidden lg:block"
+                />
+                Generate
+              </Button>
+            )}
           </div>
           <div
             className={`${litePoppins2.className} font-light prompt-recommend mx-10 xl:mx-20 relative top-20 hidden xsm:flex flex-wrap justify-center items-center gap-6`}
@@ -75,6 +107,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Painting showcases galaxies, Jesus Christ, evoking awe and wonder."
+                )
+              }
               className="text-md hidden xl:block rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Painting showcases galaxies, Jesus Christ, evoking awe and wonder.
@@ -82,6 +119,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Painting showcases galaxies, Jesus Christ, evoking awe and wonder."
+                )
+              }
               className="text-md block xl:hidden lg:text-md text-sm rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Painting showcases ga...
@@ -89,6 +131,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Create a warm and friendly illustration of an endearing dog."
+                )
+              }
               className="text-md hidden xl:block rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Create a warm and friendly illustration of an endearing dog.
@@ -96,6 +143,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Create a warm and friendly illustration of an endearing dog."
+                )
+              }
               className="text-md block xl:hidden lg:text-md text-sm rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Create a warm and...
@@ -103,6 +155,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "8K ultra-realistic photo of tramezzini course, extreme detailing."
+                )
+              }
               className="text-md hidden xl:block rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               8K ultra-realistic photo of tramezzini course, extreme detailing.
@@ -110,6 +167,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "8K ultra-realistic photo of tramezzini course, extreme detailing."
+                )
+              }
               className="text-md block xl:hidden lg:text-md text-sm rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               8K ultra-realistic photo...
@@ -117,6 +179,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Glass robot with copper details, surrounded by futuristic aura and raindrops."
+                )
+              }
               className="text-md hidden xl:block rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Glass robot with copper details, surrounded by futuristic aura and
@@ -125,6 +192,11 @@ function page() {
             <Button
               color="primary"
               variant="bordered"
+              onClick={() =>
+                setPrompt(
+                  "Glass robot with copper details, surrounded by futuristic aura and raindrops."
+                )
+              }
               className="text-md block xl:hidden lg:text-md text-sm rounded-lg bg-gray-700 shadow-xl border-none text-white"
             >
               Glass robot with copper de...
@@ -142,11 +214,11 @@ function page() {
         ul.insertAdjacentHTML('afterend', ul.outerHTML);
         ul.nextSibling.setAttribute('aria-hidden', 'true');
     })"
-            class="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+            className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
           >
             <ul
               x-ref="logos"
-              class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+              className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
             >
               {allImages?.map((image, index) => {
                 return (
@@ -185,8 +257,6 @@ function page() {
           </div>
         </div>
       </div>
-
-      {/* <Generation/> */}
     </>
   );
 }
