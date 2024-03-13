@@ -1,6 +1,6 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
-import { Audios } from "@/models/audios.models";
+import { Audio } from "@/models/audios.models";
 import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -85,7 +85,7 @@ export const POST = async (req) => {
     );
 
     //Save all audios to database
-    const newAudio = new Audios({
+    const newAudio = new Audio({
       userId: id,
       url: audio,
       transcript: output?.text,

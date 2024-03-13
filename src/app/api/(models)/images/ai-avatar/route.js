@@ -1,6 +1,6 @@
 import { ConnectDB } from "@/database";
 import { UploadImage } from "@/lib/cloudinary";
-import { generateAccessToken, validateTokens, verifyToken } from "@/lib/token";
+import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Image } from "@/models/images.models";
 import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";

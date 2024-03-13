@@ -40,8 +40,8 @@ function Menu() {
             <DropdownItem key="edit">Share</DropdownItem>
             <DropdownItem
               key="delete"
-              className="text-danger hover:bg-red-600 transition-all"
-              color="danger"
+              className="text-white hover:bg-red-600 transition-all"
+              color="error"
             >
               Delete
             </DropdownItem>

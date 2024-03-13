@@ -9,9 +9,10 @@ import {
   useDisclosure,
   Button,
   Avatar,
+  Skeleton,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
@@ -34,9 +35,16 @@ function RelatedImages() {
   const [context, setContext] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
   const [loading, setLoading] = useState(true);
-  const menuref = useRef();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!isLoading) {
+        setIsLoading(true);
+      }
+    }, 2000);
+  }, [isLoading]);
 
   useEffect(() => {
     if (isCopied) {
@@ -45,20 +53,6 @@ function RelatedImages() {
       }, 2000);
     }
   }, [isCopied]);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!menuref?.current?.contains(e.target)) {
-        setOpenMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-
-    return () => {
-      document.addEventListener("mousedown", handler);
-    };
-  }, []);
 
   const backdrops = "blur";
   const Images = [
@@ -82,23 +76,32 @@ function RelatedImages() {
   return (
     <>
       <div className="related-images">
-        <p className={`${poppins.className} text-2xl`}>Related Images</p>
+        <Skeleton isLoaded={isLoading} className="rounded-lg w-fit">
+          <p className={`${poppins.className} text-2xl`}>Related Images</p>
+        </Skeleton>
         <div className="images flex items-center justify-start flex-wrap mt-8 gap-4">
           <div className="flex flex-wrap gap-3">
             {Images?.map((image, index) => (
-              <Image
-                isZoomed
-                key={index}
-                src={image}
-                alt="image"
-                width={350}
-                height={350}
-                onClick={() => {
-                  handleOpen(backdrops);
-                  setContext(image);
-                }}
-                className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
-              />
+              <>
+                <Skeleton
+                  isLoaded={isLoading}
+                  className="rounded-lg w-fit"
+                >
+                  <Image
+                    isZoomed
+                    key={index}
+                    src={image}
+                    alt="image"
+                    width={350}
+                    height={350}
+                    onClick={() => {
+                      handleOpen(backdrops);
+                      setContext(image);
+                    }}
+                    className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                  />
+                </Skeleton>
+              </>
             ))}
           </div>
           <Modal

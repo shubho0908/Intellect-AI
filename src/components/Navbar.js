@@ -1,6 +1,15 @@
-"use client"
+"use client";
 
-import { Input, Avatar } from "@nextui-org/react";
+import {
+  Input,
+  Avatar,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  User,
+} from "@nextui-org/react";
+
 import { Poppins } from "next/font/google";
 import Image from "next/image";
 
@@ -15,7 +24,6 @@ function Navbar() {
         className={`navbar flex items-center justify-between p-3 sm:p-6 ${poppins.className}`}
       >
         <div className="left relative left-0 sm:left-[120px] md:left-[320px]">
-          
           <div className="sm:flex hidden flex-wrap md:flex-nowrap gap-4">
             <Input
               type="text"
@@ -23,19 +31,55 @@ function Navbar() {
               className="xl2:w-[30rem] w-[15rem]"
             />
           </div>
-          <Image src="/logo2.png" alt="logo" className="sm:hidden block" width={50} height={50} />
+          <Image
+            src="/logo2.png"
+            alt="logo"
+            className="sm:hidden block"
+            width={50}
+            height={50}
+          />
         </div>
         <div className="right pr-6 flex items-center">
           <p> Hi, Shubho!</p>
-          <Avatar
-            isBordered
-            color="primary"
-            className="relative left-6 cursor-pointer"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
+          <div className="flex items-center gap-4">
+            <Dropdown placement="bottom-end" backdrop="blur">
+              <DropdownTrigger>
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform relative left-6 cursor-pointer"
+                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                />
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Profile Actions"
+                variant="flat"
+                className={poppins.className}
+              >
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">zoey@example.com</p>
+                </DropdownItem>
+                <DropdownItem key="settings">My Settings</DropdownItem>
+                <DropdownItem key="team_settings">Team Settings</DropdownItem>
+                <DropdownItem key="analytics">Analytics</DropdownItem>
+                <DropdownItem key="system">System</DropdownItem>
+                <DropdownItem key="configurations">Configurations</DropdownItem>
+                <DropdownItem key="help_and_feedback">
+                  Help & Feedback
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  className="text-white hover:bg-red-600 transition-all"
+                  color="error"
+                >
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
       </div>
-
     </>
   );
 }
