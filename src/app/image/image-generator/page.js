@@ -61,7 +61,7 @@ function page() {
             <p
               className={`${litePoppins.className} bg-gradient-to-r from-gray-300 to-blue-600 text-transparent bg-clip-text font-bold text-[1.7rem] xsm:text-[2.4rem] lg:text-[3rem] xl:text-[4.2rem]`}
             >
-              with Intellect.Ai
+              with Intellect.AI
             </p>
           </div>
           <div className="input mx-6 lg:mx-20 xl:mx-40 relative top-10 flex flex-col xsm:flex-row items-center">

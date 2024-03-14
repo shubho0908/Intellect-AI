@@ -148,7 +148,7 @@ function Playground() {
           <Select
             items={models}
             label="Select Model"
-            defaultSelectedKeys={[models[2]]}
+            defaultSelectedKeys={["Sdxl-lightning"]}
             className=""
           >
             {(model) => (
