@@ -5,10 +5,10 @@ import {
   Modal,
   ModalContent,
   ModalBody,
-  ModalFooter,
   useDisclosure,
   Progress,
   Image,
+  Spinner,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { ImgComparisonSlider } from "@img-comparison-slider/react";
@@ -34,6 +34,8 @@ function page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedIMG, setUploadedIMG] = useState(null);
+  const [upscaledImg, setUpscaledImg] = useState(null);
+  const [upscaleLoading, setUpscaleLoading] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -42,6 +44,16 @@ function page() {
       }
     }, 2000);
   }, [isLoading]);
+
+  useEffect(() => {
+    if (!uploadedIMG) {
+      setUpscaleLoading(true);
+    } else {
+      setTimeout(() => {
+        setUpscaledImg(uploadedIMG);
+      }, 5000);
+    }
+  }, [uploadedIMG]);
 
   const handleFileDrop = (event) => {
     event.preventDefault();
@@ -82,8 +94,7 @@ function page() {
         async () => {
           try {
             const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-            console.log(downloadURL);
-            // Handle successful upload
+            setUploadedIMG(downloadURL);
           } catch (error) {
             console.log(error);
           }
@@ -96,10 +107,7 @@ function page() {
   };
 
   const handleOpen = async () => {
-    const downloadURL = await uploadImage(fileData);
-    if (downloadURL !== undefined || downloadURL !== null) {
-      setUploadedIMG(downloadURL);
-    }
+    await uploadImage(fileData);
     onOpen();
   };
 
@@ -235,28 +243,73 @@ function page() {
           </div>
         </div>
       </div>
-      <Modal backdrop="blur" isOpen={isOpen} onClose={onClose}>
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          setUploadProgress(0);
+          setUpscaledImg(null);
+          setUploadedIMG(false);
+          setUpscaleLoading(false);
+          setIsFileSelected(false);
+          setFileData(null);
+        }}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalBody>
-                <Progress
-                  aria-label="Downloading..."
-                  size="md"
-                  value={uploadProgress}
-                  color="success"
-                  showValueLabel={true}
-                  className="max-w-md"
-                />
+              <ModalBody
+                className={`${litePoppins.className} mt-8 mb-8 w-full`}
+              >
+                <div className="upscale-body">
+                  {!uploadedIMG && (
+                    <>
+                      <div className="flex flex-col items-center">
+                        <p>Your image is being uploaded...</p>
+                        <Progress
+                          aria-label="Uploading..."
+                          size="md"
+                          value={uploadProgress}
+                          color="success"
+                          showValueLabel={true}
+                          className="max-w-md mt-3"
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div className="upscale-data flex flex-col items-center">
+                    {!upscaledImg && uploadedIMG && (
+                      <>
+                        <div className="flex flex-col items-center">
+                          <p>Please wait while we upscale your image..</p>
+                          <Spinner
+                            label="Loading.."
+                            color="primary"
+                            className="mt-3"
+                            labelColor="primary"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {upscaledImg && (
+                      <>
+                        <p>Your image is upscaled successfully!</p>
+                        <Image
+                          src={upscaledImg}
+                          width={800}
+                          height={800}
+                          className="my-5"
+                          alt="Uploaded Image"
+                        />
+                        <Button color="primary" className="w-full">
+                          Download
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>
