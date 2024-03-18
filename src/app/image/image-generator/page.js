@@ -211,9 +211,12 @@ function page() {
           </div>
         </div>
         <div className="bottom flex flex-col items-center mt-[6rem] xsm:mt-[9rem] xl:mt-[12.4rem] w-[80%]">
-          <p className={`${litePoppins2.className} text-lg xsm:text-2xl mb-10`}>
+          <p className={`${litePoppins2.className} text-lg xsm:text-2xl`}>
             Our Best Examples
           </p>
+          <div className="new-line w-full flex items-center justify-center">
+            <div className="line w-[250px] h-[0.1rem] mt-3 bg-gradient-to-r from-[#eab1ff] to-[#0369b294]"></div>
+          </div>
           <div
             x-data="{}"
             x-init="$nextTick(() => {
@@ -221,7 +224,7 @@ function page() {
         ul.insertAdjacentHTML('afterend', ul.outerHTML);
         ul.nextSibling.setAttribute('aria-hidden', 'true');
     })"
-            className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+            className="w-full mt-14 inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
           >
             <ul
               x-ref="logos"

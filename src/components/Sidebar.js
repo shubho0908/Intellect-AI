@@ -92,16 +92,7 @@ function Sidebar() {
               >
                 Image to Motion
               </Link>
-              <Link
-                href="/video/video-matting"
-                className={`${
-                  pathname.includes("/video-matting")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Video Matting
-              </Link>
+
               <Link
                 href="/video/video-caption"
                 className={`${
@@ -177,16 +168,7 @@ function Sidebar() {
               >
                 Image Upscaler
               </Link>
-              <Link
-                href="/image/headshots"
-                className={`${
-                  pathname.includes("/headshots")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                AI Headshots
-              </Link>
+
               <Link
                 href="/image/avatar"
                 className={`${
