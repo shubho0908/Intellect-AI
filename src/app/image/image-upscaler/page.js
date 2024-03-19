@@ -272,6 +272,7 @@ function page() {
         className="max-w-fit"
         placement="center"
         backdrop="blur"
+        isDismissable={false}
         isOpen={isOpen}
         onClose={() => {
           onClose();
