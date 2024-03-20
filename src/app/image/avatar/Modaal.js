@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -12,15 +12,15 @@ import {
   Card,
   CardBody,
   CardFooter,
-  Spinner,
   Progress,
-  Textarea,
+  Tooltip,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
-import { MdOutlineDone, MdDone } from "react-icons/md";
+import { MdOutlineDone, MdDone, MdBookmarkAdd, MdDelete } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { storage } from "@/lib/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { HiOutlineDownload, HiOutlineUpload } from "react-icons/hi";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -40,10 +40,10 @@ export default function Modaal() {
   const [fileData, setFileData] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [nextStep, setNextStep] = useState(false);
-  // const [uploadProgress, setUploadProgress] = useState(0);
-  // const [uploadedIMG, setUploadedIMG] = useState(null);
-  // const [avatarIMG, setAvatarIMG] = useState(null);
-  // const [startUpload, setStartUpload] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedIMG, setUploadedIMG] = useState(null);
+  const [isCreateAvatar, setIsCreateAvatar] = useState(false);
+  const [avatarIMG, setAvatarIMG] = useState(null);
 
   const handleFileDrop = (event) => {
     event.preventDefault();
@@ -61,6 +61,58 @@ export default function Modaal() {
       setFileData(file);
     }
   };
+
+  const uploadImage = async (file) => {
+    try {
+      if (!file) {
+        return null;
+      }
+
+      const fileReference = ref(storage, `avatar/${file.name}`);
+      const uploadData = uploadBytesResumable(fileReference, file);
+
+      uploadData.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(progress);
+        },
+        (error) => {
+          console.log(error);
+        },
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
+            setUploadedIMG(downloadURL);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const upload = async () => {
+      if (isFileSelected && !uploadedIMG) {
+        await uploadImage(fileData);
+      }
+    };
+
+    upload();
+  }, [isFileSelected, uploadedIMG, fileData]);
+
+  useEffect(() => {
+    if (isCreateAvatar) {
+      setTimeout(() => {
+        setAvatarIMG("/avatar-demo/covered.jpg");
+      }, 5000);
+    }
+  }, [isCreateAvatar]);
 
   const goodImages = [
     {
@@ -131,39 +183,17 @@ export default function Modaal() {
     },
   ];
 
-  const uploadImage = async (file) => {
-    try {
-      if (!file) {
-        return null;
-      }
-
-      const fileReference = ref(storage, `avatar/${file.name}`);
-      const uploadData = uploadBytesResumable(fileReference, file);
-
-      uploadData.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.log(error);
-        },
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-            setUploadedIMG(downloadURL);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      );
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
+  const allImages = [
+    "https://replicate.delivery/pbxt/B5quWffBclntEk2BN3SI6N474ZhX1I3gQBtZdVSHnBpluXRSA/result.jpg",
+    "https://replicate.delivery/pbxt/KXeGFxxHaLQfBUZjMdfBK4LrxDT81ocoHrAezlgw2aqfckHSC/result.jpg",
+    "/avatar/cyberpunk.jpg",
+    "https://replicate.delivery/pbxt/2fkfTXze0OKXzp3KvwPrNPFjXeZnCXl1bLdBixAY9KS44YHKB/result.jpg",
+    "/avatar/gym.jpg",
+    "https://replicate.delivery/pbxt/iE31W3EYU7YuHldT0HGKLZVO6TUwFCxN7StGnkQ0ncLCRlkE/result.jpg",
+    "/avatar/beauty.jpg",
+    "/avatar/magic.jpg",
+    "/avatar/tradition.jpg",
+  ];
 
   return (
     <>
@@ -185,10 +215,15 @@ export default function Modaal() {
           onClose();
           setIsFileSelected(false);
           setFileData(null);
+          setUploadedIMG(null);
+          setIsCreateAvatar(false);
+          setAvatarIMG(null);
+          setSelectedAvatar("");
           setTimeout(() => {
             setIsClicked(false);
-          }, 1000);
+          }, 400);
           setIsAgreed(false);
+          setNextStep(false);
         }}
         className="border-2 border-gray-800"
       >
@@ -318,7 +353,7 @@ export default function Modaal() {
 
                 {isClicked && !nextStep && (
                   <div className="avatar-generate py-6 flex flex-col items-center justify-center">
-                    <div className="left flex flex-col items-center w-full px-6">
+                    <div className="left fadein flex flex-col items-center w-full px-6">
                       <div className="flex items-center mb-6">
                         <p className={`${litePoppins.className} text-xl`}>
                           STEP 1/2:{" "}
@@ -339,7 +374,7 @@ export default function Modaal() {
                             onDrop={handleFileDrop}
                             className="flex flex-col items-center justify-center pt-5 pb-6"
                           >
-                            {!isFileSelected ? (
+                            {!isFileSelected && (
                               <>
                                 <svg
                                   className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
@@ -366,20 +401,34 @@ export default function Modaal() {
                                   SVG, PNG, JPG or GIF (MAX. 800x500px)
                                 </p>
                               </>
-                            ) : (
-                              <>
-                                <div className="fadein flex flex-col items-center">
-                                  <div className="tick p-2 w-fit rounded-full border-2 border-green-500">
-                                    <MdDone
-                                      fontSize={30}
-                                      className="text-green-500"
-                                    />
-                                  </div>
-                                  <p className="mt-3 text-center">
-                                    File selected: {fileData.name}
-                                  </p>
+                            )}
+
+                            {isFileSelected && !uploadedIMG && (
+                              <div className="flex flex-col items-center">
+                                <p>Your image is being uploaded...</p>
+                                <Progress
+                                  aria-label="Uploading..."
+                                  size="md"
+                                  value={uploadProgress}
+                                  color="success"
+                                  showValueLabel={true}
+                                  className="max-w-md mt-3"
+                                />
+                              </div>
+                            )}
+
+                            {isFileSelected && uploadedIMG && (
+                              <div className="fadein flex flex-col items-center">
+                                <div className="tick p-2 w-fit rounded-full border-2 border-green-500">
+                                  <MdDone
+                                    fontSize={30}
+                                    className="text-green-500"
+                                  />
                                 </div>
-                              </>
+                                <p className="mt-3 text-center">
+                                  File uploaded: {fileData.name}
+                                </p>
+                              </div>
                             )}
                           </div>
                           <input
@@ -393,7 +442,7 @@ export default function Modaal() {
                       </div>
                       <Button
                         color="primary"
-                        isDisabled={!isFileSelected}
+                        isDisabled={!uploadedIMG}
                         onClick={() => setNextStep(true)}
                         className={`${litePoppins.className} w-full mt-6`}
                       >
@@ -403,9 +452,9 @@ export default function Modaal() {
                   </div>
                 )}
 
-                {nextStep && (
+                {nextStep && !isCreateAvatar && (
                   <>
-                    <div className="right flex flex-col items-center py-6">
+                    <div className="right fadein flex flex-col items-center py-6">
                       <div className="flex items-center">
                         <p className={`${litePoppins.className} text-xl`}>
                           STEP 2/2:{" "}
@@ -467,10 +516,188 @@ export default function Modaal() {
                         <Button
                           color="primary"
                           isDisabled={!selectedAvatar}
+                          onClick={() => setIsCreateAvatar(true)}
                           className={`${litePoppins.className} mt-10 w-1/2`}
                         >
                           Create your avatar!
                         </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {isCreateAvatar && selectedAvatar && !avatarIMG && (
+                  <>
+                    <div className="creating-avatar fadein flex flex-col items-center w-full p-5">
+                      <p className={`${litePoppins.className} text-xl`}>
+                        Creating your avatar
+                      </p>
+                      <p
+                        className={`${litePoppins2.className} mt-2 text-gray-400`}
+                      >
+                        Please wait... this process may take a while.
+                      </p>
+                      <Progress
+                        size="sm"
+                        isIndeterminate
+                        aria-label="Loading..."
+                        className="max-w-md py-5"
+                      />
+                      <div
+                        x-data="{}"
+                        x-init="$nextTick(() => {
+        let ul = $refs.logos;
+        ul.insertAdjacentHTML('afterend', ul.outerHTML);
+        ul.nextSibling.setAttribute('aria-hidden', 'true');
+    })"
+                        className="sm:w-[80%] w-full mt-6 inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+                      >
+                        <ul
+                          x-ref="logos"
+                          className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                        >
+                          {allImages?.map((image, index) => {
+                            return (
+                              <>
+                                <li key={index}>
+                                  <Image
+                                    className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                    src={image}
+                                    width={150}
+                                    height={150}
+                                  />
+                                </li>
+                              </>
+                            );
+                          })}
+                        </ul>
+                        <ul
+                          className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                          aria-hidden="true"
+                        >
+                          {allImages?.map((image, index) => {
+                            return (
+                              <>
+                                <li key={index}>
+                                  <Image
+                                    className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                    src={image}
+                                    width={150}
+                                    height={150}
+                                  />
+                                </li>
+                              </>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {avatarIMG && (
+                  <>
+                    <div className="my-avatar w-full flex flex-col items-center p-6">
+                      <p className={`${litePoppins.className} text-xl`}>
+                        Your Avatar is ready!
+                      </p>
+                      <div className="compare flex items-start gap-5">
+                        <div className="left text-center mt-6">
+                          <p>ORIGINAL</p>
+                          <Image
+                            className="rounded-xl aspect-square object-cover z-[1]"
+                            src={uploadedIMG}
+                            width={400}
+                            height={400}
+                          />
+                          <Button
+                            color="primary"
+                            className={`${litePoppins.className} w-full mt-4`}
+                          >
+                            <HiOutlineDownload
+                              fontSize={22}
+                              className="text-white"
+                            />
+                            Download
+                          </Button>
+                        </div>
+                        <div className="right text-center mt-6">
+                          <p>AVATAR</p>
+
+                          <div className="img-tools flex items-start">
+                            <Image
+                              className="rounded-xl aspect-square object-cover z-[1]"
+                              src={avatarIMG}
+                              width={400}
+                              height={400}
+                            />
+                            <div className="icon-btns flex flex-col absolute right-[3.7rem] mt-3 z-[3] items-center gap-2">
+                              <Tooltip
+                                showArrow={true}
+                                placement="right"
+                                className={litePoppins2.className}
+                                color="primary"
+                                content="Download"
+                              >
+                                <Button
+                                  isIconOnly
+                                  className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
+                                >
+                                  <HiOutlineDownload
+                                    fontSize={22}
+                                    className="text-white"
+                                  />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip
+                                showArrow={true}
+                                placement="right"
+                                color="primary"
+                                className={litePoppins2.className}
+                                content="Save to collection"
+                              >
+                                <Button
+                                  isIconOnly
+                                  className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
+                                >
+                                  <MdBookmarkAdd
+                                    fontSize={22}
+                                    className="text-white"
+                                  />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip
+                                showArrow={true}
+                                placement="right"
+                                color="danger"
+                                className={`${litePoppins2.className} bg-red-600`}
+                                content="Delete"
+                              >
+                                <Button
+                                  isIconOnly
+                                  className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
+                                >
+                                  <MdDelete
+                                    fontSize={22}
+                                    className="text-white"
+                                  />
+                                </Button>
+                              </Tooltip>
+                            </div>
+                          </div>
+                          <div className="buttons flex items-center justify-between mt-4">
+                            <Button
+                              color="primary"
+                              className={`${litePoppins.className} w-full`}
+                            >
+                              <HiOutlineUpload
+                                fontSize={22}
+                                className="text-white"
+                              />
+                              Publish
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </>
