@@ -282,6 +282,7 @@ function page() {
           setUpscaleLoading(false);
           setIsFileSelected(false);
           setFileData(null);
+          setIsSelected(false);
         }}
       >
         <ModalContent>
