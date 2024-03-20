@@ -57,7 +57,7 @@ function page() {
             <Chip
               color="warning"
               variant="dot"
-              className={`${litePoppins2.className} bg-[#120f0f9a] shadow-xl`}
+              className={`${litePoppins2.className} py-4 text-md px-2 bg-[#120f0f9a] shadow-xl`}
             >
               AI AVATAR GENERATOR
             </Chip>
