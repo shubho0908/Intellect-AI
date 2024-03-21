@@ -175,17 +175,17 @@ function Sidebar() {
                   pathname.includes("/avatar") ? "text-white" : "text-gray-400"
                 }  hover:text-white transition-all`}
               >
-                AI Avatar
+                AI Avatar Creator
               </Link>
               <Link
-                href="/image/generative-fill"
+                href="/image/magic-expand"
                 className={`${
-                  pathname.includes("/generative-fill")
+                  pathname.includes("/magic-expand")
                     ? "text-white"
                     : "text-gray-400"
                 }  hover:text-white transition-all`}
               >
-                Generative Fill
+                AI Magic Expand
               </Link>
             </div>
           ) : null}

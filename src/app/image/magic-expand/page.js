@@ -9,8 +9,11 @@ import {
   ModalBody,
   useDisclosure,
   Progress,
+  Select,
+  SelectItem,
+  Spinner,
 } from "@nextui-org/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PiFileImage } from "react-icons/pi";
 
 const litePoppins = Poppins({
@@ -28,7 +31,15 @@ function page() {
   const fileInputRef = useRef(null);
   const [uploadedIMG, setUploadedIMG] = useState(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [ratio, setRatio] = useState(null);
+  const [ratio, setRatio] = useState(new Set([]));
+  const [isGenerateClicked, setIsGenerateClicked] = useState(false);
+  const [generatedIMG, setGeneratedIMG] = useState(null);
+
+  useEffect(() => {
+    if (isGenerateClicked && generatedIMG) {
+      setIsGenerateClicked(false);
+    }
+  }, [isGenerateClicked, generatedIMG]);
 
   const handleFileUpload = (event) => {
     const selectedFile = event.target.files[0];
@@ -68,7 +79,7 @@ function page() {
             variant="dot"
             className={`${litePoppins2.className} py-4 text-md px-2 bg-[#120f0f9a] shadow-xl`}
           >
-            AI GENERATIVE FILL
+            AI MAGIC EXPAND
           </Chip>
           <p
             className={`${litePoppins.className} mt-3 text-center text-[3.5rem]`}
@@ -76,7 +87,7 @@ function page() {
             <span className="bg-gradient-to-r from-blue-600 to-gray-300 text-transparent bg-clip-text font-bold">
               Intellect.AI's
             </span>{" "}
-            Generative Fill for Images
+            Magic Expand for Images
           </p>
           <p
             className={`${litePoppins2.className} mt-3 text-lg w-3/4 text-center text-gray-300`}
@@ -121,7 +132,7 @@ function page() {
                       onPress={() => {
                         onOpen();
                         setTimeout(() => {
-                          setUploadedIMG("/generative/img1.jpg");
+                          setUploadedIMG("/generative/img3.jpg");
                         }, 4000);
                       }}
                       color="primary"
@@ -188,8 +199,17 @@ function page() {
         backdrop="blur"
         isDismissable={false}
         isOpen={isOpen}
-        size={uploadedIMG ? "3xl" : "xl"}
+        size={uploadedIMG ? "2xl" : "xl"}
         onOpenChange={onOpenChange}
+        onClose={() => {
+          onClose();
+          setFile(null);
+          setTimeout(() => {
+            setUploadedIMG(null);
+          }, 500);
+          setRatio(null);
+          setIsGenerateClicked(false);
+        }}
       >
         <ModalContent>
           {(onClose) => (
@@ -217,65 +237,96 @@ function page() {
                 )}
                 {uploadedIMG && (
                   <>
-                    <div className="gen-fill py-5 flex items-start justify-center">
-                      <div className="left flex flex-col items-center">
+                    <div
+                      className={`gen-fill py-5 flex gap-8 ${
+                        !isGenerateClicked ? "items-start" : "items-center"
+                      } justify-between`}
+                    >
+                      <div
+                        className={`${litePoppins.className} left flex flex-col items-center`}
+                      >
                         <p>Original Image</p>
                         <Image
                           src={uploadedIMG}
                           alt="original"
-                          className="aspect-square object-cover"
+                          className="mt-5"
                           width={300}
-                          height={300}
                         />
                       </div>
-                      <div className="right">
-                        <div className="top">
-                          <p>Select Ratio</p>
-                          <div className="all-ratios mt-5 bg-[#27272A] justify-between rounded-lg p-4 flex items-end">
-                            <div
-                              onClick={() => setRatio("4:5")}
-                              className={`four-by-five cursor-pointer rounded-lg h-[75px] w-[60px] bg-[#120f0f] ${
-                                ratio === "4:5"
-                                  ? "border-2 border-blue-500"
-                                  : null
-                              } flex items-center justify-center mr-2`}
+                      <div className="right w-1/2">
+                        {!isGenerateClicked && !generatedIMG && (
+                          <div className="top w-full">
+                            <p className={litePoppins.className}>
+                              Choose any preferred ratio
+                            </p>
+                            <Select
+                              className={`${litePoppins2.className} py-5 w-full`}
+                              label="Select ratio"
+                              selectedKeys={ratio}
+                              onSelectionChange={setRatio}
                             >
-                              <p className="text-sm">4:5</p>
-                            </div>
-                            <div
-                              onClick={() => setRatio("2:3")}
-                              className={`two-by-three cursor-pointer rounded-lg h-[90px] w-[60px] bg-[#120f0f] ${
-                                ratio === "2:3"
-                                  ? "border-2 border-blue-500"
-                                  : null
-                              } flex items-center justify-center mr-2`}
+                              <SelectItem
+                                className={litePoppins2.className}
+                                key="Square"
+                                value={"Square"}
+                              >
+                                Square (1:1)
+                              </SelectItem>
+                              <SelectItem
+                                className={litePoppins2.className}
+                                key="Horizontal"
+                                value={"Horizontal"}
+                              >
+                                Horizontal (16:9)
+                              </SelectItem>
+                              <SelectItem
+                                className={litePoppins2.className}
+                                key="Vertical"
+                                value={"Vertical"}
+                              >
+                                Vertical (9:16)
+                              </SelectItem>
+                            </Select>
+                            <Button
+                              color="primary"
+                              isDisabled={ratio?.size === 0}
+                              className={`${litePoppins.className} w-full`}
+                              onClick={() => {
+                                setIsGenerateClicked(true);
+                                setTimeout(() => {
+                                  setGeneratedIMG("/avatar/gym.jpg");
+                                }, 3000);
+                              }}
                             >
-                              <p className="text-sm">2:3</p>
-                            </div>
-                            <div
-                              onClick={() => setRatio("1:1")}
-                              className={`one-by-one cursor-pointer rounded-lg h-[60px] w-[60px] bg-[#120f0f] flex items-center justify-center ${
-                                ratio === "1:1"
-                                  ? "border-2 border-blue-500"
-                                  : null
-                              } mr-2`}
-                            >
-                              <p className="text-sm">1:1</p>
-                            </div>
-
-                            <div
-                              onClick={() => setRatio("16:9")}
-                              className={`sixteen-by-nine cursor-pointer rounded-lg h-[60px] w-[100px] bg-[#120f0f] ${
-                                ratio === "16:9"
-                                  ? "border-2 border-blue-500"
-                                  : null
-                              } flex items-center justify-center`}
-                            >
-                              <p className="text-sm">16:9</p>
-                            </div>
+                              Start Generating
+                            </Button>
                           </div>
-                        </div>
-                        <div className="bottom"></div>
+                        )}
+                        {isGenerateClicked && !generatedIMG && (
+                          <div className="loading fadein">
+                            <Spinner
+                              label="Please wait! Your image is being generated"
+                              color="default"
+                              labelColor="foreground"
+                              className={`${litePoppins2.className} text-center`}
+                            />
+                          </div>
+                        )}
+                        {generatedIMG && (
+                          <>
+                            <div
+                              className={`${litePoppins.className} flex flex-col items-center`}
+                            >
+                              <p>Generated Image</p>
+                              <Image
+                                src={generatedIMG}
+                                alt="original"
+                                className="mt-5"
+                                width={300}
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </>
