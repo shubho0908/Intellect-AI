@@ -9,6 +9,7 @@ import {
   Progress,
   Image,
   Switch,
+  Chip,
   Spinner,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -128,7 +129,13 @@ function page() {
             </Skeleton>
           </div>
           <div className="right w-1/2">
-            <div className="tag"></div>
+            <Chip
+              color="warning"
+              variant="dot"
+              className={`${litePoppins2.className} py-4 mt-2 mb-4 text-md px-2 bg-[#120f0f9a] shadow-xl`}
+            >
+              AI IMAGE UPSCALER
+            </Chip>
             <p className={`${litePoppins.className} text-[3rem]`}>
               Upscale and Restore your images with{" "}
               <span className="bg-gradient-to-r from-gray-300 to-blue-600 text-transparent bg-clip-text font-bold">

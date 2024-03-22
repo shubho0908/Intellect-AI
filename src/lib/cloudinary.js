@@ -6,6 +6,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+//Backend Upload
 const UploadImage = async (data) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
@@ -53,5 +54,8 @@ const UploadAudio = async (data) => {
     );
   });
 };
+
+//Frontend upload
+
 
 export { UploadImage, UploadVideo, UploadAudio };

@@ -15,6 +15,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import { PiFileImage } from "react-icons/pi";
+import { HiOutlineDownload } from "react-icons/hi";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -162,6 +163,10 @@ function page() {
                   alt="img1"
                   width={80}
                   height={80}
+                  onClick={() => {
+                    onOpen();
+                    setUploadedIMG("/generative/img1.jpg");
+                  }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
                 <Image
@@ -169,6 +174,10 @@ function page() {
                   alt="img2"
                   width={80}
                   height={80}
+                  onClick={() => {
+                    onOpen();
+                    setUploadedIMG("/generative/img2.jpg");
+                  }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
                 <Image
@@ -176,6 +185,10 @@ function page() {
                   alt="img3"
                   width={80}
                   height={80}
+                  onClick={() => {
+                    onOpen();
+                    setUploadedIMG("/generative/img3.jpg");
+                  }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
               </div>
@@ -324,6 +337,16 @@ function page() {
                                 className="mt-5"
                                 width={300}
                               />
+                              <Button
+                                color="primary"
+                                className={`${litePoppins.className} mt-6`}
+                              >
+                                <HiOutlineDownload
+                                  fontSize={22}
+                                  className="text-white"
+                                />
+                                Download Image
+                              </Button>
                             </div>
                           </>
                         )}
