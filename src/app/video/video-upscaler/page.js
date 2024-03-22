@@ -8,8 +8,6 @@ import {
   useDisclosure,
   Progress,
   Image,
-  Card,
-  CardBody,
   Chip,
   Spinner,
 } from "@nextui-org/react";
@@ -129,7 +127,7 @@ function page() {
           <p
             className={`${litePoppins.className} w-3/4 text-center text-[3.8rem]`}
           >
-            Upscale you low-quality videos with{" "}
+            Upscale your low-quality videos with{" "}
             <span className="bg-gradient-to-r from-gray-300 to-blue-600 text-transparent bg-clip-text font-bold">
               Intellect.AI
             </span>
@@ -137,32 +135,19 @@ function page() {
           <p
             className={`${litePoppins2.className} text-lg w-2/3 text-center mt-4 text-gray-300`}
           >
-            Elevate your images effortlessly with advanced AI technology for
-            upscaling and restoring photos with precision and ease.
+            Upgrade video quality effortlessly. Transform low-resolution footage
+            into high-definition brilliance with advanced AI technology.
           </p>
           <Button
             color="primary"
             variant="shadow"
-            className={`${litePoppins.className} p-6 text-lg mt-8`}
+            className={`${litePoppins.className} p-6 text-lg mt-8 mb-20`}
             onClick={handleOpen}
           >
             Get Started
           </Button>
-          <div className="video p-[.40rem] rounded-xl bg-gray-800 mt-14">
-            <div className="vid-1 absolute rounded-xl border-3 border-white shadow-xl">
-              <video
-                width="400"
-                height="280"
-                autoPlay
-                loop
-                preload="none"
-                className="rounded-xl"
-                muted
-              >
-                <source src="/video upscale/demo-inp.mp4" type="video/mp4" />
-              </video>
-            </div>
-            <div className="vid-2">
+          <Skeleton isLoaded={isLoading} className="rounded-lg w-fit">
+            <div className="video-demo p-2 rounded-xl bg-gradient-to-r from-blue-900 via-pink-200 to-blue-800">
               <video
                 width="2560"
                 height="1440"
@@ -172,10 +157,10 @@ function page() {
                 className="rounded-xl shadow-xl"
                 muted
               >
-                <source src="/video upscale/demo-out.mp4" type="video/mp4" />
+                <source src="/video upscale/demo.mp4" type="video/mp4" />
               </video>
             </div>
-          </div>
+          </Skeleton>
         </div>
         <div className="bottom flex flex-col justify-center items-center mt-20"></div>
       </div>
