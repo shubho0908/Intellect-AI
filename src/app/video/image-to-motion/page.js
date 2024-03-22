@@ -17,6 +17,7 @@ import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { useEffect, useState } from "react";
 import { MdBookmarkAdd, MdDelete, MdDone } from "react-icons/md";
 import { HiOutlineDownload, HiOutlineUpload } from "react-icons/hi";
+import toast, { Toaster } from "react-hot-toast";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -36,6 +37,9 @@ function page() {
   const [uploadedIMG, setUploadedIMG] = useState(null);
   const [upscaleLoading, setUpscaleLoading] = useState(false);
   const [motionVideo, setMotionVideo] = useState(null);
+
+  //Toast
+  const fileSizeError = (data) => toast.error(data);
 
   useEffect(() => {
     setTimeout(() => {
@@ -58,7 +62,10 @@ function page() {
   const handleFileDrop = (event) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (file) {
+    const size = file.size / 1024 / 1024;
+    if (size > 10) {
+      fileSizeError("File size should be less than 10MB");
+    } else {
       setIsFileSelected(true);
       setFileData(file);
     }
@@ -66,7 +73,10 @@ function page() {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    const size = file.size / 1024 / 1024;
+    if (size > 10) {
+      fileSizeError("File size should be less than 10MB");
+    } else {
       setIsFileSelected(true);
       setFileData(file);
     }
@@ -120,6 +130,11 @@ function page() {
 
   return (
     <>
+      <Toaster
+        toastOptions={{
+          className: litePoppins.className,
+        }}
+      />
       <div className="image-motion flex flex-col items-center fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4 p-4">
         <div className="top w-[90%] flex flex-row-reverse justify-between items-center mt-6">
           <div className="left">
