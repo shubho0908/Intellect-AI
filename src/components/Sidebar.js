@@ -7,7 +7,6 @@ import { useState } from "react";
 import { GoHome, GoFileDirectory } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
-import { PiWaveform } from "react-icons/pi";
 import { usePathname } from "next/navigation";
 
 const poppins = Poppins({
@@ -19,7 +18,6 @@ function Sidebar() {
   const [isDown, setIsDown] = useState({
     image: false,
     video: false,
-    audio: false,
   });
   const pathname = usePathname();
 
@@ -27,7 +25,7 @@ function Sidebar() {
     <>
       <div
         className={`sidebar shadow-xl z-[5] fixed overflow-auto bg-[#120f0f70] backdrop-blur-xl flex flex-col w-fit border-r-2 border-gray-800 ${
-          isDown.video && isDown.image && isDown.audio ? "h-full" : "h-[100vh]"
+          isDown.video && isDown.image ? "h-full" : "h-[100vh]"
         } p-6 md:px-10 ${poppins.className}`}
       >
         <div className="logo-section hidden md:block">
@@ -88,7 +86,7 @@ function Sidebar() {
                   pathname.includes("/image-to-motion")
                     ? "text-white"
                     : "text-gray-400"
-                }  hover:text-white transition-all`}
+                }  hover:text-white flex items-start transition-all`}
               >
                 Image to Motion
               </Link>
@@ -189,51 +187,7 @@ function Sidebar() {
               </Link>
             </div>
           ) : null}
-          <div
-            className={`hover:bg-[#0266D9] cursor-pointer ${
-              pathname.includes("/audio/") && "bg-[#0266D9]"
-            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
-            onClick={() => {
-              setIsDown({ ...isDown, audio: !isDown.audio });
-            }}
-          >
-            <div className="audio-div flex items-center">
-              <PiWaveform fontSize={23} className="text-white md:mr-5" />
-              <p className="hidden cursor-pointer md:block">Audios</p>
-            </div>
-            {isDown.audio ? (
-              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
-            ) : (
-              <FaAngleDown
-                fontSize={16}
-                className="text-white hidden md:block"
-              />
-            )}
-          </div>
-          {isDown.audio ? (
-            <div className="hidden py-2 image-tools md:flex flex-col relative left-10 leading-10">
-              <Link
-                href="/audio/audio-enhancer"
-                className={`${
-                  pathname.includes("/audio-enhancer")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Audio Enhancer
-              </Link>
-              <Link
-                href="/audio/audio-subtitle"
-                className={`${
-                  pathname.includes("/audio-subtitle")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Subtitle generator
-              </Link>
-            </div>
-          ) : null}
+
           <Link
             href="/collections"
             className={`hover:bg-[#0266D9] cursor-pointer ${

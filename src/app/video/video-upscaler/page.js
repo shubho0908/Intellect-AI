@@ -177,8 +177,12 @@ function page() {
         onClose={() => {
           onClose();
           setUploadedVideo(null);
+          setUploadClicked(false);
           setIsFileSelected(false);
           setFileData(null);
+          setResolution(null);
+          setModel(null);
+          setGeneratedVideo(null);
           setIsGenerateVideo(false);
         }}
       >
@@ -292,7 +296,7 @@ function page() {
                   )}
                   {uploadedVideo && (
                     <div
-                      className={`options flex flex-col w-full items-center
+                      className={`options fadein flex flex-col w-full items-center
                       justify-between gap-6`}
                     >
                       {!isGenerateVideo && (
