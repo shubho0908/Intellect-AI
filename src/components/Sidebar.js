@@ -57,72 +57,7 @@ function Sidebar() {
             <LuLayoutDashboard fontSize={23} className="text-white md:mr-5" />
             <p className="hidden md:block">Dashboard</p>
           </Link>
-          <div
-            className={`hover:bg-[#0266D9] cursor-pointer ${
-              pathname.includes("/video/") && "bg-[#0266D9]"
-            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
-            onClick={() => {
-              setIsDown({ ...isDown, video: !isDown.video });
-            }}
-          >
-            <div className="video-div flex items-center">
-              <IoVideocamOutline fontSize={23} className="text-white md:mr-5" />
-              <p className="hidden md:block">Videos</p>
-            </div>
-            {isDown.video ? (
-              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
-            ) : (
-              <FaAngleDown
-                fontSize={16}
-                className="text-white hidden md:block"
-              />
-            )}
-          </div>
-          {isDown.video ? (
-            <div className="hidden py-2 md:flex video-tools flex-col relative left-10 leading-10">
-              <Link
-                href="/video/image-to-motion"
-                className={`${
-                  pathname.includes("/image-to-motion")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white flex items-start transition-all`}
-              >
-                Image to Motion
-              </Link>
 
-              <Link
-                href="/video/video-caption"
-                className={`${
-                  pathname.includes("/video-caption")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Video Caption
-              </Link>
-              <Link
-                href="/video/video-upscaler"
-                className={`${
-                  pathname.includes("/video-upscaler")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Video Upscaler
-              </Link>
-              <Link
-                href="/video/video-dubbing"
-                className={`${
-                  pathname.includes("/video-dubbing")
-                    ? "text-white"
-                    : "text-gray-400"
-                }  hover:text-white transition-all`}
-              >
-                Video Re-talking
-              </Link>
-            </div>
-          ) : null}
           <div
             className={`hover:bg-[#0266D9] cursor-pointer ${
               pathname.includes("/image/") && "bg-[#0266D9]"
@@ -184,6 +119,63 @@ function Sidebar() {
                 }  hover:text-white transition-all`}
               >
                 AI Magic Expand
+              </Link>
+            </div>
+          ) : null}
+
+          <div
+            className={`hover:bg-[#0266D9] cursor-pointer ${
+              pathname.includes("/video/") && "bg-[#0266D9]"
+            } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center justify-between my-1`}
+            onClick={() => {
+              setIsDown({ ...isDown, video: !isDown.video });
+            }}
+          >
+            <div className="video-div flex items-center">
+              <IoVideocamOutline fontSize={23} className="text-white md:mr-5" />
+              <p className="hidden md:block">Videos</p>
+            </div>
+            {isDown.video ? (
+              <FaAngleUp fontSize={16} className="text-white hidden md:block" />
+            ) : (
+              <FaAngleDown
+                fontSize={16}
+                className="text-white hidden md:block"
+              />
+            )}
+          </div>
+          {isDown.video ? (
+            <div className="hidden py-2 md:flex video-tools flex-col relative left-10 leading-10">
+              <Link
+                href="/video/image-to-motion"
+                className={`${
+                  pathname.includes("/image-to-motion")
+                    ? "text-white"
+                    : "text-gray-400"
+                }  hover:text-white flex items-start transition-all`}
+              >
+                Image to Motion
+              </Link>
+
+              <Link
+                href="/video/video-caption"
+                className={`${
+                  pathname.includes("/video-caption")
+                    ? "text-white"
+                    : "text-gray-400"
+                }  hover:text-white transition-all`}
+              >
+                Video Caption
+              </Link>
+              <Link
+                href="/video/video-upscaler"
+                className={`${
+                  pathname.includes("/video-upscaler")
+                    ? "text-white"
+                    : "text-gray-400"
+                }  hover:text-white transition-all`}
+              >
+                Video Upscaler
               </Link>
             </div>
           ) : null}
