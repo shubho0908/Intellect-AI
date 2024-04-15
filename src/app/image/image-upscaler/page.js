@@ -234,12 +234,12 @@ function page() {
               <ImgComparisonSlider>
                 <img
                   slot="first"
-                  src="/upscale/inp.jpeg"
+                  src="/upscale/inp1.jpg"
                   className="w-[450px] h-[450px] object-cover rounded-xl shadow-xl"
                 />
                 <img
                   slot="second"
-                  src="/upscale/output.png"
+                  src="/upscale/output1.png"
                   className="w-[450px] h-[450px] object-cover rounded-xl shadow-xl"
                 />
               </ImgComparisonSlider>
@@ -248,7 +248,7 @@ function page() {
               <ImgComparisonSlider>
                 <img
                   slot="first"
-                  src="/upscale/inp2.jpeg"
+                  src="/upscale/inp2.jpg"
                   className="w-[450px] h-[450px] object-cover rounded-xl shadow-xl"
                 />
                 <img
@@ -262,7 +262,7 @@ function page() {
               <ImgComparisonSlider>
                 <img
                   slot="first"
-                  src="/upscale/inp3.jpeg"
+                  src="/upscale/inp3.jpg"
                   className="w-[450px] h-[450px] object-cover rounded-xl shadow-xl"
                 />
                 <img
