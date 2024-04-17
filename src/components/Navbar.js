@@ -21,7 +21,7 @@ function Navbar() {
   return (
     <>
       <div
-        className={`navbar flex items-center justify-between p-3 sm:p-6 ${poppins.className}`}
+        className={`navbar flex z-[4] items-center justify-between p-3 sm:p-6 ${poppins.className}`}
       >
         <div className="left relative left-0 sm:left-[120px] md:left-[320px]">
           <div className="sm:flex hidden flex-wrap md:flex-nowrap gap-4">
