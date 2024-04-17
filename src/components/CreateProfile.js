@@ -9,6 +9,10 @@ import {
   Button,
   useDisclosure,
   Avatar,
+  Input,
+  Select,
+  SelectItem,
+  Switch,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
@@ -21,6 +25,18 @@ const poppins = Poppins({
 export default function CreateProfile() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [user, isUser] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+
+  const professions = [
+    "Designer",
+    "Developer",
+    "Freelancer",
+    "Content Creator",
+    "Musician",
+    "Photographer",
+    "Writer",
+    "Others",
+  ];
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,16 +54,19 @@ export default function CreateProfile() {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         backdrop="blur"
-        size="lg"
+        placement="center"
+        size="xl"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader
+                className={`${poppins.className} flex flex-col gap-1`}
+              >
                 Account Details
               </ModalHeader>
               <ModalBody>
-                <div className="user-form">
+                <div className="user-form mb-3">
                   <div className="profile flex items-center gap-8">
                     <div className="dp flex items-end">
                       <Avatar
@@ -78,8 +97,93 @@ export default function CreateProfile() {
                     The photo will be used for your profile, and will be visible
                     to other users of the platform.
                   </p>
+                  <div className="form-body mt-5">
+                    <div className="row-1 flex items-center justify-between">
+                      <Input
+                        key="outside"
+                        type="text"
+                        label="Username"
+                        className={`${poppins.className} w-[250px]`}
+                        labelPlacement="outside"
+                        placeholder="Enter username"
+                      />
+                      <Input
+                        key="outside"
+                        type="email"
+                        label="Email"
+                        className={`${poppins.className} w-[250px]`}
+                        labelPlacement="outside"
+                        placeholder="Enter email"
+                        isReadOnly
+                        defaultValue="shubhobera98@gmail.com"
+                      />
+                    </div>
+                    <div className="row-2 mt-6 flex items-center justify-between">
+                      <Input
+                        key="outside"
+                        type="text"
+                        label="First Name"
+                        className={`${poppins.className} w-[250px]`}
+                        labelPlacement="outside"
+                        placeholder="Enter first name"
+                      />
+                      <Input
+                        key="outside"
+                        type="text"
+                        label="Last Name"
+                        className={`${poppins.className} w-[250px]`}
+                        labelPlacement="outside"
+                        placeholder="Enter last name"
+                      />
+                    </div>
+                    <div className="row-3 mt-6 flex items-center">
+                      <Select
+                        labelPlacement="outside"
+                        label="Profession"
+                        placeholder="Select profession"
+                        className={`${poppins.className} w-[250px]`}
+                      >
+                        {professions?.map((profession) => (
+                          <SelectItem
+                            className={poppins.className}
+                            key={profession}
+                            value={profession}
+                          >
+                            {profession}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      <div
+                        className={`${poppins.className} flex flex-col gap-2 ml-[1.8rem]`}
+                      >
+                        <p className="text-sm">Account type?</p>
+                        <div className="flex items-center">
+                          <Switch
+                            isSelected={isSelected}
+                            onValueChange={setIsSelected}
+                          ></Switch>
+                          <p className="text-small text-default-500">
+                            {isSelected ? "Public" : "Private"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </ModalBody>
+              <ModalFooter className={`${poppins.className} mb-2`}>
+                <Button
+                  color="default"
+                  variant="ghost"
+                  radius="full"
+                  onPress={onClose}
+                >
+                  Cancel
+                </Button>
+                <Button color="primary" radius="full" onPress={onClose}>
+                  Save changes
+                </Button>
+              </ModalFooter>
             </>
           )}
         </ModalContent>

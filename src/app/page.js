@@ -4,6 +4,8 @@ import { Avatar, Button, Card, CardHeader, Image } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { IoBookmarkOutline } from "react-icons/io5";
 import CreateProfile from "@/components/CreateProfile";
+import { IoIosArrowForward } from "react-icons/io";
+import { useEffect, useRef } from "react";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -16,6 +18,8 @@ const litePoppins2 = Poppins({
 });
 function Home() {
   const router = useRouter();
+  const scrollableContentRef = useRef(null);
+
   const models = [
     {
       name: "Image Generator",
@@ -84,12 +88,15 @@ function Home() {
 
   return (
     <>
-    <CreateProfile/>
+      <CreateProfile />
       <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px]">
         <div className="main-home m-4">
           <div className="top">
             <p className={`${litePoppins.className} text-2xl`}>Home</p>
-            <div className="models-section mt-8 flex gap-4 overflow-x-scroll scrollbar-hide [mask-image:_linear-gradient(to_right,transparent_0,_black_0px,_black_calc(100%-128px),transparent_100%)]">
+            <div
+              ref={scrollableContentRef}
+              className="models-section scroll-smooth mt-8 flex items-center gap-4 overflow-x-scroll scrollbar-hide [mask-image:_linear-gradient(to_right,transparent_0,_black_0px,_black_calc(100%-68px),transparent_100%)]"
+            >
               {models?.map((data, index) => (
                 <div
                   key={index}
@@ -117,6 +124,16 @@ function Home() {
                   </Card>
                 </div>
               ))}
+              <div
+                onClick={() => {
+                  if (scrollableContentRef.current) {
+                    scrollableContentRef.current.scrollLeft += 500;
+                  }
+                }}
+                className="arrow cursor-pointer absolute shadow-2xl z-[11] right-10 bg-gray-700 rounded-full p-2"
+              >
+                <IoIosArrowForward color="white" fontSize={34} />
+              </div>
             </div>
           </div>
           <div className="bottom mt-20">
@@ -142,12 +159,16 @@ function Home() {
                                 className="z-0"
                               />
                               <p
-                                className={`${litePoppins.className} text-white font-medium text-large`}
+                                className={`${litePoppins.className} text-white font-medium`}
                               >
                                 Shubho0908
                               </p>
                             </div>
-                            <Button isIconOnly variant="ghost" className="border-none">
+                            <Button
+                              isIconOnly
+                              variant="ghost"
+                              className="border-none"
+                            >
                               <IoBookmarkOutline
                                 className="text-white"
                                 fontSize={26}
