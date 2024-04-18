@@ -13,6 +13,7 @@ import {
   Select,
   SelectItem,
   Switch,
+  Textarea,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
@@ -167,6 +168,14 @@ export default function CreateProfile() {
                           </p>
                         </div>
                       </div>
+                    </div>
+                    <div className={`${poppins.className} summary mt-6`}>
+                      <Textarea
+                        label="Summary"
+                        labelPlacement="outside"
+                        placeholder="Enter summary"
+                        className="w-full"
+                      />
                     </div>
                   </div>
                 </div>

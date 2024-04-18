@@ -12,12 +12,15 @@ import {
 
 import { Poppins } from "next/font/google";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
   weight: "400",
   subsets: ["latin"],
 });
 function Navbar() {
+  const router = useRouter();
+
   return (
     <>
       <div
@@ -60,7 +63,12 @@ function Navbar() {
                   <p className="font-semibold">Signed in as</p>
                   <p className="font-semibold">shubhobera98@gmail.com</p>
                 </DropdownItem>
-                <DropdownItem key="profile">Profile</DropdownItem>
+                <DropdownItem
+                  onClick={() => router.push("/profile/shubho0908")}
+                  key="profile"
+                >
+                  Profile
+                </DropdownItem>
                 <DropdownItem key="collections">My Collections</DropdownItem>
                 <DropdownItem
                   key="logout"

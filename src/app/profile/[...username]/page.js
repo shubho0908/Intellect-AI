@@ -46,7 +46,7 @@ function Profile({ params }) {
 
   return (
     <>
-      <div className="profile fadein mb-[12rem] sm:mb-[8rem] sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
+      <div className="profile fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
         <div className="user-data">
           <div className="banner">
             <Button
@@ -83,7 +83,7 @@ function Profile({ params }) {
                 <MdVerified className="text-blue-500" fontSize={22} />
               </p>
               <p className={`${poppins.className} text-gray-400`}>
-                @shubho0908
+                @{params?.username}
               </p>
               <div
                 className={`${litePoppins.className} tags mt-3 flex items-center gap-3`}
