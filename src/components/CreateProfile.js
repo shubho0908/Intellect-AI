@@ -24,7 +24,7 @@ const poppins = Poppins({
 
 export default function CreateProfile() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [user, isUser] = useState(false);
+  const [user, setUser] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
 
   const professions = [

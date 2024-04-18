@@ -60,14 +60,8 @@ function Navbar() {
                   <p className="font-semibold">Signed in as</p>
                   <p className="font-semibold">shubhobera98@gmail.com</p>
                 </DropdownItem>
-                <DropdownItem key="settings">My Settings</DropdownItem>
-                <DropdownItem key="team_settings">Team Settings</DropdownItem>
-                <DropdownItem key="analytics">Analytics</DropdownItem>
-                <DropdownItem key="system">System</DropdownItem>
-                <DropdownItem key="configurations">Configurations</DropdownItem>
-                <DropdownItem key="help_and_feedback">
-                  Help & Feedback
-                </DropdownItem>
+                <DropdownItem key="profile">Profile</DropdownItem>
+                <DropdownItem key="collections">My Collections</DropdownItem>
                 <DropdownItem
                   key="logout"
                   className="text-white hover:bg-red-600 transition-all"

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { IoBookmarkOutline } from "react-icons/io5";
 import CreateProfile from "@/components/CreateProfile";
 import { IoIosArrowForward } from "react-icons/io";
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -19,6 +19,7 @@ const litePoppins2 = Poppins({
 function Home() {
   const router = useRouter();
   const scrollableContentRef = useRef(null);
+  const [user, setUser] = useState(null);
 
   const models = [
     {
@@ -101,8 +102,9 @@ function Home() {
                 <div
                   key={index}
                   onClick={() => {
-                    router.push(data?.url);
-                    console.log(data?.url);
+                    if (user) {
+                      router.push(data?.url);
+                    }
                   }}
                   className="cursor-pointer"
                 >
