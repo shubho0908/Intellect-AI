@@ -3,14 +3,19 @@ import {
   Avatar,
   Button,
   Chip,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
-import CreateProfile from "@/components/CreateProfile";
 import Posts from "./Posts";
+import EditAccount from "@/app/profile/[...username]/EditAccount";
 
 const poppins = Poppins({
   weight: "500",
@@ -23,11 +28,10 @@ const litePoppins = Poppins({
 });
 
 function Profile({ params }) {
-  const [isEdit, setIsEdit] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
-      {isEdit && <CreateProfile />}
       <div className="profile fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
         <div className="user-data">
           <div className="banner">
@@ -50,7 +54,7 @@ function Profile({ params }) {
               />
               <Button
                 isIconOnly
-                onClick={() => setIsEdit(true)}
+                onClick={onOpen}
                 color="primary"
                 className="rounded-full relative right-10"
                 size="sm"
@@ -93,13 +97,50 @@ function Profile({ params }) {
                 </div>
               </div>
               <div className="user-posts mt-8">
-                <Posts/>
+                <Posts />
               </div>
             </div>
           </div>
         </div>
-        <div className="content"></div>
       </div>
+      {/* Modal  */}
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+        backdrop="blur"
+        placement="center"
+        size="xl"
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalHeader
+                className={`${poppins.className} flex flex-col gap-1`}
+              >
+                Account Details
+              </ModalHeader>
+              <ModalBody>
+                <EditAccount />
+              </ModalBody>
+              <ModalFooter className={`${poppins.className} mb-2`}>
+                <Button
+                  color="default"
+                  variant="ghost"
+                  radius="full"
+                  onPress={onclose}
+                >
+                  Cancel
+                </Button>
+                <Button color="primary" radius="full" onPress={onclose}>
+                  Save changes
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

@@ -88,9 +88,9 @@ function Posts() {
                 isOpen={isOpen}
                 size="4xl"
                 onOpenChange={onOpenChange}
-                className={`${litePoppins.className} my-modal`}
+                className={`${litePoppins.className}`}
               >
-                <ModalContent className="modal-body">
+                <ModalContent>
                   {(onClose) => (
                     <>
                       <ModalBody className="mb-5">

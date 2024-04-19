@@ -15,7 +15,7 @@ function Modal2({ data }) {
 
   return (
     <>
-      <div className="modal-body items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
+      <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
         <div className="left hidden md:block">
           {data && (
             <>
