@@ -44,7 +44,7 @@ export default function CreateProfile() {
       if (!user) {
         onOpen();
       }
-    }, 1000);
+    }, 400);
   }, [user]);
 
   return (

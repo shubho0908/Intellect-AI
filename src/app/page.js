@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { IoBookmarkOutline } from "react-icons/io5";
 import CreateProfile from "@/components/CreateProfile";
-import { IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useRef, useState } from "react";
 import Modal2 from "./image/image-generator/(components)/Modal2";
 
@@ -115,7 +115,7 @@ function Home() {
             <p className={`${litePoppins.className} text-2xl`}>Home</p>
             <div
               ref={scrollableContentRef}
-              className="models-section scroll-smooth mt-8 flex items-center gap-4 overflow-x-scroll scrollbar-hide [mask-image:_linear-gradient(to_right,transparent_0,_black_0px,_black_calc(100%-68px),transparent_100%)]"
+              className="models-section scroll-smooth mt-6 flex items-center gap-4 flex-wrap scrollbar-hide"
             >
               {models?.map((data, index) => (
                 <div
@@ -127,14 +127,14 @@ function Home() {
                   }}
                   className="cursor-pointer"
                 >
-                  <Card className="col-span-12 sm:col-span-4 h-[220px] w-[370px] flex justify-center items-center">
+                  <Card className="col-span-12 sm:col-span-4 h-[150px] w-[300px] flex justify-center items-center">
                     <CardHeader
                       className={`${litePoppins.className} absolute z-10 flex-col items-center`}
                     >
                       <h4 className="text-white font-medium text-large">
                         {data?.name}
                       </h4>
-                      <p className="text-white/60 ">{data?.desc}</p>
+                      <p className="text-white/60 text-sm">{data?.desc}</p>
                     </CardHeader>
                     <Image
                       removeWrapper
@@ -145,23 +145,13 @@ function Home() {
                   </Card>
                 </div>
               ))}
-              <div
-                onClick={() => {
-                  if (scrollableContentRef.current) {
-                    scrollableContentRef.current.scrollLeft += 500;
-                  }
-                }}
-                className="arrow cursor-pointer absolute shadow-2xl z-[11] right-10 bg-gray-700 rounded-full p-2"
-              >
-                <IoIosArrowForward color="white" fontSize={34} />
-              </div>
             </div>
           </div>
           <div className="bottom mt-20">
             <p className={`${litePoppins.className} text-2xl`}>
               Recent Creations
             </p>
-            <p>
+            <p className={`${litePoppins2.className} mt-2`}>
               See what others are making, discover prompts, and share your own
               creatives.
             </p>
@@ -219,7 +209,6 @@ function Home() {
                       backdrop="blur"
                       isOpen={isOpen}
                       size="4xl"
-                      isDismissable={false}
                       onOpenChange={onOpenChange}
                       className={`${litePoppins.className} my-modal`}
                     >

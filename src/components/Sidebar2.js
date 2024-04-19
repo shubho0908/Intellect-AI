@@ -25,7 +25,7 @@ function Sidebar2() {
   return (
     <>
       <div
-        className={`sidebar border-r-2 z-[5] border-gray-800 fixed bg-[#120f0feb] flex bottom-0 w-full backdrop-blur-sm p-3 ${poppins.className}`}
+        className={`sidebar border-r-2 z-[20] border-gray-800 fixed bg-[#120f0feb] flex bottom-0 w-full backdrop-blur-sm p-3 ${poppins.className}`}
       >
         <div className="middle-section w-full justify-between flex items-center">
           <Link

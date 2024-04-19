@@ -24,7 +24,7 @@ function Sidebar() {
   return (
     <>
       <div
-        className={`sidebar shadow-xl z-[5] fixed overflow-auto bg-[#120f0f70] backdrop-blur-xl flex flex-col w-fit border-r-2 border-gray-800 ${
+        className={`sidebar shadow-xl z-[21] fixed overflow-auto bg-[#120f0f70] backdrop-blur-xl flex flex-col w-fit border-r-2 border-gray-800 ${
           isDown.video && isDown.image ? "h-full" : "h-[100vh]"
         } p-6 md:px-10 ${poppins.className}`}
       >

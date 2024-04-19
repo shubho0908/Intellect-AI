@@ -1,9 +1,16 @@
 "use client";
-import { Avatar, Button, Card, Chip, Image } from "@nextui-org/react";
-import React from "react";
+import {
+  Avatar,
+  Button,
+  Chip,
+  useDisclosure,
+} from "@nextui-org/react";
+import React, { useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
+import CreateProfile from "@/components/CreateProfile";
+import Posts from "./Posts";
 
 const poppins = Poppins({
   weight: "500",
@@ -16,36 +23,11 @@ const litePoppins = Poppins({
 });
 
 function Profile({ params }) {
-  const posts = [
-    {
-      img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      title: "The Future of AI is Here.",
-      desc: "Here is the description of the post section, each will have individual description",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      title: "The Future of AI is Here.",
-      desc: "Here is the description of the post section, each will have individual description",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      title: "The Future of AI is Here.",
-      desc: "Here is the description of the post section, each will have individual description",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      title: "The Future of AI is Here.",
-      desc: "Here is the description of the post section, each will have individual description",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      title: "The Future of AI is Here.",
-      desc: "Here is the description of the post section, each will have individual description",
-    },
-  ];
+  const [isEdit, setIsEdit] = useState(false);
 
   return (
     <>
+      {isEdit && <CreateProfile />}
       <div className="profile fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
         <div className="user-data">
           <div className="banner">
@@ -68,6 +50,7 @@ function Profile({ params }) {
               />
               <Button
                 isIconOnly
+                onClick={() => setIsEdit(true)}
                 color="primary"
                 className="rounded-full relative right-10"
                 size="sm"
@@ -110,36 +93,7 @@ function Profile({ params }) {
                 </div>
               </div>
               <div className="user-posts mt-8">
-                <div className="all-posts relative z-0 flex items-center gap-6 flex-wrap">
-                  {posts?.map((data, index) => {
-                    return (
-                      <>
-                        <div key={index}>
-                          <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
-                            <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
-                              <div className="bottom px-4 absolute bottom-3">
-                                <p className={litePoppins.className}>
-                                  {data?.title}
-                                </p>
-                                <p
-                                  className={`${litePoppins.className} text-sm mt-2`}
-                                >
-                                  "{data?.desc}"
-                                </p>
-                              </div>
-                            </div>
-                            <Image
-                              removeWrapper
-                              alt="Card background"
-                              className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.2]"
-                              src={data?.img}
-                            />
-                          </Card>
-                        </div>
-                      </>
-                    );
-                  })}
-                </div>
+                <Posts/>
               </div>
             </div>
           </div>
