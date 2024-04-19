@@ -83,27 +83,27 @@ function Posts() {
                   />
                 </Card>
               </div>
-              <Modal
-                backdrop="blur"
-                isOpen={isOpen}
-                size="4xl"
-                onOpenChange={onOpenChange}
-                className={`${litePoppins.className}`}
-              >
-                <ModalContent>
-                  {(onClose) => (
-                    <>
-                      <ModalBody className="mb-5">
-                        <Modal2 data={newData} />
-                      </ModalBody>
-                    </>
-                  )}
-                </ModalContent>
-              </Modal>
             </>
           );
         })}
       </div>
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        size="4xl"
+        onOpenChange={onOpenChange}
+        className={`${litePoppins.className}`}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <Modal2 data={newData} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

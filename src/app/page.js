@@ -205,23 +205,6 @@ function Home() {
                         />
                       </Card>
                     </div>
-                    <Modal
-                      backdrop="blur"
-                      isOpen={isOpen}
-                      size="4xl"
-                      onOpenChange={onOpenChange}
-                      className={`${litePoppins.className} my-modal`}
-                    >
-                      <ModalContent className="modal-body">
-                        {(onClose) => (
-                          <>
-                            <ModalBody className="mb-5">
-                              <Modal2 data={newData} />
-                            </ModalBody>
-                          </>
-                        )}
-                      </ModalContent>
-                    </Modal>
                   </>
                 );
               })}
@@ -229,6 +212,24 @@ function Home() {
           </div>
         </div>
       </div>
+      {/* Modal  */}
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        size="4xl"
+        onOpenChange={onOpenChange}
+        className={`${litePoppins.className} my-modal`}
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <Modal2 data={newData} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
