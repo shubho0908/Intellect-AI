@@ -1,11 +1,22 @@
 "use client";
 import { Poppins } from "next/font/google";
-import { Avatar, Button, Card, CardHeader, Image } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Card,
+  CardHeader,
+  Image,
+  Modal,
+  ModalContent,
+  ModalBody,
+  useDisclosure,
+} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { IoBookmarkOutline } from "react-icons/io5";
 import CreateProfile from "@/components/CreateProfile";
 import { IoIosArrowForward } from "react-icons/io";
 import { useRef, useState } from "react";
+import Modal2 from "./image/image-generator/(components)/Modal2";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -20,6 +31,7 @@ function Home() {
   const router = useRouter();
   const scrollableContentRef = useRef(null);
   const [user, setUser] = useState(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const models = [
     {
@@ -87,6 +99,13 @@ function Home() {
     },
   ];
 
+  const newData = {
+    img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    user: "Shubhojeet Bera",
+    prompt:
+      "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum blanditiis odio corporis nulla debitis, harum, sint, voluptate culpa autem qui veritatis eius.",
+  };
+
   return (
     <>
       <CreateProfile />
@@ -150,7 +169,7 @@ function Home() {
               {posts?.map((data, index) => {
                 return (
                   <>
-                    <div key={index}>
+                    <div key={index} onClick={onOpen}>
                       <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[350px] w-[350px] relative group">
                         <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                           <div className="flex top items-center justify-between w-full px-4">
@@ -196,6 +215,24 @@ function Home() {
                         />
                       </Card>
                     </div>
+                    <Modal
+                      backdrop="blur"
+                      isOpen={isOpen}
+                      size="4xl"
+                      isDismissable={false}
+                      onOpenChange={onOpenChange}
+                      className={`${litePoppins.className} my-modal`}
+                    >
+                      <ModalContent className="modal-body">
+                        {(onClose) => (
+                          <>
+                            <ModalBody className="mb-5">
+                              <Modal2 data={newData} />
+                            </ModalBody>
+                          </>
+                        )}
+                      </ModalContent>
+                    </Modal>
                   </>
                 );
               })}
