@@ -12,7 +12,7 @@ import {
 
 import { Poppins } from "next/font/google";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const poppins = Poppins({
   weight: "400",
@@ -20,6 +20,7 @@ const poppins = Poppins({
 });
 function Navbar() {
   const router = useRouter();
+  const path = usePathname();
 
   return (
     <>
@@ -30,7 +31,9 @@ function Navbar() {
           <div className="sm:flex hidden flex-wrap md:flex-nowrap gap-4">
             <Input
               type="text"
-              placeholder="Search for any model."
+              placeholder={`${
+                path !== "/" ? "Search for any model." : "Search for any user."
+              }`}
               className="xl2:w-[30rem] w-[15rem]"
             />
           </div>

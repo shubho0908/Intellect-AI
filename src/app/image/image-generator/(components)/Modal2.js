@@ -1,17 +1,30 @@
 "use client";
 
 import { Image, Button, Avatar } from "@nextui-org/react";
-import Menu from "./Menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
-import { MdDeleteOutline, MdOutlineBookmarkAdd, MdOutlineDone } from "react-icons/md";
+import {
+  MdDeleteOutline,
+  MdOutlineBookmarkAdd,
+  MdOutlineDone,
+} from "react-icons/md";
 import { PiMagicWand } from "react-icons/pi";
-import { RxUpload } from "react-icons/rx";
+import { RxDownload } from "react-icons/rx";
+import { IoBookmarkOutline } from "react-icons/io5";
+import { BiLike } from "react-icons/bi";
 
 function Modal2({ data }) {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    if (isCopied) {
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    }
+  }, [isCopied]);
 
   return (
     <>
@@ -19,16 +32,15 @@ function Modal2({ data }) {
         <div className="left hidden md:block">
           {data && (
             <>
-              <Menu />
               <Image
                 src={data?.img}
                 alt="image"
-                width={500}
-                height={500}
+                width={450}
+                height={450}
                 onContextMenu={(e) => {
                   e.preventDefault();
                 }}
-                className="cursor-pointer z-[1] object-cover h-[500px] w-[500px]"
+                className="cursor-pointer z-[1] object-cover h-[450px] w-[450px]"
               />
             </>
 
@@ -91,7 +103,7 @@ function Modal2({ data }) {
               </div>
             </>
           )}
-          <div className="prompt mt-6">
+          <div className="prompt mt-4">
             <div className="head flex items-center">
               <p>Prompt details</p>
               <div className="cursor-pointer rounded-lg">
@@ -137,14 +149,32 @@ function Modal2({ data }) {
                 <p className="text-sm mt-2">Image tool</p>
               </div>
             </div>
-            <Button
-              color="primary"
-              variant="solid"
-              className="rounded-xl mt-10 w-full"
-            >
-              <RxUpload fontSize={21} className="text-white" />
-              Publish
-            </Button>
+            <div className="btn-grp flex items-center justify-between gap-3 mt-6">
+              <Button
+                color="default"
+                variant="ghost"
+                className="rounded-xl w-fit"
+              >
+                <BiLike fontSize={21} className="text-white" />
+                Like
+              </Button>
+              <Button
+                color="default"
+                variant="ghost"
+                className="rounded-xl w-fit"
+              >
+                <RxDownload fontSize={21} className="text-white" />
+                Download
+              </Button>
+              <Button
+                color="default"
+                variant="ghost"
+                className="rounded-xl w-fit"
+              >
+                <IoBookmarkOutline fontSize={21} className="text-white" />
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       </div>

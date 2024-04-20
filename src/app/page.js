@@ -108,7 +108,7 @@ function Home() {
 
   return (
     <>
-      <CreateProfile />
+      {/* <CreateProfile /> */}
       <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px]">
         <div className="main-home m-4">
           <div className="top">
@@ -187,11 +187,8 @@ function Home() {
                             </Button>
                           </div>
                           <div className="bottom px-4 absolute bottom-3">
-                            <p className={litePoppins.className}>
-                              {data?.title}
-                            </p>
                             <p
-                              className={`${litePoppins2.className} text-sm mt-2`}
+                              className={`${litePoppins2.className} text-md mt-2`}
                             >
                               "{data?.desc}"
                             </p>

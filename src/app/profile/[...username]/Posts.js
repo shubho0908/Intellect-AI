@@ -69,8 +69,7 @@ function Posts() {
                 <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
                   <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                     <div className="bottom px-4 absolute bottom-3">
-                      <p className={litePoppins.className}>{data?.title}</p>
-                      <p className={`${litePoppins.className} text-sm mt-2`}>
+                      <p className={`${litePoppins.className} text-md mt-2`}>
                         "{data?.desc}"
                       </p>
                     </div>

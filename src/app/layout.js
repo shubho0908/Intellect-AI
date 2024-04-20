@@ -27,11 +27,11 @@ export default function RootLayout({ children }) {
             </div>
             <div className="right w-full">
               <div className="right-content">
-                <div className="top bg-[#120f0f70] backdrop-blur-xl z-[20] fixed top-0 w-full">
+                {/* <div className="top bg-[#120f0f70] backdrop-blur-xl z-[20] fixed top-0 w-full">
                   <Navbar />
-                </div>
+                </div> */}
                 <div className="bottom w-full">
-                  <div className="data relative top-[90px] w-full">
+                  <div className="data relative top-[20px] w-full">
                     {children}
                   </div>
                 </div>

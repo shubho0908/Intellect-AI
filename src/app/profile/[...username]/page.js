@@ -129,11 +129,11 @@ function Profile({ params }) {
                   color="default"
                   variant="ghost"
                   radius="full"
-                  onPress={onclose}
+                  onPress={onClose}
                 >
                   Cancel
                 </Button>
-                <Button color="primary" radius="full" onPress={onclose}>
+                <Button color="primary" radius="full" onPress={onClose}>
                   Save changes
                 </Button>
               </ModalFooter>
