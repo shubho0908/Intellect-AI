@@ -1,7 +1,6 @@
 import "./globals.css";
 import { Providers } from "./providers";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
 import Sidebar2 from "@/components/Sidebar2";
 
 
@@ -31,7 +30,7 @@ export default function RootLayout({ children }) {
                   <Navbar />
                 </div> */}
                 <div className="bottom w-full">
-                  <div className="data relative top-[20px] w-full">
+                  <div className="data relative w-full">
                     {children}
                   </div>
                 </div>

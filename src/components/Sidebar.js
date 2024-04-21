@@ -23,6 +23,10 @@ function Sidebar() {
   });
   const pathname = usePathname();
 
+  if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
+    return null;
+  }
+
   return (
     <>
       <div className="sidebar-wrapper h-[100vh] shadow-xl bg-[#120f0f70] border-gray-800 border-r-2 backdrop-blur-xl z-[21] fixed overflow-auto scrollbar-hide">
@@ -30,12 +34,12 @@ function Sidebar() {
           className={`sidebar z-[21] flex flex-col w-fit p-6 md:px-10 ${poppins.className}`}
         >
           <div className="logo-section hidden md:block">
-            <Link href="/">
+            <Link href="/home">
               <Image src="/logo1.png" width={220} height={220} alt="Logo" />
             </Link>
           </div>
           <div className="logo-section block md:hidden">
-            <Link href="/">
+            <Link href="/home">
               <Image src="/logo2.png" width={50} height={50} alt="Logo" />
             </Link>
           </div>
@@ -60,16 +64,16 @@ function Sidebar() {
               OVERVIEW
             </p>
             <Link
-              href="/"
+              href="/home"
               className={`hover:bg-[#0266D9] ${
-                pathname === "/" && "bg-[#0266D9]"
+                pathname === "/home" && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
             >
               <GoHome fontSize={23} className="text-white md:mr-5" />
               <p className="hidden md:block">Home</p>
             </Link>
             <Link
-              href="/"
+              href="/home"
               className={`hover:bg-[#0266D9] ${
                 pathname === "/dashboard" && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
@@ -224,7 +228,10 @@ function Sidebar() {
               </div>
             ) : null}
           </div>
-          <Button variant="ghost" className="justify-start text-md p-6 border-none">
+          <Button
+            variant="ghost"
+            className="justify-start text-md p-6 border-none"
+          >
             <FiMinusCircle fontSize={23} className="text-white mr-5" />
             <p>Log out</p>
           </Button>
