@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRef, useState } from "react";
-import Modal2 from "../image/image-generator/(components)/Modal2";
+import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 
 const litePoppins = Poppins({
   weight: "500",
