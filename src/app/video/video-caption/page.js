@@ -7,10 +7,26 @@ import {
   ModalContent,
   ModalBody,
   useDisclosure,
+  Progress,
+  CardBody,
+  Card,
+  Select,
+  SelectItem,
+  ScrollShadow,
+  ModalFooter,
+  Spinner,
 } from "@nextui-org/react";
-import { Poppins } from "next/font/google";
+import {
+  Poppins,
+  Atkinson_Hyperlegible,
+  M_PLUS_Rounded_1c,
+  Tajawal,
+} from "next/font/google";
+import { useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import { HiOutlineUpload } from "react-icons/hi";
+import { MdDone } from "react-icons/md";
+import { HexColorPicker } from "react-colorful";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -21,8 +37,158 @@ const litePoppins2 = Poppins({
   weight: "300",
   subsets: ["latin"],
 });
+
+const poppinsExtraBold = Poppins({
+  weight: "800",
+  subsets: ["latin"],
+});
+
+const poppinsBoldItalic = Poppins({
+  weight: "700",
+  subsets: ["latin"],
+  style: "italic",
+});
+
+const poppinsBold = Poppins({
+  weight: "700",
+  subsets: ["latin"],
+});
+
+const atkinsonBold = Atkinson_Hyperlegible({
+  weight: "700",
+  subsets: ["latin"],
+});
+
+const atkinsonBoldItalic = Atkinson_Hyperlegible({
+  weight: "700",
+  subsets: ["latin"],
+  style: "italic",
+});
+
+const mPlusRounedExtraBold = M_PLUS_Rounded_1c({
+  weight: "800",
+  subsets: ["latin"],
+});
+
+const tajawalBold = Tajawal({
+  weight: "700",
+  subsets: ["latin"],
+});
+
+const tajawalExtraBold = Tajawal({
+  weight: "800",
+  subsets: ["latin"],
+});
+
 function page() {
+  const [isFileSelected, setIsFileSelected] = useState(false);
+  const [fileData, setFileData] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [uploadedVideo, setUploadedVideo] = useState(null);
+  const [uploadClicked, setUploadClicked] = useState(false);
+  const [fontStyle, setFontStyle] = useState(new Set([]));
+  const [fontSize, setFontSize] = useState(new Set([]));
+  const [color, setColor] = useState("#ffffff");
+  const [hightlightColor, setHighlightColor] = useState("#000000");
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const [isHighlightColorOpen, setIsHighlightColorOpen] = useState(false);
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [isCaptionedVideo, setIsCaptionedVideo] = useState(null);
+
+  const handleFileDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    const size = file.size / 1024 / 1024;
+    if (size > 100) {
+      alert("File size should be less than 100MB");
+    } else {
+      setIsFileSelected(true);
+      setFileData(file);
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const size = file.size / 1024 / 1024;
+    if (size > 100) {
+      alert("File size should be less than 100MB");
+    } else {
+      setIsFileSelected(true);
+      setFileData(file);
+    }
+  };
+
+  const uploadVideo = async (file) => {
+    try {
+      if (!file) {
+        return null;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        const newFile = reader.result;
+
+        try {
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                file: newFile,
+                upload_preset: "intellect",
+                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+                public_id: `videoCaption/${Date.now()}`,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const data = await response.json();
+          setUploadedVideo(data.secure_url);
+          setUploadClicked(false);
+        } catch (error) {
+          console.log("Error uploading video:", error.message);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.log("Error converting file to base64:", error.message);
+    }
+  };
+
+  const handleOpen = async () => {
+    onOpen();
+  };
+
+  const fontSizes = [
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px",
+    "26px",
+    "28px",
+    "30px",
+    "32px",
+    "34px",
+    "36px",
+    "38px",
+    "40px",
+    "42px",
+    "44px",
+    "46px",
+    "48px",
+    "50px",
+    "52px",
+  ];
 
   return (
     <>
@@ -70,59 +236,71 @@ function page() {
           <p className="text-[2rem]">
             How to use Intellect's AI Video Captioning:
           </p>
-          <div className="flex items-center justify-evenly w-full mt-6">
-            <div className="demo1 w-[350px] flex flex-col items-center">
-              <Image
-                src="/caption/upload.png"
-                className="shadow-lg mb-6"
-                width={300}
-                height={300}
-                alt="Upload"
-              />
-              <p className="text-semibold w-2/3 text-center text-lg mt-3">
-                Upload your video
-              </p>
-              <p
-                className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
-              >
-                Upload your video for instant, accurate AI-generated captions.
-              </p>
-            </div>
-            <div className="demo2 w-[350px] flex flex-col items-center">
-              <Image
-                src="/caption/style.png"
-                className="shadow-lg"
-                width={350}
-                height={350}
-                alt="Style"
-              />
-              <p className="text-semibold w-2/3 text-center text-lg mt-3">
-                Change subtitle styles, personalize, and more
-              </p>
-              <p
-                className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
-              >
-                Customize subtitle styles, personalize settings, and explore
-                additional features.
-              </p>
-            </div>
-            <div className="demo3 w-[350px] flex flex-col items-center">
-              <Image
-                src="/caption/download.png"
-                className="shadow-lg"
-                width={320}
-                height={320}
-                alt="download"
-              />
-              <p className="text-semibold w-2/3 text-center text-lg mt-3">
-                Download your video
-              </p>
-              <p
-                className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
-              >
-                Download your video or export the subtitle file separately.
-              </p>
-            </div>
+          <div className="flex items-center justify-evenly w-full mt-14">
+            <Card className="w-[350px] flex flex-col items-center ">
+              <CardBody>
+                <Image
+                  src="/caption/upload.png"
+                  className="shadow-lg mb-6"
+                  width={300}
+                  height={300}
+                  alt="Upload"
+                />
+                <div className="px-4 py-2">
+                  <p className="text-semibold text-center text-lg">
+                    Upload your video
+                  </p>
+                  <p
+                    className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
+                  >
+                    Upload your video for instant, accurate AI-generated
+                    captions.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+            <Card className="w-[350px] flex flex-col items-center ">
+              <CardBody>
+                <Image
+                  src="/caption/style.png"
+                  className="shadow-lg"
+                  width={350}
+                  height={350}
+                  alt="Style"
+                />
+                <div className="px-4 py-2">
+                  <p className="text-semibold text-center text-lg">
+                    Change subtitle styles
+                  </p>
+                  <p
+                    className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
+                  >
+                    Customize subtitle styles, and explore additional features.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+            <Card className="w-[350px] flex flex-col items-center ">
+              <CardBody>
+                <Image
+                  src="/caption/download.png"
+                  className="shadow-lg"
+                  width={320}
+                  height={320}
+                  alt="download"
+                />
+                <div className="px-4 py-2">
+                  <p className="text-semibold text-center text-lg">
+                    Download your video
+                  </p>
+                  <p
+                    className={`${litePoppins2.className}  text-gray-300 mt-2 text-center`}
+                  >
+                    Download your video or export the subtitle file separately.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
           </div>
         </div>
       </div>
@@ -143,57 +321,315 @@ function page() {
               <ModalBody
                 className={`${litePoppins.className} max-h-[600px] overflow-scroll scrollbar-hide`}
               >
-                <div className="upload-video py-6">
-                  <div
-                    className={`${litePoppins2.className} flex w-full items-center flex-col justify-center`}
-                  >
-                    <p className={`${litePoppins.className} text-xl`}>
-                      Upload a video
-                    </p>
-                    <label
-                      htmlFor="dropzone-file"
-                      className="flex flex-col mt-6 items-center justify-center w-full h-64 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer bg-none"
-                    >
-                      <div
-                        onDragOver={(e) => e.preventDefault()}
-                        className="flex flex-col items-center justify-center pt-5 pb-6"
-                      >
-                        <svg
-                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 20 16"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                          />
-                        </svg>
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-semibold">Click to upload</span>{" "}
-                          or drag and drop
-                        </p>
+                <ScrollShadow className="max-h-[600px] scrollbar-hide">
+                  <div className="py-6 flex flex-col items-center justify-center">
+                    {!uploadedVideo && (
+                      <div className="left fadein flex flex-col items-center w-full px-6">
+                        {!uploadClicked && (
+                          <>
+                            <div
+                              className={`${litePoppins2.className} flex w-full items-center flex-col justify-center`}
+                            >
+                              <p className={`${litePoppins.className} text-xl`}>
+                                Upload a video
+                              </p>
+                              <label
+                                htmlFor="dropzone-file"
+                                className="flex flex-col mt-6 items-center justify-center w-full h-64 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer bg-none"
+                              >
+                                <div
+                                  onDragOver={(e) => e.preventDefault()}
+                                  onDrop={handleFileDrop}
+                                  className="flex flex-col items-center justify-center pt-5 pb-6"
+                                >
+                                  {!isFileSelected && (
+                                    <>
+                                      <svg
+                                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 20 16"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                        />
+                                      </svg>
+                                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <span className="font-semibold">
+                                          Click to upload
+                                        </span>{" "}
+                                        or drag and drop
+                                      </p>
+                                    </>
+                                  )}
+
+                                  {isFileSelected && !uploadClicked && (
+                                    <div className="fadein flex flex-col items-center">
+                                      <div className="tick p-2 w-fit rounded-full border-2 border-green-500">
+                                        <MdDone
+                                          fontSize={30}
+                                          className="text-green-500"
+                                        />
+                                      </div>
+                                      <p className="mt-3 text-center">
+                                        File selected: {fileData.name}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                                <input
+                                  onChange={handleFileChange}
+                                  id="dropzone-file"
+                                  type="file"
+                                  accept="video/mp4"
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+                            <Button
+                              color="primary"
+                              isDisabled={!isFileSelected}
+                              onClick={async () => {
+                                setUploadClicked(true);
+                                await uploadVideo(fileData);
+                              }}
+                              className={`${litePoppins.className} w-full mt-6`}
+                            >
+                              Upload
+                            </Button>
+                          </>
+                        )}
+                        {uploadClicked && (
+                          <div className="flex fadein flex-col items-center w-full leading-10">
+                            <p className={`${litePoppins.className} text-lg`}>
+                              Your video is being uploaded...
+                            </p>
+                            <p
+                              className={`${litePoppins2.className} text-gray-400`}
+                            >
+                              Please wait... this process may take a while.
+                            </p>
+                            <Progress
+                              size="sm"
+                              isIndeterminate
+                              aria-label="Loading..."
+                              className="max-w-md py-4"
+                            />
+                          </div>
+                        )}
                       </div>
-                      <input
-                        id="dropzone-file"
-                        type="file"
-                        accept="video/mp4"
-                        className="hidden"
-                      />
-                    </label>
+                    )}
+                    {uploadedVideo && !isSubmitClicked && (
+                      <>
+                        <div className="flex flex-col fadein items-start">
+                          <div className="left">
+                            <video
+                              width="550"
+                              height="550"
+                              loop
+                              autoPlay
+                              preload="none"
+                              className="rounded-xl shadow-lg"
+                            >
+                              <source
+                                src="https://res.cloudinary.com/dntkbcfor/video/upload/v1713696371/videoCaption/1713696348819.mp4"
+                                type="video/mp4"
+                              />
+                            </video>
+                          </div>
+                          <div className="right flex items-start justify-between w-full mt-6">
+                            <div className="sub-left flex flex-col items-start">
+                              <Select
+                                className={`${litePoppins2.className} py-2 w-[250px]`}
+                                label="Favorite font"
+                                placeholder="Select a font style"
+                                selectedKeys={fontStyle}
+                                onSelectionChange={setFontStyle}
+                              >
+                                <SelectItem
+                                  className={poppinsExtraBold.className}
+                                  key="Poppins/Poppins-ExtraBold.ttf"
+                                  value={"Poppins/Poppins-ExtraBold.ttf"}
+                                >
+                                  Poppins Extra Bold
+                                </SelectItem>
+                                <SelectItem
+                                  className={poppinsBold.className}
+                                  key="Poppins/Poppins-Bold.ttf"
+                                  value={"Poppins/Poppins-Bold.ttf"}
+                                >
+                                  Poppins Bold
+                                </SelectItem>
+                                <SelectItem
+                                  className={poppinsBoldItalic.className}
+                                  key="Poppins/Poppins-BoldItalic.ttf"
+                                  value={"Poppins/Poppins-BoldItalic.ttf"}
+                                >
+                                  Poppins Bold Italic
+                                </SelectItem>
+                                <SelectItem
+                                  className={atkinsonBold.className}
+                                  key="Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.ttf"
+                                  value={
+                                    "Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.ttf"
+                                  }
+                                >
+                                  Atkinson Hyperlegible Bold
+                                </SelectItem>
+                                <SelectItem
+                                  className={atkinsonBoldItalic.className}
+                                  key="Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.ttf"
+                                  value={
+                                    "Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.ttf"
+                                  }
+                                >
+                                  Atkinson Hyperlegible Bold Italic
+                                </SelectItem>
+                                <SelectItem
+                                  className={mPlusRounedExtraBold.className}
+                                  key="M_PLUS_Rounded_1c/MPLUSRounded1c-ExtraBold.ttf"
+                                  value={
+                                    "M_PLUS_Rounded_1c/MPLUSRounded1c-ExtraBold.ttf"
+                                  }
+                                >
+                                  M PLUS Extra Bold
+                                </SelectItem>
+                                <SelectItem
+                                  className={tajawalBold.className}
+                                  key="Tajawal/Tajawal-Bold.ttf"
+                                  value={"Tajawal/Tajawal-Bold.ttf"}
+                                >
+                                  Tajawal Bold
+                                </SelectItem>
+                                <SelectItem
+                                  className={tajawalExtraBold.className}
+                                  key="Tajawal/Tajawal-ExtraBold.ttf"
+                                  value={"Tajawal/Tajawal-ExtraBold.ttf"}
+                                >
+                                  Tajawal Extra Bold
+                                </SelectItem>
+                              </Select>
+                              <div className="color flex flex-col items-start mt-4">
+                                <p className={litePoppins2.className}>
+                                  Select font color
+                                </p>
+                                <Card className="bg-gray-700/60 mt-3">
+                                  <CardBody>
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        onClick={() =>
+                                          setIsColorOpen(!isColorOpen)
+                                        }
+                                        className="w-10 h-10 rounded-lg cursor-pointer"
+                                        style={{ backgroundColor: color }}
+                                      ></div>
+                                      <p>{color}</p>
+                                    </div>
+                                  </CardBody>
+                                </Card>
+                                {isColorOpen && (
+                                  <HexColorPicker
+                                    className="mt-4"
+                                    color={color}
+                                    onChange={setColor}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                            <div className="sub-right">
+                              <Select
+                                className={`${litePoppins2.className} py-2 w-[250px]`}
+                                label="Prefferd font size"
+                                placeholder="Select a font size"
+                                selectedKeys={fontSize}
+                                onSelectionChange={setFontSize}
+                              >
+                                {fontSizes.map((size, index) => (
+                                  <SelectItem
+                                    className={litePoppins2.className}
+                                    key={size}
+                                    value={size}
+                                  >
+                                    {size}
+                                  </SelectItem>
+                                ))}
+                              </Select>
+                              <div className="color flex flex-col items-start mt-4">
+                                <p className={litePoppins2.className}>
+                                  Select highlight color
+                                </p>
+                                <Card className="bg-gray-700/60 mt-3">
+                                  <CardBody>
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        onClick={() =>
+                                          setIsHighlightColorOpen(
+                                            !isHighlightColorOpen
+                                          )
+                                        }
+                                        className="w-10 h-10 rounded-lg cursor-pointer"
+                                        style={{
+                                          backgroundColor: hightlightColor,
+                                        }}
+                                      ></div>
+                                      <p>{hightlightColor}</p>
+                                    </div>
+                                  </CardBody>
+                                </Card>
+                                {isHighlightColorOpen && (
+                                  <HexColorPicker
+                                    className="mt-4"
+                                    color={hightlightColor}
+                                    onChange={setHighlightColor}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {isSubmitClicked && !isCaptionedVideo && (
+                      <div className="loading fadein w-full flex flex-col items-center justify-center">
+                        <Spinner
+                          label="Please wait! Your video is being upscaling..."
+                          color="default"
+                          labelColor="foreground"
+                          className={`${litePoppins.className} text-lg text-center`}
+                        />
+                      </div>
+                    )}
                   </div>
-                  <Button
-                    color="primary"
-                    className={`${litePoppins.className} w-full mt-6`}
-                  >
-                    Upload
-                  </Button>
-                </div>
+                </ScrollShadow>
               </ModalBody>
+              {uploadedVideo && !isSubmitClicked && (
+                <ModalFooter>
+                  <Button
+                    variant="ghost"
+                    color="default"
+                    className={litePoppins.className}
+                    radius="full"
+                    onPress={onClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => setIsSubmitClicked(true)}
+                    variant="solid"
+                    color="primary"
+                    className={litePoppins.className}
+                    radius="full"
+                  >
+                    Submit changes
+                  </Button>
+                </ModalFooter>
+              )}
             </>
           )}
         </ModalContent>

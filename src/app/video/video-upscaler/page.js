@@ -38,7 +38,7 @@ function page() {
   const [resolution, setResolution] = useState(new Set([]));
   const [model, setModel] = useState(new Set([]));
   const [isGenerateVideo, setIsGenerateVideo] = useState(false);
-  const [generatedVideo, setGeneratedVideo] = useState(false);
+  const [generatedVideo, setGeneratedVideo] = useState(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -103,7 +103,7 @@ function page() {
           setUploadedVideo(data.secure_url);
           setUploadClicked(false);
         } catch (error) {
-          console.log("Error uploading image:", error.message);
+          console.log("Error uploading video:", error.message);
         }
       };
 
