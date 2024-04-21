@@ -109,7 +109,7 @@ function Home() {
   return (
     <>
       {/* <CreateProfile /> */}
-      <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px]">
+      <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="main-home m-4">
           <div className="top">
             <p className={`${litePoppins.className} text-2xl`}>Home</p>

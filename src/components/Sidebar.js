@@ -9,7 +9,7 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import { Avatar, Button } from "@nextui-org/react";
-import { MdOutlineLogin } from "react-icons/md";
+import { FiMinusCircle } from "react-icons/fi";
 
 const poppins = Poppins({
   weight: "400",
@@ -56,7 +56,9 @@ function Sidebar() {
           </Link>
 
           <div className="middle-section my-20 md:my-6 flex flex-col">
-            <p className="mt-3 text-sm font-semibold text-gray-400">OVERVIEW</p>
+            <p className="mt-3 mb-2 text-sm font-semibold text-gray-400">
+              OVERVIEW
+            </p>
             <Link
               href="/"
               className={`hover:bg-[#0266D9] ${
@@ -86,7 +88,9 @@ function Sidebar() {
                 <p className="hidden md:block"> My Collections</p>
               </div>
             </Link>
-            <p className="mt-6 text-sm font-semibold text-gray-400">AI TOOLS</p>
+            <p className="mt-6 mb-2 text-sm font-semibold text-gray-400">
+              AI TOOLS
+            </p>
             <div
               className={`hover:bg-[#0266D9] cursor-pointer ${
                 pathname.includes("/image/") && "bg-[#0266D9]"
@@ -220,8 +224,8 @@ function Sidebar() {
               </div>
             ) : null}
           </div>
-          <Button variant="solid" className="bg-red-600">
-            <MdOutlineLogin fontSize={23} className="text-white" />
+          <Button variant="ghost" className="justify-start text-md p-6 border-none">
+            <FiMinusCircle fontSize={23} className="text-white mr-5" />
             <p>Log out</p>
           </Button>
         </div>
