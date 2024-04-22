@@ -29,11 +29,18 @@ function Login() {
 
   const router = useRouter();
 
-  const welcome = (name) => toast.success(`Welcome ${name}!`);
-  const errorToast = (err) => toast.error(`${err}`);
+  const welcome = (name) => toast.success(`Welcome ${name}!`, {
+    className: poppins.className,
+  });
+  const errorToast = (err) => toast.error(`${err}`, {
+    className: poppins.className,
+  });
 
   const Login = async () => {
     try {
+      if (email == null || password == null) {
+        errorToast("Please fill all the fields");
+      }
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {

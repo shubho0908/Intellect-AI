@@ -2,6 +2,7 @@ import { ConnectDB } from "@/database";
 import { generateTokens } from "@/lib/token";
 import { User } from "@/models/user.models";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -51,6 +52,42 @@ export const POST = async (req) => {
 
     user.refreshToken = refreshToken;
     await user.save();
+
+    return NextResponse.json({ success: true, data: user }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+};
+
+export const GET = async () => {
+  try {
+    const accessToken = cookies().get("accessToken")?.value;
+    if (!accessToken) {
+      return NextResponse.json(
+        { success: false, error: "Missing access token" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    if (!decoded) {
+      return NextResponse.json(
+        { success: false, error: "Invalid access token" },
+        { status: 401 }
+      );
+    }
+
+    const userId = decoded?.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "User not found" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ success: true, data: user }, { status: 200 });
   } catch (error) {
