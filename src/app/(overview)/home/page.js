@@ -108,43 +108,7 @@ function Home() {
     <>
       <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="main-home m-4">
-          <div className="top">
-            <p className={`${litePoppins.className} text-2xl`}>Home</p>
-            <div
-              ref={scrollableContentRef}
-              className="models-section scroll-smooth mt-6 flex items-center gap-4 flex-wrap scrollbar-hide"
-            >
-              {models?.map((data, index) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (user) {
-                      router.push(data?.url);
-                    }
-                  }}
-                  className="cursor-pointer"
-                >
-                  <Card className="col-span-12 sm:col-span-4 h-[150px] w-[300px] flex justify-center items-center">
-                    <CardHeader
-                      className={`${litePoppins.className} absolute z-10 flex-col items-center`}
-                    >
-                      <h4 className="text-white font-medium text-large">
-                        {data?.name}
-                      </h4>
-                      <p className="text-white/60 text-sm">{data?.desc}</p>
-                    </CardHeader>
-                    <Image
-                      removeWrapper
-                      alt="Card background"
-                      className="z-0 w-full h-full object-cover brightness-[.4]"
-                      src="/upscale/output2.png"
-                    />
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="bottom mt-20">
+          <div className="bottom mt-10">
             <p className={`${litePoppins.className} text-2xl`}>
               Recent Creations
             </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import Modal2 from "@/app/image/image-generator/(components)/Modal2";
+import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 import {
   Card,
   Image,

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Image, Skeleton } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import Playground from "@/components/Playground";
-import Modaal from "@/app/image/image-generator/(components)/Modaal";
+import Modaal from "./Modaal";
 import RelatedImages from "./RelatedImages";
 import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";

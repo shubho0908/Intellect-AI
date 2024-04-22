@@ -22,6 +22,28 @@ const poppins = Poppins({
 function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  const Login = async () => {
+    try {
+      console.log(email, password);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const { success, data } = await response.json();
+      if (success) {
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <>
@@ -50,12 +72,14 @@ function Login() {
                 label="Email"
                 variant="bordered"
                 placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
               />
               <Input
                 label="Password"
                 variant="bordered"
                 isRequired
                 placeholder="Enter your password"
+                onChange={(e) => setPassword(e.target.value)}
                 endContent={
                   <button
                     className="focus:outline-none"
@@ -72,7 +96,9 @@ function Login() {
                 type={isVisible ? "text" : "password"}
               />
 
-              <Button color="primary">Log In</Button>
+              <Button onClick={Login} color="primary">
+                Log In
+              </Button>
               <Divider orientation="horizontal" className="mt-4 mb-1" />
               <div className="extra flex items-center justify-center text-sm">
                 <p className="mr-2">Need to create an account?</p>

@@ -10,12 +10,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
 import Posts from "./Posts";
-import EditAccount from "@/app/profile/[...username]/EditAccount";
+import EditAccount from "./EditAccount";
 
 const poppins = Poppins({
   weight: "500",

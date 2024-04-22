@@ -1,7 +1,7 @@
 "use client";
 
 import { Poppins } from "next/font/google";
-import Generation from "@/app/image/image-generator/(components)/Generation";
+import Generation from "./(components)/Generation";
 import { Button, Image, Input, Skeleton } from "@nextui-org/react";
 import { PiMagicWand } from "react-icons/pi";
 import { useEffect, useState } from "react";
@@ -39,6 +39,22 @@ function page() {
       }
     }, 2000);
   }, [isLoading]);
+
+  // const createImage = async () => {
+  //   try {
+  //     const response = await fetch("/api/images/text-to-image", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ prompt }),
+  //     });
+
+  //     const 
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   if (isClicked) {
     return (
