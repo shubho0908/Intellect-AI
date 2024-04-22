@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
   weight: "400",
@@ -25,9 +27,13 @@ function Login() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
 
+  const router = useRouter();
+
+  const welcome = (name) => toast.success(`Welcome ${name}!`);
+  const errorToast = (err) => toast.error(`${err}`);
+
   const Login = async () => {
     try {
-      console.log(email, password);
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -36,17 +42,21 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      const { success, data } = await response.json();
-      if (success) {
-        console.log(data);
+      const { success, data, error } = await response.json();
+      if (success == true) {
+        welcome(data?.name);
+        router.push("/home");
+      } else {
+        errorToast(error);
       }
     } catch (error) {
-      console.log(error.message);
+      errorToast(error.message);
     }
   };
 
   return (
     <>
+      <Toaster />
       <div className="login flex flex-col items-center justify-center h-[100vh] w-full">
         <div className="top flex items-center flex-col">
           <Image

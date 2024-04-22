@@ -11,9 +11,11 @@ import {
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "400",
@@ -24,9 +26,40 @@ function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isSelected, setIsSelected] = useState(false);
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  const router = useRouter();
+
+  const welcome = (name) => toast.success(`Welcome ${name}!`);
+  const errorToast = (err) => toast.error(`${err}`);
+
+  const Signup = async () => {
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const { success, data, error } = await response.json();
+      if (success == true) {
+        welcome(data?.name);
+        router.push("/home");
+      } else {
+        errorToast(error);
+      }
+    } catch (error) {
+      errorToast(error.message);
+    }
+  };
 
   return (
     <>
+      <Toaster />
       <div className="login flex flex-col items-center justify-center h-[100vh] w-full">
         <div className="top flex items-center flex-col">
           <Image
@@ -52,6 +85,7 @@ function Login() {
                 label="Full Name"
                 variant="bordered"
                 placeholder="Enter your full name"
+                onChange={(e) => setName(e.target.value)}
               />
               <Input
                 isClearable
@@ -61,12 +95,14 @@ function Login() {
                 label="Email"
                 variant="bordered"
                 placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
               />
               <Input
                 label="Password"
                 isRequired
                 variant="bordered"
                 placeholder="Enter your password"
+                onChange={(e) => setPassword(e.target.value)}
                 endContent={
                   <button
                     className="focus:outline-none"
@@ -92,7 +128,7 @@ function Login() {
                 </Checkbox>
               </div>
 
-              <Button isDisabled={!isSelected} color="primary">
+              <Button onClick={Signup} isDisabled={!isSelected} color="primary">
                 Sign Up
               </Button>
               <Divider orientation="horizontal" className="mt-4 mb-1" />
