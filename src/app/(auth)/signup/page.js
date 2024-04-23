@@ -11,7 +11,6 @@ import {
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
@@ -30,10 +29,8 @@ function Login() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
 
-  const router = useRouter();
-
   const welcome = (name) =>
-    toast.success(`Welcome ${name}!`, {
+    toast.success(`Welcome back, ${name}!`, {
       className: poppins.className,
     });
   const errorToast = (err) =>
@@ -57,7 +54,9 @@ function Login() {
       const { success, data, error } = await response.json();
       if (success == true) {
         welcome(data?.name);
-        router.push("/home");
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
         errorToast(error);
       }

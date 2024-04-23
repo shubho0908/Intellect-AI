@@ -14,7 +14,6 @@ import { useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
   weight: "400",
@@ -27,14 +26,14 @@ function Login() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
 
-  const router = useRouter();
-
-  const welcome = (name) => toast.success(`Welcome ${name}!`, {
-    className: poppins.className,
-  });
-  const errorToast = (err) => toast.error(`${err}`, {
-    className: poppins.className,
-  });
+  const welcome = (name) =>
+    toast.success(`Welcome ${name}!`, {
+      className: poppins.className,
+    });
+  const errorToast = (err) =>
+    toast.error(`${err}`, {
+      className: poppins.className,
+    });
 
   const Login = async () => {
     try {
@@ -52,7 +51,9 @@ function Login() {
       const { success, data, error } = await response.json();
       if (success == true) {
         welcome(data?.name);
-        router.push("/home");
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
         errorToast(error);
       }

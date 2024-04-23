@@ -40,21 +40,28 @@ function page() {
     }, 2000);
   }, [isLoading]);
 
-  // const createImage = async () => {
-  //   try {
-  //     const response = await fetch("/api/images/text-to-image", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ prompt }),
-  //     });
+  const firstGeneration = async () => {
+    try {
+      setIsClicked(true);
+      const response = await fetch("/api/text-to-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          height: 1024,
+          width: 1024,
+          numberOfOutputs: 4,
+          model: "Sdxl",
+        }),
+      });
 
-  //     const 
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
+      const {success, data, error} = await response.json();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   if (isClicked) {
     return (

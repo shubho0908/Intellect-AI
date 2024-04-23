@@ -10,7 +10,7 @@ import { UploadImage } from "@/lib/cloudinary";
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { prompt, height, width, numberOfOutputs } = await req.json();
+    const { prompt, height, width, numberOfOutputs, model } = await req.json();
 
     // Check if refresh token is available
     const refreshTokenValue = cookies().get("refreshToken")?.value;
@@ -66,40 +66,78 @@ export const POST = async (req) => {
       );
     }
 
-    //Generate image
     const replicate = new Replicate({
       auth: process.env.REPLICATE_API_TOKEN,
     });
-    const output = await replicate.run(
-      "lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
-      {
-        input: {
-          seed: 2992471961,
-          width,
-          height,
-          prompt,
-          scheduler: "K_EULER",
-          num_outputs: numberOfOutputs,
-          guidance_scale: 0,
-          negative_prompt:
-            "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster",
-          num_inference_steps: 4,
-        },
-      }
-    );
 
-    // Save image to Cloudinary
     let allImages;
-    if (output.length > 1) {
-      allImages = await Promise.all(
-        output.map(async (element) => {
-          const result = await UploadImage(element);
-          console.log(result);
-          return result?.url;
-        })
+
+    //Generate image using SDXL
+    if (model === "Sdxl") {
+      const output = await replicate.run(
+        "lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+        {
+          input: {
+            seed: 2992471961,
+            width,
+            height,
+            prompt,
+            scheduler: "K_EULER",
+            num_outputs: numberOfOutputs,
+            guidance_scale: 0,
+            negative_prompt:
+              "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster",
+            num_inference_steps: 4,
+          },
+        }
       );
-    } else {
-      allImages = await UploadImage(output);
+      
+      // Save image to Cloudinary
+      if (output.length > 1) {
+        allImages = await Promise.all(
+          output.map(async (element) => {
+            const result = await UploadImage(element);
+            console.log(result);
+            return result?.url;
+          })
+        );
+      } else {
+        allImages = await UploadImage(output);
+      }
+    }
+
+    //Generate image using Dreamshaper
+    else if (model === "dreamshaper") {
+      const output = await replicate.run(
+        "lucataco/dreamshaper-xl-turbo:0a1710e0187b01a255302738ca0158ff02a22f4638679533e111082f9dd1b615",
+        {
+          input: {
+            width,
+            height,
+            prompt,
+            scheduler: "K_EULER",
+            num_outputs: numberOfOutputs,
+            guidance_scale: 2,
+            negative_prompt:
+              "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster,ugly, deformed, noisy, blurry, low contrast, text, BadDream, 3d, cgi, render, fake, anime, open mouth, big forehead, long neck",
+            num_inference_steps: 7,
+            apply_watermark: false,
+          },
+        }
+      );
+
+      // Save image to Cloudinary
+      if (output.length > 1) {
+        allImages = await Promise.all(
+          output.map(async (element) => {
+            const result = await UploadImage(element);
+            console.log(result);
+            return result?.url;
+          })
+        );
+      } else {
+        allImages = await UploadImage(output);
+      }
     }
 
     const newImage = new Image({

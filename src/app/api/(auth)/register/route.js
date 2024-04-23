@@ -3,7 +3,6 @@ import { generateTokens } from "@/lib/token";
 import { Library } from "@/models/library.models";
 import { User } from "@/models/user.models";
 import bcrypt from "bcrypt";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {

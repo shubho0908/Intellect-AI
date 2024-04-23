@@ -3,12 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GoHome, GoFileDirectory } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
-import { usePathname } from "next/navigation";
-import { Avatar, Button } from "@nextui-org/react";
+import { usePathname, useRouter } from "next/navigation";
+import { Avatar, Button, Skeleton } from "@nextui-org/react";
 import { FiMinusCircle } from "react-icons/fi";
 
 const poppins = Poppins({
@@ -22,6 +22,46 @@ function Sidebar() {
     video: false,
   });
   const pathname = usePathname();
+  const [user, setUser] = useState(null);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/login");
+      const { success, data, error } = await response.json();
+      if (success) {
+        setUser(data);
+      } else {
+        console.error("Error fetching user data:", error);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  const Logout = async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { success } = await response.json();
+      if (success) {
+        alert("Logged out successfully");
+        useRouter().push("/login");
+      } else {
+        alert("Error occured while logging out");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
     return null;
@@ -43,19 +83,21 @@ function Sidebar() {
               <Image src="/logo2.png" width={50} height={50} alt="Logo" />
             </Link>
           </div>
-          <Link href="/profile/shubho0908">
+          <Link href={`/profile/${user?.username}`}>
             <div className="flex mt-6 cursor-pointer bg-gray-700/40 hover:bg-gray-700/80 transition-all px-6 py-3 rounded-xl items-center justify-center gap-4">
               <div className="flex items-center gap-4">
                 <Avatar
                   as="button"
                   className="transition-transform relative cursor-pointer"
-                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  src={user?.profileImg}
                 />
               </div>
-              <div className="data">
-                <p>Shubhojeet...</p>
-                <p className="text-sm text-gray-400">@shubho0908</p>
-              </div>
+              <Skeleton isLoaded={user} className="rounded-lg min-w-[100px]">
+                <div className="data">
+                  <p>{user?.name}</p>
+                  <p className="text-sm text-gray-400">@{user?.username}</p>
+                </div>
+              </Skeleton>
             </div>
           </Link>
 
@@ -229,6 +271,7 @@ function Sidebar() {
             ) : null}
           </div>
           <Button
+            onClick={Logout}
             variant="ghost"
             className="justify-start text-md p-6 border-none"
           >

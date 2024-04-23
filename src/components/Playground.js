@@ -22,10 +22,6 @@ function Playground() {
 
   const models = [
     {
-      value: "Realvisxl2-lcm",
-      label: "Realvisxl2-lcm",
-    },
-    {
       value: "Dreamshaper-xl-turbo",
       label: "Dreamshaper-xl-turbo",
     },
