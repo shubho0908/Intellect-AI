@@ -29,7 +29,7 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 
-function RelatedImages() {
+function RelatedImages({ data }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [backdrop, setBackdrop] = useState("blur");
   const [context, setContext] = useState(null);
@@ -73,30 +73,44 @@ function RelatedImages() {
     }
   };
 
+  if (data && data?.urls?.length === 0) {
+    return null;
+  }
+
+  let formattedDate;
+  if (data && data?.urls.length > 0) {
+    const date = new Date(data?.createdAt);
+
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    };
+
+    formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
+  }
+
   return (
     <>
       <div className="related-images">
-        <Skeleton isLoaded={isLoading} className="rounded-lg w-fit">
+        <Skeleton isLoaded={data !== null} className="rounded-lg w-fit">
           <p className={`${poppins.className} text-2xl`}>Related Images</p>
         </Skeleton>
         <div className="images flex items-center justify-start flex-wrap mt-8 gap-4">
           <div className="flex flex-wrap gap-3">
             {Images?.map((image, index) => (
               <>
-                <Skeleton
-                  isLoaded={isLoading}
-                  className="rounded-lg w-fit"
-                >
+                <Skeleton isLoaded={data !== null} className="rounded-lg w-fit">
                   <Image
                     isZoomed
                     key={index}
-                    src={image}
+                    src={data?.urls[index + 1]}
                     alt="image"
                     width={350}
                     height={350}
                     onClick={() => {
                       handleOpen(backdrops);
-                      setContext(image);
+                      setContext(data?.urls[index + 1]);
                     }}
                     className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
                   />
@@ -237,9 +251,11 @@ function RelatedImages() {
                             </div>
                           </div>
                           <div className="content mt-4 w-full md:max-w-[350px] text-sm bg-[#27272A] p-3 rounded-lg">
-                            A dolphin leaps through the waves, set against a
-                            backdrop of bright blues A dolphin leaps through the
-                            waves, set against a backdrop of bright blues
+                            {data?.prompt.length >= 90 ? (
+                              <p>{data?.prompt.slice(0, 90)}...</p>
+                            ) : (
+                              <p>{data?.prompt}</p>
+                            )}
                           </div>
                         </div>
                         <div className="more-details py-6 px-2 ">
@@ -248,13 +264,15 @@ function RelatedImages() {
                               <p className="text-sm text-gray-500">
                                 Resolution
                               </p>
-                              <p className="text-sm mt-1">1024 x 1024px</p>
+                              <p className="text-sm mt-1">
+                                {data?.miscData?.dimensions}
+                              </p>
                             </div>
                             <div className="created flex flex-col items-end">
                               <p className="text-sm text-gray-500">
                                 Created At
                               </p>
-                              <p className="text-sm mt-1">Jan 1, 2022</p>
+                              <p className="text-sm mt-1">{formattedDate}</p>
                             </div>
                           </div>
                           <div className="second mt-4 flex items-center justify-between">
@@ -265,7 +283,9 @@ function RelatedImages() {
                                   fontSize={18}
                                   className="text-white mr-2"
                                 />
-                                <p className="text-sm">Stable Diffusion</p>
+                                <p className="text-sm">
+                                  {data?.miscData?.modelName}
+                                </p>
                               </div>
                             </div>
                             <div className="category flex flex-col items-end">

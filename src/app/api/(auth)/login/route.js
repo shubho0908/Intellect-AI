@@ -1,5 +1,5 @@
 import { ConnectDB } from "@/database";
-import { generateTokens } from "@/lib/token";
+import { generateAccessToken, generateTokens, verifyToken } from "@/lib/token";
 import { User } from "@/models/user.models";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -44,7 +44,7 @@ export const POST = async (req) => {
 
     const { refreshToken, accessToken } = generateTokens(
       { id: user._id },
-      "1h"
+      "2m"
     );
 
     cookies().set("accessToken", accessToken);
@@ -64,24 +64,40 @@ export const POST = async (req) => {
 
 export const GET = async () => {
   try {
-    const accessToken = cookies().get("accessToken")?.value;
-    if (!accessToken) {
+    await ConnectDB();
+
+    const accessTokenValue = cookies().get("accessToken")?.value;
+    const refreshTokenValue = cookies().get("refreshToken")?.value;
+
+    if (!refreshTokenValue) {
       return NextResponse.json(
-        { success: false, error: "Missing access token" },
+        { success: false, error: "Missing refresh token" },
         { status: 401 }
       );
     }
 
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
-    if (!decoded) {
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "2m");
+        cookies().set("accessToken", newAccessToken);
+      }
+    }
+
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Invalid access token" },
+        { success: false, error: "Invalid tokens" },
         { status: 401 }
       );
     }
-
-    const userId = decoded?.id;
     const user = await User.findById(userId);
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -92,7 +108,7 @@ export const GET = async () => {
     return NextResponse.json({ success: true, data: user }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "An unexpected error occurred" },
       { status: 500 }
     );
   }

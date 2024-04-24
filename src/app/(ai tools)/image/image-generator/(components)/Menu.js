@@ -38,13 +38,6 @@ function Menu() {
             </DropdownItem>
             <DropdownItem key="copy">Save to collection</DropdownItem>
             <DropdownItem key="edit">Share</DropdownItem>
-            <DropdownItem
-              key="delete"
-              className="text-white hover:bg-red-600 transition-all"
-              color="error"
-            >
-              Delete
-            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>

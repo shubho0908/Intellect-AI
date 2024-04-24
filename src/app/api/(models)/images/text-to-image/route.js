@@ -74,7 +74,7 @@ export const POST = async (req) => {
 
     //Generate image using SDXL
     if (model === "Sdxl") {
-      const output = await replicate.run(
+      allImages = await replicate.run(
         "lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
         {
           input: {
@@ -91,24 +91,11 @@ export const POST = async (req) => {
           },
         }
       );
-      
-      // Save image to Cloudinary
-      if (output.length > 1) {
-        allImages = await Promise.all(
-          output.map(async (element) => {
-            const result = await UploadImage(element);
-            console.log(result);
-            return result?.url;
-          })
-        );
-      } else {
-        allImages = await UploadImage(output);
-      }
     }
 
     //Generate image using Dreamshaper
     else if (model === "dreamshaper") {
-      const output = await replicate.run(
+      allImages = await replicate.run(
         "lucataco/dreamshaper-xl-turbo:0a1710e0187b01a255302738ca0158ff02a22f4638679533e111082f9dd1b615",
         {
           input: {
@@ -125,24 +112,19 @@ export const POST = async (req) => {
           },
         }
       );
-
-      // Save image to Cloudinary
-      if (output.length > 1) {
-        allImages = await Promise.all(
-          output.map(async (element) => {
-            const result = await UploadImage(element);
-            console.log(result);
-            return result?.url;
-          })
-        );
-      } else {
-        allImages = await UploadImage(output);
-      }
     }
+
+    // Upload the generated images to Cloudinary
+    const uploadedImages = await Promise.all(
+      allImages.map(async (image) => {
+        const uploadResult = await UploadImage(image);
+        return uploadResult.url;
+      })
+    );
 
     const newImage = new Image({
       userId: id,
-      url: output?.length > 1 ? JSON.stringify(allImages) : allImages[0],
+      urls: uploadedImages,
       prompt,
       miscData: {
         dimensions: `${width}x${height}`,
@@ -153,8 +135,16 @@ export const POST = async (req) => {
     await newImage.save();
 
     const library = await Library.findOne({ userId: id });
-    library.images.push(newImage._id);
-    await library.save();
+    if (library) {
+      library?.images.push(newImage._id);
+      await library.save();
+    } else {
+      const newLibrary = new Library({
+        userId: id,
+        images: [newImage._id],
+      });
+      await newLibrary.save();
+    }
 
     return NextResponse.json(
       { success: true, data: newImage },

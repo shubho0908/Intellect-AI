@@ -31,6 +31,7 @@ function page() {
   const [prompt, setPrompt] = useState("");
   const [isClicked, setIsClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [Data, setData] = useState(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,7 +44,7 @@ function page() {
   const firstGeneration = async () => {
     try {
       setIsClicked(true);
-      const response = await fetch("/api/text-to-image", {
+      const response = await fetch("/api/images/text-to-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +58,12 @@ function page() {
         }),
       });
 
-      const {success, data, error} = await response.json();
+      const { success, data, error } = await response.json();
+      if (success) {
+        setData(data);
+      } else {
+        console.log(error);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -66,7 +72,7 @@ function page() {
   if (isClicked) {
     return (
       <>
-        <Generation />
+        <Generation ModelData={Data} />
       </>
     );
   }
@@ -120,7 +126,7 @@ function page() {
             ) : (
               <Button
                 color="primary"
-                onClick={() => setIsClicked(true)}
+                onClick={firstGeneration}
                 className={`${litePoppins.className} rounded-xl xsm:rounded-lg mt-4 xsm:mt-0 xsm:ml-3 w-full xsm:w-fit lg:ml-0 lg:absolute lg:right-4`}
               >
                 <PiMagicWand

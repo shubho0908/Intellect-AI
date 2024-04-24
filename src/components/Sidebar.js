@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { GoHome, GoFileDirectory } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Avatar, Button, Skeleton } from "@nextui-org/react";
 import { FiMinusCircle } from "react-icons/fi";
 
@@ -54,7 +54,7 @@ function Sidebar() {
       const { success } = await response.json();
       if (success) {
         alert("Logged out successfully");
-        useRouter().push("/login");
+        window.location.reload();
       } else {
         alert("Error occured while logging out");
       }
