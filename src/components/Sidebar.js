@@ -115,7 +115,7 @@ function Sidebar() {
               <p className="hidden md:block">Home</p>
             </Link>
             <Link
-              href="/home"
+              href="/dashboard"
               className={`hover:bg-[#0266D9] ${
                 pathname === "/dashboard" && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}

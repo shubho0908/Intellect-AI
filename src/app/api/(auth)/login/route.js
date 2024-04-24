@@ -44,7 +44,7 @@ export const POST = async (req) => {
 
     const { refreshToken, accessToken } = generateTokens(
       { id: user._id },
-      "2m"
+      "1h"
     );
 
     cookies().set("accessToken", accessToken);
@@ -85,7 +85,7 @@ export const GET = async () => {
       const decodedRefresh = verifyToken(refreshTokenValue);
       userId = decodedRefresh?.id;
       if (userId) {
-        const newAccessToken = generateAccessToken({ id: userId }, "2m");
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
         cookies().set("accessToken", newAccessToken);
       }
     }

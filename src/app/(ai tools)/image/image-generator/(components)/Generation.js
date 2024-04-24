@@ -34,6 +34,8 @@ function page({ ModelData }) {
   const [useAi, setUseAi] = useState(false);
   const [ratio, setRatio] = useState("1:1");
   const [totalImages, setTotalImages] = useState(4);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+  const [value, setValue] = useState(new Set([]));
 
   useEffect(() => {
     if (ModelData !== null) {
@@ -70,6 +72,7 @@ function page({ ModelData }) {
   const generateImage = async () => {
     try {
       setModelData(null);
+      setIsBtnLoading(true);
       const { height, width } = generateHeightWidth();
       const response = await fetch("/api/images/text-to-image", {
         method: "POST",
@@ -81,18 +84,21 @@ function page({ ModelData }) {
           height,
           width,
           numberOfOutputs: totalImages,
-          model: "dreamshaper",
+          model: value === "Sdxl-lightning" ? "Sdxl" : "dreamshaper",
         }),
       });
 
       const { success, data, error } = await response.json();
       if (success) {
         setModelData(data);
+        setIsBtnLoading(false);
       } else {
         console.error(error);
+        setIsBtnLoading(false);
       }
     } catch (error) {
       console.error("An error occurred:", error.message);
+      setIsBtnLoading(false);
     }
   };
 
@@ -342,12 +348,14 @@ function page({ ModelData }) {
                 items={models}
                 label="Select Model"
                 defaultSelectedKeys={["Sdxl-lightning"]}
-                className=""
+                selectedKeys={value}
+                onSelectionChange={setValue}
               >
                 {(model) => (
                   <SelectItem
                     className={litePoppins.className}
                     key={model.value}
+                    value={model.value}
                   >
                     {model.label}
                   </SelectItem>
@@ -357,6 +365,7 @@ function page({ ModelData }) {
             <Button
               onClick={generateImage}
               color="primary"
+              isLoading={isBtnLoading}
               variant="solid"
               className="w-full mt-10 mb-5"
             >
