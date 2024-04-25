@@ -70,12 +70,9 @@ export const POST = async (req) => {
     const removedImg =
       extract[0] + `upload/c_pad,ar_${ratio},g_center,b_gen_fill/` + extract[1];
 
-    // Save image to Cloudinary
-    const result = await UploadImage(removedImg);
-
     const newImage = new Image({
       userId: id,
-      url: result.url,
+      urls: [removedImg],
       miscData: {
         dimensions: ratio,
         modelName: "Generative Fill",

@@ -62,6 +62,9 @@ function page() {
         if (success) {
           setUpscaledImg(data);
         }
+        if (error?.includes("CUDA")) {
+          alert("GPU is too busy, please try again later.");
+        }
       } catch (error) {
         console.log(error.message);
       }
@@ -134,6 +137,26 @@ function page() {
   const handleOpen = async () => {
     await uploadImage(fileData);
     onOpen();
+  };
+
+  const downloadImage = async () => {
+    const imageUrl = upscaledImg;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
   };
 
   return (
@@ -305,7 +328,9 @@ function page() {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setUpscaledImg(null);
+          setTimeout(() => {
+            setUpscaledImg(null);
+          }, 1000);
           setUploadedIMG(false);
           setIsFileSelected(false);
           setFileData(null);
@@ -377,7 +402,9 @@ function page() {
                           </div>
                         </div>
 
-                        <Button color="primary">Download Upscaled Image</Button>
+                        <Button onClick={downloadImage} color="primary">
+                          Download Upscaled Image
+                        </Button>
                       </>
                     )}
                   </div>
