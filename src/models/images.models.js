@@ -19,7 +19,6 @@ const imageSchema = new Schema(
     },
     prompt: {
       type: String,
-      required: true,
     },
     title: {
       type: String,

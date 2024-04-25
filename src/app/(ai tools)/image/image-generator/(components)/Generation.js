@@ -226,13 +226,13 @@ function page({ ModelData }) {
             </div>
           </div>
           <div className="bottom mt-4">
-            <RelatedImages data={modelData} />
+            <RelatedImages Data={modelData} />
           </div>
         </div>
         <div
-          className={`${litePoppins.className}  hidden xl2:block right border-l-2 border-gray-800 h-[100vh] p-6 w-[450px]`}
+          className={`${litePoppins.className}  hidden xl2:block right h-[100vh] p-6 w-[450px]`}
         >
-          <div className="playground">
+          <div className="playground fixed right-10 top-0 pt-[20px] pl-10 h-[100vh] border-l-2 border-gray-800">
             <div className="prompt">
               <p className="text-md sm:text-lg">Prompt</p>
               <Textarea
@@ -248,6 +248,7 @@ function page({ ModelData }) {
                   color="primary"
                   className="w-full mt-3 text-md"
                   variant="shadow"
+                  isDisabled={modelData === null}
                   onClick={() => {
                     setUseAi(true);
                     setTimeout(() => {
@@ -262,6 +263,7 @@ function page({ ModelData }) {
                 <Button
                   color="primary"
                   isLoading
+                  isDisabled={modelData === null}
                   className="w-full mt-3 text-md"
                 >
                   Thinking...
@@ -366,6 +368,7 @@ function page({ ModelData }) {
               onClick={generateImage}
               color="primary"
               isLoading={isBtnLoading}
+              isDisabled={modelData === null}
               variant="solid"
               className="w-full mt-10 mb-5"
             >

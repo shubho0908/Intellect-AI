@@ -16,8 +16,6 @@ import { Poppins } from "next/font/google";
 import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { useEffect, useState } from "react";
 import { MdDone } from "react-icons/md";
-import { storage } from "@/lib/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -34,11 +32,9 @@ function page() {
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [fileData, setFileData] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedIMG, setUploadedIMG] = useState(null);
   const [upscaledImg, setUpscaledImg] = useState(null);
-  const [upscaleLoading, setUpscaleLoading] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isEnhance, setIsEnhance] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -49,12 +45,31 @@ function page() {
   }, [isLoading]);
 
   useEffect(() => {
-    if (!uploadedIMG) {
-      setUpscaleLoading(true);
-    } else {
-      setTimeout(() => {
-        setUpscaledImg(uploadedIMG);
-      }, 5000);
+    const upscaleImage = async () => {
+      try {
+        const response = await fetch("/api/images/upscale", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: uploadedIMG,
+            enhance: isEnhance,
+          }),
+        });
+
+        const { success, data, error } = await response.json();
+        if (success) {
+          setUpscaledImg(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    if (uploadedIMG) {
+      console.log(uploadedIMG);
+      upscaleImage();
     }
   }, [uploadedIMG]);
 
@@ -81,31 +96,38 @@ function page() {
         return null;
       }
 
-      const fileReference = ref(storage, `upscale/${file.name}`);
-      const uploadData = uploadBytesResumable(fileReference, file);
+      const reader = new FileReader();
 
-      uploadData.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.log(error);
-        },
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-            setUploadedIMG(downloadURL);
-          } catch (error) {
-            console.log(error);
-          }
+      reader.onload = async () => {
+        const newFile = reader.result;
+
+        try {
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                file: newFile,
+                upload_preset: "intellect",
+                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+                public_id: `images/ImageUpscaler/${Date.now()}`,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const data = await response.json();
+          setUploadedIMG(data.secure_url);
+        } catch (error) {
+          console.log("Error uploading image:", error.message);
         }
-      );
+      };
+
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.log("Error converting file to base64:", error.message);
     }
   };
 
@@ -208,7 +230,7 @@ function page() {
               </label>
               {isFileSelected && (
                 <div className="flex items-center fadein w-full justify-between mt-6 ">
-                  <Switch isSelected={isSelected} onValueChange={setIsSelected}>
+                  <Switch isSelected={isEnhance} onValueChange={setIsEnhance}>
                     Face Enhance
                   </Switch>
                   <Button
@@ -276,20 +298,18 @@ function page() {
         </div>
       </div>
       <Modal
-        className="max-w-fit"
         placement="center"
+        size={`${upscaledImg ? "4xl" : "xl"}`}
         backdrop="blur"
         isDismissable={false}
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setUploadProgress(0);
           setUpscaledImg(null);
           setUploadedIMG(false);
-          setUpscaleLoading(false);
           setIsFileSelected(false);
           setFileData(null);
-          setIsSelected(false);
+          setIsEnhance(false);
         }}
       >
         <ModalContent>
@@ -300,14 +320,15 @@ function page() {
                   {!uploadedIMG && (
                     <>
                       <div className="flex flex-col items-center">
-                        <p>Your image is being uploaded...</p>
+                        <p className={`${litePoppins.className} text-xl`}>
+                          Uploading your image
+                        </p>
+
                         <Progress
-                          aria-label="Uploading..."
-                          size="md"
-                          value={uploadProgress}
-                          color="success"
-                          showValueLabel={true}
-                          className="max-w-md mt-3"
+                          size="sm"
+                          isIndeterminate
+                          aria-label="Loading..."
+                          className="max-w-md py-5"
                         />
                       </div>
                     </>
@@ -317,11 +338,11 @@ function page() {
                       <>
                         <div className="flex flex-col items-center">
                           <p>Please wait while we upscale your image..</p>
-                          <Spinner
-                            label="Loading.."
-                            color="primary"
-                            className="mt-6"
-                            labelColor="primary"
+                          <Progress
+                            size="sm"
+                            isIndeterminate
+                            aria-label="Loading..."
+                            className="max-w-md py-5"
                           />
                         </div>
                       </>

@@ -10,59 +10,46 @@ import Replicate from "replicate";
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { image } = await req.json();
+    const { image, enhance } = await req.json();
 
-    // Check if refresh token is available
+    const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
+
     if (!refreshTokenValue) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
       );
     }
 
-    // Check if the refresh token is expired
+    //Check if refresh token is expired
     try {
       verifyToken(refreshTokenValue);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Session expired" },
-        { status: 404 }
+        { status: 401 }
       );
     }
 
-    // Check if access token is available
-    const accessToken = cookies().get("accessToken")?.value;
-    if (!accessToken) {
-      try {
-        // Try to generate a new access token using the refresh token
-        const payload = verifyToken(refreshTokenValue);
-        const newToken = generateAccessToken({ id: payload.id }, "1h");
-        cookies().set("accessToken", newToken);
-        return NextResponse.json(
-          {
-            success: true,
-            message: "New token generated",
-          },
-          { status: 200 }
-        );
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized access" },
-          { status: 404 }
-        );
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
       }
     }
 
-    // Verify the access token
-    let id;
-    try {
-      const payload = verifyToken(accessToken);
-      id = payload.id;
-    } catch (error) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
       );
     }
 
@@ -77,32 +64,28 @@ export const POST = async (req) => {
         input: {
           image,
           scale: 4,
-          face_enhance: true,
+          face_enhance: enhance,
         },
       }
     );
 
-    // Save image to Cloudinary
-    const result = await UploadImage(output);
 
     const newImage = new Image({
-      userId: id,
-      url: result.url,
-      prompt,
+      userId,
+      urls: [output],
       miscData: {
-        dimensions: `${width}x${height}`,
         modelName: "real-esrgan",
       },
     });
 
     await newImage.save();
 
-    const library = await Library.findOne({ userId: id });
+    const library = await Library.findOne({ userId });
     library.images.push(newImage._id);
     await library.save();
 
     return NextResponse.json(
-      { success: true, data: newImage },
+      { success: true, data: newImage?.urls[0] },
       { status: 201 }
     );
   } catch (error) {

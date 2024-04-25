@@ -104,8 +104,8 @@ export const POST = async (req) => {
     // Upload the generated images to Cloudinary
     const uploadedImages = await Promise.all(
       allImages.map(async (image) => {
-        const uploadResult = await UploadImage(image);
-        return uploadResult.url;
+        const uploadResult = await UploadImage(image, "Text2Image");
+        return uploadResult.secure_url;
       })
     );
 

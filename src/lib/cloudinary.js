@@ -7,11 +7,11 @@ cloudinary.config({
 });
 
 //Backend Upload
-const UploadImage = async (data) => {
+const UploadImage = async (data, id) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       data,
-      { public_id: `images/${Date.now()}` },
+      { public_id: `images/${id}/${Date.now()}` },
       (error, result) => {
         if (error) {
           reject(error);
@@ -23,11 +23,11 @@ const UploadImage = async (data) => {
   });
 };
 
-const UploadVideo = async (data) => {
+const UploadVideo = async (data, id) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       data,
-      { resource_type: "video", public_id: `videos/${Date.now()}` },
+      { resource_type: "video", public_id: `videos/${id}/${Date.now()}` },
       (error, result) => {
         if (error) {
           reject(error);
@@ -39,23 +39,4 @@ const UploadVideo = async (data) => {
   });
 };
 
-const UploadAudio = async (data) => {
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(
-      data,
-      { resource_type: "auto", public_id: `audios/${Date.now()}` },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      }
-    );
-  });
-};
-
-//Frontend upload
-
-
-export { UploadImage, UploadVideo, UploadAudio };
+export { UploadImage, UploadVideo };

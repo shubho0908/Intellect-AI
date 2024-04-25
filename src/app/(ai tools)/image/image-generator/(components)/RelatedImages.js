@@ -20,6 +20,7 @@ import { RxUpload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 import Menu from "./Menu";
+import Link from "next/link";
 const poppins = Poppins({
   weight: "600",
   subsets: ["latin"],
@@ -29,7 +30,7 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 
-function RelatedImages({ data }) {
+function RelatedImages({ Data }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [backdrop, setBackdrop] = useState("blur");
   const [context, setContext] = useState(null);
@@ -37,6 +38,7 @@ function RelatedImages({ data }) {
   const [isCopied, setIsCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -53,6 +55,22 @@ function RelatedImages({ data }) {
       }, 2000);
     }
   }, [isCopied]);
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await fetch(`/api/user?userId=${Data?.userId}`);
+        const { success, data, error } = await response.json();
+        if (success) {
+          setUserData(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    getUser();
+  }, [Data]);
 
   const backdrops = "blur";
   const Images = [
@@ -73,13 +91,13 @@ function RelatedImages({ data }) {
     }
   };
 
-  if (data && data?.urls?.length === 0) {
+  if (Data && Data?.urls?.length < 2) {
     return null;
   }
 
   let formattedDate;
-  if (data && data?.urls.length > 0) {
-    const date = new Date(data?.createdAt);
+  if (Data && Data?.urls.length > 0) {
+    const date = new Date(Data?.createdAt);
 
     const options = {
       day: "numeric",
@@ -93,24 +111,24 @@ function RelatedImages({ data }) {
   return (
     <>
       <div className="related-images">
-        <Skeleton isLoaded={data !== null} className="rounded-lg w-fit">
+        <Skeleton isLoaded={Data !== null} className="rounded-lg w-fit">
           <p className={`${poppins.className} text-2xl`}>Related Images</p>
         </Skeleton>
         <div className="images flex items-center justify-start flex-wrap mt-8 gap-4">
           <div className="flex flex-wrap gap-3">
             {Images?.map((image, index) => (
               <>
-                <Skeleton isLoaded={data !== null} className="rounded-lg w-fit">
+                <Skeleton isLoaded={Data !== null} className="rounded-lg w-fit">
                   <Image
                     isZoomed
                     key={index}
-                    src={data?.urls[index + 1]}
+                    src={Data?.urls[index + 1]}
                     alt="image"
                     width={350}
                     height={350}
                     onClick={() => {
                       handleOpen(backdrops);
-                      setContext(data?.urls[index + 1]);
+                      setContext(Data?.urls[index + 1]);
                     }}
                     className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
                   />
@@ -158,19 +176,21 @@ function RelatedImages({ data }) {
                         )}
                       </div>
                       <div className="right w-full md:w-fit ml-0 mt-0 md:mt-0 md:ml-8">
-                        <div className="user-data flex items-center">
-                          <Avatar
-                            color="primary"
-                            className="cursor-pointer"
-                            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-                          />
-                          <p className="w-max ml-2 md:text-md text-sm">
-                            Shubhojeet Bera
-                          </p>
+                        <div className="user-data flex items-center gap-4">
+                          <Link href={`/profile/${userData?.username}`} className="flex items-center gap-4">
+                            <Avatar
+                              color="primary"
+                              className="cursor-pointer"
+                              src={userData?.profileImg}
+                            />
+                            <p className="w-max md:text-md text-md">
+                              {userData?.name}
+                            </p>
+                          </Link>
                           {!isFollowed ? (
                             <Button
                               color="primary"
-                              className="rounded-full ml-4"
+                              className="rounded-full"
                               onPress={() => setIsFollowed(true)}
                             >
                               <RiUserFollowLine
@@ -183,7 +203,7 @@ function RelatedImages({ data }) {
                             <Button
                               color="primary"
                               variant="bordered"
-                              className="rounded-full ml-4 border-gray-600 text-white"
+                              className="rounded-full border-gray-600 text-white"
                               onPress={() => setIsFollowed(false)}
                             >
                               <RiUserUnfollowLine
@@ -251,10 +271,10 @@ function RelatedImages({ data }) {
                             </div>
                           </div>
                           <div className="content mt-4 w-full md:max-w-[350px] text-sm bg-[#27272A] p-3 rounded-lg">
-                            {data?.prompt.length >= 90 ? (
-                              <p>{data?.prompt.slice(0, 90)}...</p>
+                            {Data?.prompt.length >= 90 ? (
+                              <p>{Data?.prompt.slice(0, 90)}...</p>
                             ) : (
-                              <p>{data?.prompt}</p>
+                              <p>{Data?.prompt}</p>
                             )}
                           </div>
                         </div>
@@ -265,7 +285,7 @@ function RelatedImages({ data }) {
                                 Resolution
                               </p>
                               <p className="text-sm mt-1">
-                                {data?.miscData?.dimensions}
+                                {Data?.miscData?.dimensions}
                               </p>
                             </div>
                             <div className="created flex flex-col items-end">
@@ -284,7 +304,7 @@ function RelatedImages({ data }) {
                                   className="text-white mr-2"
                                 />
                                 <p className="text-sm">
-                                  {data?.miscData?.modelName}
+                                  {Data?.miscData?.modelName}
                                 </p>
                               </div>
                             </div>
