@@ -42,11 +42,15 @@ function page() {
     }
   }, [isGenerateClicked, generatedIMG]);
 
+  const MAX_FILE_SIZE = 500 * 1024;
   const handleFileUpload = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      console.log(selectedFile);
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        alert("File size exceeds 500KB. Please choose a smaller file.");
+      } else {
+        setFile(selectedFile);
+      }
     }
   };
 
@@ -58,13 +62,102 @@ function page() {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
-      setFile(droppedFile);
-      console.log(droppedFile);
+      if (droppedFile.size > MAX_FILE_SIZE) {
+        alert("File size exceeds 500KB. Please choose a smaller file.");
+      } else {
+        setFile(droppedFile);
+      }
     }
   };
 
   const handleClick = () => {
     fileInputRef.current.click();
+  };
+
+  const uploadImage = async (file) => {
+    try {
+      if (!file) {
+        return null;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        const newFile = reader.result;
+
+        try {
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                file: newFile,
+                upload_preset: "intellect",
+                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+                public_id: `images/MagicExpand/${Date.now()}`,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const data = await response.json();
+          setUploadedIMG(data.url);
+        } catch (error) {
+          console.log("Error uploading image:", error.message);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.log("Error converting file to base64:", error.message);
+    }
+  };
+
+  const expandImage = async () => {
+    try {
+      setIsGenerateClicked(true);
+      const response = await fetch("/api/images/generative-fill", {
+        method: "POST",
+        body: JSON.stringify({
+          image: uploadedIMG,
+          ratio: ratio?.currentKey,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { success, data, error } = await response.json();
+      if (success) {
+        setGeneratedIMG(data);
+      } else {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const downloadImage = async () => {
+    const imageUrl = generatedIMG;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
   };
 
   return (
@@ -132,9 +225,7 @@ function page() {
                     <Button
                       onPress={() => {
                         onOpen();
-                        setTimeout(() => {
-                          setUploadedIMG("/generative/img3.jpg");
-                        }, 4000);
+                        uploadImage(file);
                       }}
                       color="primary"
                       className={`${litePoppins.className} text-lg p-7 w-full shadow-lg shadow-[#0000002f]`}
@@ -159,35 +250,41 @@ function page() {
               </p>
               <div className="all-imgs py-4 flex items-center gap-4">
                 <Image
-                  src="/generative/img1.jpg"
+                  src="https://res.cloudinary.com/dntkbcfor/image/upload/v1714142060/images/MagicExpand/demo1.jpg"
                   alt="img1"
                   width={80}
                   height={80}
                   onClick={() => {
                     onOpen();
-                    setUploadedIMG("/generative/img1.jpg");
+                    setUploadedIMG(
+                      "https://res.cloudinary.com/dntkbcfor/image/upload/v1714142060/images/MagicExpand/demo1.jpg"
+                    );
                   }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
                 <Image
-                  src="/generative/img2.jpg"
+                  src="https://res.cloudinary.com/dntkbcfor/image/upload/v1714142059/images/MagicExpand/demo2.jpg"
                   alt="img2"
                   width={80}
                   height={80}
                   onClick={() => {
                     onOpen();
-                    setUploadedIMG("/generative/img2.jpg");
+                    setUploadedIMG(
+                      "https://res.cloudinary.com/dntkbcfor/image/upload/v1714142059/images/MagicExpand/demo2.jpg"
+                    );
                   }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
                 <Image
-                  src="/generative/img3.jpg"
+                  src="https://res.cloudinary.com/dntkbcfor/image/upload/v1714142059/images/MagicExpand/demo3.webp"
                   alt="img3"
                   width={80}
                   height={80}
                   onClick={() => {
                     onOpen();
-                    setUploadedIMG("/generative/img3.jpg");
+                    setUploadedIMG(
+                      "https://res.cloudinary.com/dntkbcfor/image/upload/v1714142059/images/MagicExpand/demo3.webp"
+                    );
                   }}
                   className="aspect-square object-cover cursor-pointer shadow-lg shadow-[#0000003e]"
                 />
@@ -219,6 +316,7 @@ function page() {
           setFile(null);
           setTimeout(() => {
             setUploadedIMG(null);
+            setGeneratedIMG(null);
           }, 500);
           setRatio(null);
           setIsGenerateClicked(false);
@@ -251,7 +349,7 @@ function page() {
                 {uploadedIMG && (
                   <>
                     <div
-                      className={`gen-fill py-5 flex gap-8 ${
+                      className={`gen-fill fadein py-5 flex gap-8 ${
                         !isGenerateClicked ? "items-start" : "items-center"
                       } justify-between`}
                     >
@@ -280,22 +378,22 @@ function page() {
                             >
                               <SelectItem
                                 className={litePoppins2.className}
-                                key="Square"
-                                value={"Square"}
+                                key="1:1"
+                                value={"1:1"}
                               >
                                 Square (1:1)
                               </SelectItem>
                               <SelectItem
                                 className={litePoppins2.className}
-                                key="Horizontal"
-                                value={"Horizontal"}
+                                key="16:9"
+                                value={"16:9"}
                               >
                                 Horizontal (16:9)
                               </SelectItem>
                               <SelectItem
                                 className={litePoppins2.className}
-                                key="Vertical"
-                                value={"Vertical"}
+                                key="9:16"
+                                value={"9:16"}
                               >
                                 Vertical (9:16)
                               </SelectItem>
@@ -304,12 +402,7 @@ function page() {
                               color="primary"
                               isDisabled={ratio?.size === 0}
                               className={`${litePoppins.className} w-full`}
-                              onClick={() => {
-                                setIsGenerateClicked(true);
-                                setTimeout(() => {
-                                  setGeneratedIMG("/avatar/gym.jpg");
-                                }, 3000);
-                              }}
+                              onClick={expandImage}
                             >
                               Start Generating
                             </Button>
@@ -328,7 +421,7 @@ function page() {
                         {generatedIMG && (
                           <>
                             <div
-                              className={`${litePoppins.className} flex flex-col items-center`}
+                              className={`${litePoppins.className} flex faadein flex-col items-center`}
                             >
                               <p>Generated Image</p>
                               <Image
@@ -336,8 +429,10 @@ function page() {
                                 alt="original"
                                 className="mt-5"
                                 width={300}
+                                height={280}
                               />
                               <Button
+                                onClick={downloadImage}
                                 color="primary"
                                 className={`${litePoppins.className} mt-6`}
                               >
