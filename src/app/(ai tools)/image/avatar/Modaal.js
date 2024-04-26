@@ -18,9 +18,14 @@ import {
 import { Poppins } from "next/font/google";
 import { MdOutlineDone, MdDone, MdBookmarkAdd, MdDelete } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
-import { storage } from "@/lib/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { HiOutlineDownload, HiOutlineUpload } from "react-icons/hi";
+import {
+  fictional,
+  professional,
+  fitness,
+  cyberpunk,
+  traditional,
+} from "./prompts";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -40,10 +45,10 @@ export default function Modaal() {
   const [fileData, setFileData] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [nextStep, setNextStep] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedIMG, setUploadedIMG] = useState(null);
   const [isCreateAvatar, setIsCreateAvatar] = useState(false);
   const [avatarIMG, setAvatarIMG] = useState(null);
+  const [prompt, setPrompt] = useState(null);
 
   const handleFileDrop = (event) => {
     event.preventDefault();
@@ -68,31 +73,38 @@ export default function Modaal() {
         return null;
       }
 
-      const fileReference = ref(storage, `avatar/${file.name}`);
-      const uploadData = uploadBytesResumable(fileReference, file);
+      const reader = new FileReader();
 
-      uploadData.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.log(error);
-        },
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-            setUploadedIMG(downloadURL);
-          } catch (error) {
-            console.log(error);
-          }
+      reader.onload = async () => {
+        const newFile = reader.result;
+
+        try {
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                file: newFile,
+                upload_preset: "intellect",
+                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+                public_id: `images/ImageAvatar/${Date.now()}`,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const data = await response.json();
+          setUploadedIMG(data.secure_url);
+        } catch (error) {
+          console.log("Error uploading image:", error.message);
         }
-      );
+      };
+
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.log("Error converting file to base64:", error.message);
     }
   };
 
@@ -105,14 +117,6 @@ export default function Modaal() {
 
     upload();
   }, [isFileSelected, uploadedIMG, fileData]);
-
-  useEffect(() => {
-    if (isCreateAvatar) {
-      setTimeout(() => {
-        setAvatarIMG("/avatar-demo/covered.jpg");
-      }, 5000);
-    }
-  }, [isCreateAvatar]);
 
   const goodImages = [
     {
@@ -156,30 +160,35 @@ export default function Modaal() {
       alt: "Fitness",
       title: "Fitness",
       description: "Energetic, health-conscious, and stylish.",
+      prompt: fitness,
     },
     {
       url: "/avatar/corporate.jpg",
       alt: "Professional",
       title: "Professional",
       description: "Polished, sophisticated, and elegant.",
+      prompt: professional,
     },
     {
       url: "/avatar/magic.jpg",
       alt: "Fictional",
       title: "Fictional",
       description: "Imaginative, creative, and whimsical.",
+      prompt: fictional,
     },
     {
       url: "/avatar/cyberpunk.jpg",
       alt: "Gaming",
       title: "Cyberpunk",
       description: "Futuristic, edgy, and tech-savvy.",
+      prompt: cyberpunk,
     },
     {
       url: "/avatar/tradition.jpg",
       alt: "Traditional",
       title: "Traditional",
       description: "Classic, and sophisticated attire.",
+      prompt: traditional,
     },
   ];
 
@@ -194,6 +203,49 @@ export default function Modaal() {
     "/avatar/magic.jpg",
     "/avatar/tradition.jpg",
   ];
+
+  const createAvatar = async () => {
+    try {
+      setIsCreateAvatar(true);
+      const response = await fetch("/api/images/ai-avatar", {
+        method: "POST",
+        body: JSON.stringify({
+          image: uploadedIMG,
+          prompt,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { success, data, error } = await response.json();
+      if (success) {
+        setAvatarIMG(data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const downloadImage = async (img) => {
+    const imageUrl = img;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
 
   return (
     <>
@@ -219,6 +271,7 @@ export default function Modaal() {
           setIsCreateAvatar(false);
           setAvatarIMG(null);
           setSelectedAvatar("");
+          setPrompt(null);
           setTimeout(() => {
             setIsClicked(false);
           }, 400);
@@ -407,12 +460,10 @@ export default function Modaal() {
                               <div className="flex flex-col items-center">
                                 <p>Your image is being uploaded...</p>
                                 <Progress
-                                  aria-label="Uploading..."
-                                  size="md"
-                                  value={uploadProgress}
-                                  color="success"
-                                  showValueLabel={true}
-                                  className="max-w-md mt-3"
+                                  size="sm"
+                                  isIndeterminate
+                                  aria-label="Loading..."
+                                  className="max-w-md py-5"
                                 />
                               </div>
                             )}
@@ -480,9 +531,10 @@ export default function Modaal() {
                                       key={index}
                                     >
                                       <CardBody
-                                        onClick={() =>
-                                          setSelectedAvatar(img.title)
-                                        }
+                                        onClick={() => {
+                                          setSelectedAvatar(img.title);
+                                          setPrompt(img.prompt);
+                                        }}
                                         className="overflow-visible p-0"
                                       >
                                         <Image
@@ -516,7 +568,7 @@ export default function Modaal() {
                         <Button
                           color="primary"
                           isDisabled={!selectedAvatar}
-                          onClick={() => setIsCreateAvatar(true)}
+                          onClick={createAvatar}
                           className={`${litePoppins.className} mt-10 w-1/2`}
                         >
                           Create your avatar!
@@ -603,7 +655,9 @@ export default function Modaal() {
                       </p>
                       <div className="compare flex items-start gap-5">
                         <div className="left text-center mt-6">
-                          <p>ORIGINAL</p>
+                          <p className={`${litePoppins.className} mb-2`}>
+                            ORIGINAL
+                          </p>
                           <Image
                             className="rounded-xl aspect-square object-cover z-[1]"
                             src={uploadedIMG}
@@ -612,6 +666,7 @@ export default function Modaal() {
                           />
                           <Button
                             color="primary"
+                            onClick={() => downloadImage(uploadedIMG)}
                             className={`${litePoppins.className} w-full mt-4`}
                           >
                             <HiOutlineDownload
@@ -622,7 +677,9 @@ export default function Modaal() {
                           </Button>
                         </div>
                         <div className="right text-center mt-6">
-                          <p>AVATAR</p>
+                          <p className={`${litePoppins.className} mb-2`}>
+                            AVATAR
+                          </p>
 
                           <div className="img-tools flex items-start">
                             <Image
@@ -641,6 +698,7 @@ export default function Modaal() {
                               >
                                 <Button
                                   isIconOnly
+                                  onClick={() => downloadImage(avatarIMG)}
                                   className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
                                 >
                                   <HiOutlineDownload
