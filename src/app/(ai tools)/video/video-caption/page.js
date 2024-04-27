@@ -24,7 +24,6 @@ import {
 } from "next/font/google";
 import { useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
-import { HiOutlineUpload } from "react-icons/hi";
 import { MdDone } from "react-icons/md";
 import { HexColorPicker } from "react-colorful";
 
@@ -89,11 +88,11 @@ function page() {
   const [fontStyle, setFontStyle] = useState(new Set([]));
   const [fontSize, setFontSize] = useState(new Set([]));
   const [color, setColor] = useState("#ffffff");
-  const [hightlightColor, setHighlightColor] = useState("#000000");
+  const [highlightColor, setHighlightColor] = useState("#000000");
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [isHighlightColorOpen, setIsHighlightColorOpen] = useState(false);
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  const [isCaptionedVideo, setIsCaptionedVideo] = useState(null);
+  const [CaptionedVideo, setCaptionedVideo] = useState(null);
 
   const handleFileDrop = (event) => {
     event.preventDefault();
@@ -138,7 +137,7 @@ function page() {
                 file: newFile,
                 upload_preset: "intellect",
                 api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-                public_id: `videoCaption/${Date.now()}`,
+                public_id: `videos/videoCaption/${Date.now()}`,
               }),
               headers: {
                 "Content-Type": "application/json",
@@ -160,35 +159,55 @@ function page() {
     }
   };
 
-  const handleOpen = async () => {
-    onOpen();
+  const generateVideo = async () => {
+    try {
+      setIsSubmitClicked(true);
+      const response = await fetch("/api/videos/video-subtitle", {
+        method: "POST",
+        body: JSON.stringify({
+          video: uploadedVideo,
+          font: fontStyle?.currentKey,
+          fontSize: fontSize?.currentKey,
+          color,
+          highlightColor,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { success, data, error } = await response.json();
+      if (success) {
+        setCaptionedVideo(data);
+      } else {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
-  const fontSizes = [
-    "8px",
-    "10px",
-    "12px",
-    "14px",
-    "16px",
-    "18px",
-    "20px",
-    "22px",
-    "24px",
-    "26px",
-    "28px",
-    "30px",
-    "32px",
-    "34px",
-    "36px",
-    "38px",
-    "40px",
-    "42px",
-    "44px",
-    "46px",
-    "48px",
-    "50px",
-    "52px",
-  ];
+  const fontSizes = [2, 4, 6, , 7, 8, 10];
+
+  const download = async (data) => {
+    const downloadUrl = data;
+
+    try {
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading content:", error);
+    }
+  };
 
   return (
     <>
@@ -436,10 +455,7 @@ function page() {
                               preload="none"
                               className="rounded-xl shadow-lg"
                             >
-                              <source
-                                src="https://res.cloudinary.com/dntkbcfor/video/upload/v1713696371/videoCaption/1713696348819.mp4"
-                                type="video/mp4"
-                              />
+                              <source src={uploadedVideo} type="video/mp4" />
                             </video>
                           </div>
                           <div className="right flex items-start justify-between w-full mt-6">
@@ -555,7 +571,7 @@ function page() {
                                     key={size}
                                     value={size}
                                   >
-                                    {size}
+                                    {size.toString()} rem
                                   </SelectItem>
                                 ))}
                               </Select>
@@ -574,17 +590,17 @@ function page() {
                                         }
                                         className="w-10 h-10 rounded-lg cursor-pointer"
                                         style={{
-                                          backgroundColor: hightlightColor,
+                                          backgroundColor: highlightColor,
                                         }}
                                       ></div>
-                                      <p>{hightlightColor}</p>
+                                      <p>{highlightColor}</p>
                                     </div>
                                   </CardBody>
                                 </Card>
                                 {isHighlightColorOpen && (
                                   <HexColorPicker
                                     className="mt-4"
-                                    color={hightlightColor}
+                                    color={highlightColor}
                                     onChange={setHighlightColor}
                                   />
                                 )}
@@ -595,15 +611,37 @@ function page() {
                       </>
                     )}
 
-                    {isSubmitClicked && !isCaptionedVideo && (
+                    {isSubmitClicked && !CaptionedVideo && (
                       <div className="loading fadein w-full flex flex-col items-center justify-center">
                         <Spinner
-                          label="Please wait! Your video is being upscaling..."
+                          label="Please wait! Your captions are being generated..."
                           color="default"
                           labelColor="foreground"
                           className={`${litePoppins.className} text-lg text-center`}
                         />
                       </div>
+                    )}
+                    {CaptionedVideo && (
+                      <>
+                        <video
+                          width="550"
+                          height="550"
+                          loop
+                          autoPlay
+                          controls
+                          preload="none"
+                          className="rounded-xl shadow-lg"
+                        >
+                          <source src={CaptionedVideo} type="video/mp4" />
+                        </video>
+                        <Button
+                          className={`${litePoppins.className} mt-4`}
+                          onClick={()=> download(CaptionedVideo)}
+                          color="primary"
+                        >
+                          Download video
+                        </Button>
+                      </>
                     )}
                   </div>
                 </ScrollShadow>
@@ -620,7 +658,7 @@ function page() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={() => setIsSubmitClicked(true)}
+                    onClick={generateVideo}
                     variant="solid"
                     color="primary"
                     className={litePoppins.className}

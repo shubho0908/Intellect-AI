@@ -532,8 +532,8 @@ export default function Modaal() {
                                     >
                                       <CardBody
                                         onClick={() => {
-                                          setSelectedAvatar(img.title);
-                                          setPrompt(img.prompt);
+                                          setSelectedAvatar(img?.title);
+                                          setPrompt(img?.prompt);
                                         }}
                                         className="overflow-visible p-0"
                                       >
