@@ -59,7 +59,7 @@ function RelatedImages({ Data }) {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await fetch(`/api/user?userId=${Data?.userId}`);
+        const response = await fetch("/api/login");
         const { success, data, error } = await response.json();
         if (success) {
           setUserData(data);

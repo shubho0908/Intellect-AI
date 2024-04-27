@@ -17,10 +17,8 @@ const poppins = Poppins({
   weight: "400",
   subsets: ["latin"],
 });
-function EditAccount() {
-
-  const [isSelected, setIsSelected] = useState(false);
-
+function EditAccount({ userData }) {
+  const [isSelected, setIsSelected] = useState(true);
 
   const professions = [
     "Designer",
@@ -39,7 +37,7 @@ function EditAccount() {
         <div className="profile flex items-center gap-8">
           <div className="dp flex items-end">
             <Avatar
-              src="https://i.pravatar.cc/150?u=a04258114e29026708c"
+              src={userData?.profileImg}
               className="w-20 h-20 text-large"
             />
             <Button
@@ -53,9 +51,11 @@ function EditAccount() {
           </div>
           <div>
             <p className={`${poppins.className} text-lg font-semibold`}>
-              Shubhojeet Bera
+              {userData?.name}
             </p>
-            <p className={`${poppins.className} text-gray-400`}>@shubhobera</p>
+            <p className={`${poppins.className} text-gray-400`}>
+              @{userData?.username}
+            </p>
           </div>
         </div>
         <p className={`${poppins.className} text-gray-400 my-4`}>

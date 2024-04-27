@@ -10,7 +10,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
@@ -27,21 +27,33 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 
-function Profile({ params }) {
+function Profile() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [user, setUser] = useState(null);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/login");
+      const { success, data, error } = await response.json();
+      if (success) {
+        setUser(data);
+      } else {
+        console.error("Error fetching user data:", error);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   return (
     <>
       <div className="profile fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
         <div className="user-data">
           <div className="banner">
-            <Button
-              variant="flat"
-              className={`${poppins.className} text-white mt-2 absolute right-6`}
-              radius="full"
-            >
-              Edit cover
-            </Button>
             <div class="bg-gradient-to-br from-pink-300 to-blue-400 h-[220px] w-full rounded-lg"></div>
           </div>
           <div className="user-details flex flex-col items-start w-full xl:w-[60%] relative left-4 xl:left-[14rem] bottom-[5.5rem]">
@@ -49,7 +61,7 @@ function Profile({ params }) {
               <Avatar
                 isBordered
                 color="primary"
-                src="https://i.pravatar.cc/150?u=a04258114e29026708c"
+                src={user?.profileImg}
                 className="w-[10rem] h-[10rem] text-large"
               />
               <Button
@@ -66,11 +78,11 @@ function Profile({ params }) {
               <p
                 className={`${poppins.className} text-xl flex items-center gap-2 cursor-pointer font-bold`}
               >
-                Shubhojeet Bera
+                {user?.name}
                 <MdVerified className="text-blue-500" fontSize={22} />
               </p>
               <p className={`${poppins.className} text-gray-400`}>
-                @{params?.username}
+                @{user?.username}
               </p>
               <div
                 className={`${litePoppins.className} tags mt-3 flex items-center gap-3`}
@@ -88,11 +100,15 @@ function Profile({ params }) {
                 className={`${litePoppins.className} stats  flex items-center mt-3 gap-3`}
               >
                 <div className="followers flex items-center gap-2">
-                  <p className="font-bold text-gray-300">500</p>
+                  <p className="font-bold text-gray-300">
+                    {user?.followers?.length}
+                  </p>
                   <p className="text-gray-400">Followers</p>
                 </div>
                 <div className="following flex items-center gap-2">
-                  <p className="font-bold text-gray-300">12</p>
+                  <p className="font-bold text-gray-300">
+                    {user?.following?.length}
+                  </p>
                   <p className="text-gray-400">Following</p>
                 </div>
               </div>
@@ -122,7 +138,7 @@ function Profile({ params }) {
                 Account Details
               </ModalHeader>
               <ModalBody>
-                <EditAccount />
+                <EditAccount userData={user} />
               </ModalBody>
               <ModalFooter className={`${poppins.className} mb-2`}>
                 <Button

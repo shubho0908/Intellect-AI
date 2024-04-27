@@ -27,6 +27,9 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
     },
+    role: {
+      type: String,
+    },
     tokens: {
       type: Number,
       default: 100,

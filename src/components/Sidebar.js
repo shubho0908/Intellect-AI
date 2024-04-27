@@ -94,7 +94,11 @@ function Sidebar() {
               </div>
               <Skeleton isLoaded={user} className="rounded-lg min-w-[100px]">
                 <div className="data">
-                  <p>{user?.name}</p>
+                  <p>
+                    {user?.name?.length > 10
+                      ? `${user?.name.slice(0, 10)}...`
+                      : user?.name}
+                  </p>
                   <p className="text-sm text-gray-400">@{user?.username}</p>
                 </div>
               </Skeleton>

@@ -27,7 +27,7 @@ function Login() {
   const [password, setPassword] = useState(null);
 
   const welcome = (name) =>
-    toast.success(`Welcome ${name}!`, {
+    toast.success(`Welcome back, ${name}!`, {
       className: poppins.className,
     });
   const errorToast = (err) =>
