@@ -91,7 +91,7 @@ function page() {
                 file: newFile,
                 upload_preset: "intellect",
                 api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-                public_id: `videoUpscaler/${Date.now()}`,
+                public_id: `videos/videoUpscaler/${Date.now()}`,
               }),
               headers: {
                 "Content-Type": "application/json",
@@ -115,6 +115,52 @@ function page() {
 
   const handleOpen = async () => {
     onOpen();
+  };
+
+  const download = async (data) => {
+    const downloadUrl = data;
+
+    try {
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading content:", error);
+    }
+  };
+
+  const upscaleImage = async () => {
+    try {
+      setIsGenerateVideo(true);
+      const response = await fetch("/api/videos/video-upscale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          video: uploadedVideo,
+          model: model?.currentKey,
+          resolution: resolution?.currentKey,
+        }),
+      });
+
+      const { success, data, error } = await response.json();
+      if (success) {
+        setGeneratedVideo(data);
+      } else {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -297,11 +343,11 @@ function page() {
                   {uploadedVideo && (
                     <div
                       className={`options fadein flex flex-col w-full items-center
-                      justify-between gap-6`}
+                        justify-between gap-6`}
                     >
                       {!isGenerateVideo && (
                         <>
-                          <div className="left">
+                          <div className="left mb-4">
                             <video
                               width="550"
                               height="550"
@@ -320,7 +366,7 @@ function page() {
                                 Choose video resolution
                               </p>
                               <Select
-                                className={`${litePoppins2.className} py-5 w-full`}
+                                className={`${litePoppins2.className} py-2 w-full`}
                                 label="Select resolution"
                                 selectedKeys={resolution}
                                 onSelectionChange={setResolution}
@@ -334,15 +380,15 @@ function page() {
                                 </SelectItem>
                                 <SelectItem
                                   className={litePoppins2.className}
-                                  key="2K"
-                                  value={"2K"}
+                                  key="2k"
+                                  value={"2k"}
                                 >
                                   2K (1440p)
                                 </SelectItem>
                                 <SelectItem
                                   className={litePoppins2.className}
-                                  key="4K"
-                                  value={"4K"}
+                                  key="4k"
+                                  value={"4k"}
                                 >
                                   4K (2160p)
                                 </SelectItem>
@@ -353,47 +399,40 @@ function page() {
                                 Choose model
                               </p>
                               <Select
-                                className={`${litePoppins2.className} py-5 w-full`}
+                                className={`${litePoppins2.className} py-2 w-full`}
                                 label="Select model"
                                 selectedKeys={model}
                                 onSelectionChange={setModel}
                               >
                                 <SelectItem
                                   className={litePoppins2.className}
-                                  key="RealESRGAN"
-                                  value={"RealESRGAN"}
+                                  key="RealESRGAN_x4plus"
+                                  value={"RealESRGAN_x4plus"}
                                 >
                                   RealESRGAN-4x-plus
                                 </SelectItem>
                                 <SelectItem
                                   className={litePoppins2.className}
-                                  key="RealESRGAN_anime"
-                                  value={"RealESRGAN_anime"}
+                                  key="RealESRGAN_x4plus_anime_6B"
+                                  value={"RealESRGAN_x4plus_anime_6B"}
                                 >
                                   RealESRGAN-4x-plus-anime
                                 </SelectItem>
                                 <SelectItem
                                   className={litePoppins2.className}
-                                  key="Anime-v3"
-                                  value={"Anime-v3"}
+                                  key="realesr-animevideov3"
+                                  value={"realesr-animevideov3"}
                                 >
                                   Anime v3
                                 </SelectItem>
                               </Select>
                               <Button
                                 color="primary"
-                                onClick={() => {
-                                  setIsGenerateVideo(true);
-                                  setTimeout(() => {
-                                    setGeneratedVideo(
-                                      "/video upscale/demo-main.mp4"
-                                    );
-                                  }, 4000);
-                                }}
+                                onClick={upscaleImage}
                                 isDisabled={
                                   resolution?.size === 0 || model?.size === 0
                                 }
-                                className={`${litePoppins.className} w-full`}
+                                className={`${litePoppins.className} mt-4 w-full`}
                               >
                                 Start Generating
                               </Button>
@@ -428,7 +467,11 @@ function page() {
                             >
                               <source src={generatedVideo} type="video/mp4" />
                             </video>
-                            <Button color="primary" className="w-1/2 mt-4">
+                            <Button
+                              onClick={() => download(generatedVideo)}
+                              color="primary"
+                              className="w-1/2 mt-4"
+                            >
                               <HiOutlineDownload
                                 fontSize={22}
                                 className="text-white"
