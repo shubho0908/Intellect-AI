@@ -103,7 +103,7 @@ function page() {
           );
 
           const data = await response.json();
-          setUploadedIMG(data.url);
+          setUploadedIMG(data.secure_url);
         } catch (error) {
           console.log("Error uploading image:", error.message);
         }

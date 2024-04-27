@@ -71,7 +71,6 @@ function page() {
     };
 
     if (uploadedIMG) {
-      console.log(uploadedIMG);
       upscaleImage();
     }
   }, [uploadedIMG]);

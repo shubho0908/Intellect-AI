@@ -5,6 +5,7 @@ import Generation from "./(components)/Generation";
 import { Button, Image, Input, Skeleton } from "@nextui-org/react";
 import { PiMagicWand } from "react-icons/pi";
 import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -41,6 +42,11 @@ function page() {
     }, 2000);
   }, [isLoading]);
 
+  const errorToast = (err) =>
+    toast.error(`${err}`, {
+      className: litePoppins.className,
+    });
+
   const firstGeneration = async () => {
     try {
       setIsClicked(true);
@@ -62,10 +68,10 @@ function page() {
       if (success) {
         setData(data);
       } else {
-        console.log(error);
+        errorToast(error);
       }
     } catch (error) {
-      console.log(error.message);
+      errorToast(error.message);
     }
   };
 
@@ -79,6 +85,7 @@ function page() {
 
   return (
     <>
+      <Toaster />
       <div className="image-generator fadein mb-[12rem] sm:mb-[8rem] sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4 p-4 flex flex-col items-center">
         <div className="top mt-10">
           <div className="head flex flex-col items-center">

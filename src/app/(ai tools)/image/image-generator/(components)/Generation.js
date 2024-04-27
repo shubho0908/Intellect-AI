@@ -18,6 +18,7 @@ import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";
 import { prompts } from "@/others/Prompts";
 import Menu from "./Menu";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "600",
@@ -42,6 +43,11 @@ function page({ ModelData }) {
       setModelData(ModelData);
     }
   }, [ModelData]);
+
+  const errorToast = (err) =>
+    toast.error(`${err}`, {
+      className: litePoppins.className,
+    });
 
   const formattedDate = modelData
     ? new Intl.DateTimeFormat("en-GB", {
@@ -93,11 +99,11 @@ function page({ ModelData }) {
         setModelData(data);
         setIsBtnLoading(false);
       } else {
-        console.error(error);
+        errorToast(error);
         setIsBtnLoading(false);
       }
     } catch (error) {
-      console.error("An error occurred:", error.message);
+      errorToast("An error occurred:", error.message);
       setIsBtnLoading(false);
     }
   };

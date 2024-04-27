@@ -9,13 +9,12 @@ import {
   Progress,
   Image,
   Chip,
-  Spinner,
   Tooltip,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { useEffect, useState } from "react";
-import { MdBookmarkAdd, MdDelete, MdDone } from "react-icons/md";
+import { MdBookmarkAdd, MdDone } from "react-icons/md";
 import { HiOutlineDownload, HiOutlineUpload } from "react-icons/hi";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -35,11 +34,13 @@ function page() {
   const [fileData, setFileData] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [uploadedIMG, setUploadedIMG] = useState(null);
-  const [upscaleLoading, setUpscaleLoading] = useState(false);
   const [motionVideo, setMotionVideo] = useState(null);
 
   //Toast
-  const fileSizeError = (data) => toast.error(data);
+  const fileSizeError = (data) =>
+    toast.error(data, {
+      className: litePoppins.className,
+    });
 
   useEffect(() => {
     setTimeout(() => {
@@ -50,12 +51,29 @@ function page() {
   }, [isLoading]);
 
   useEffect(() => {
-    if (!uploadedIMG) {
-      setUpscaleLoading(true);
-    } else {
-      setTimeout(() => {
-        setMotionVideo("/img2vid/out/2.mp4");
-      }, 5000);
+    const createVideo = async () => {
+      try {
+        const response = await fetch("/api/videos/image-to-video", {
+          method: "POST",
+          body: JSON.stringify({ image: uploadedIMG }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const { success, data, error } = await response.json();
+        if (success) {
+          setMotionVideo(data);
+        } else {
+          console.log(error);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    if (uploadedIMG) {
+      createVideo();
     }
   }, [uploadedIMG]);
 
@@ -102,7 +120,7 @@ function page() {
                 file: newFile,
                 upload_preset: "intellect",
                 api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-                public_id: `img2motion/${Date.now()}`,
+                public_id: `videos/Img2Motion/${Date.now()}`,
               }),
               headers: {
                 "Content-Type": "application/json",
@@ -126,6 +144,26 @@ function page() {
   const handleOpen = async () => {
     await uploadImage(fileData);
     onOpen();
+  };
+
+  const download = async (data) => {
+    const downloadUrl = data;
+
+    try {
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading content:", error);
+    }
   };
 
   return (
@@ -320,8 +358,7 @@ function page() {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setUploadedIMG(false);
-          setUpscaleLoading(false);
+          setUploadedIMG(null);
           setIsFileSelected(false);
           setFileData(null);
           setMotionVideo(null);
@@ -359,40 +396,52 @@ function page() {
                           <p className={`${litePoppins.className}`}>
                             Please wait while we transform your image..
                           </p>
-                          <Spinner
-                            label="Loading.."
-                            color="primary"
-                            className="mt-6"
-                            labelColor="primary"
+                          <Progress
+                            size="sm"
+                            isIndeterminate
+                            aria-label="Loading..."
+                            className="max-w-md py-5"
                           />
                         </div>
                       </>
                     )}
                     {motionVideo && (
                       <>
-                        <div className="my-avatar w-full flex flex-col items-center p-6">
+                        <div className="my-avatar w-full flex flex-col items-center p-3">
                           <p className={`${litePoppins.className} text-xl`}>
                             Your video is ready!
                           </p>
                           <div className="compare flex items-start gap-5">
                             <div className="left text-center mt-6">
                               <p>ORIGINAL</p>
-                              <Image
-                                className="rounded-xl aspect-square object-cover z-[1]"
-                                src={uploadedIMG}
-                                width={400}
-                                height={400}
-                              />
-                              <Button
-                                color="primary"
-                                className={`${litePoppins.className} w-full mt-4`}
-                              >
-                                <HiOutlineDownload
-                                  fontSize={22}
-                                  className="text-white"
+                              <div className="flex flex-row-reverse">
+                                <Image
+                                  className="rounded-xl aspect-square object-cover z-[1]"
+                                  src={uploadedIMG}
+                                  width={400}
+                                  height={400}
                                 />
-                                Download
-                              </Button>
+                                <div className="icon-btns flex mr-2 flex-col absolute mt-3 z-[3] items-center gap-2">
+                                  <Tooltip
+                                    showArrow={true}
+                                    placement="right"
+                                    className={litePoppins2.className}
+                                    color="primary"
+                                    content="Download"
+                                  >
+                                    <Button
+                                      isIconOnly
+                                      onClick={() => download(uploadedIMG)}
+                                      className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
+                                    >
+                                      <HiOutlineDownload
+                                        fontSize={22}
+                                        className="text-white"
+                                      />
+                                    </Button>
+                                  </Tooltip>
+                                </div>
+                              </div>
                             </div>
                             <div className="right text-center mt-6">
                               <p>VIDEO</p>
@@ -418,6 +467,7 @@ function page() {
                                   >
                                     <Button
                                       isIconOnly
+                                      onClick={() => download(motionVideo)}
                                       className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
                                     >
                                       <HiOutlineDownload
@@ -443,36 +493,7 @@ function page() {
                                       />
                                     </Button>
                                   </Tooltip>
-                                  <Tooltip
-                                    showArrow={true}
-                                    placement="right"
-                                    color="danger"
-                                    className={`${litePoppins2.className} bg-red-600`}
-                                    content="Delete"
-                                  >
-                                    <Button
-                                      isIconOnly
-                                      className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
-                                    >
-                                      <MdDelete
-                                        fontSize={22}
-                                        className="text-white"
-                                      />
-                                    </Button>
-                                  </Tooltip>
                                 </div>
-                              </div>
-                              <div className="buttons flex items-center justify-between mt-4">
-                                <Button
-                                  color="primary"
-                                  className={`${litePoppins.className} w-full`}
-                                >
-                                  <HiOutlineUpload
-                                    fontSize={22}
-                                    className="text-white"
-                                  />
-                                  Publish
-                                </Button>
                               </div>
                             </div>
                           </div>
