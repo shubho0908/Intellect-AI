@@ -116,12 +116,12 @@ function Home() {
               See what others are making, discover prompts, and share your own
               creatives.
             </p>
-            <div className="all-posts relative z-0 flex items-center gap-6 flex-wrap mt-5">
+            <div className="all-posts relative z-0 flex items-center gap-6 flex-wrap mt-8">
               {posts?.map((data, index) => {
                 return (
                   <>
                     <div key={index} onClick={onOpen}>
-                      <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[350px] w-[350px] relative group">
+                      <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
                         <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                           <div className="flex top items-center justify-between w-full px-4">
                             <div className="flex items-center gap-4">
@@ -149,7 +149,7 @@ function Home() {
                           </div>
                           <div className="bottom px-4 absolute bottom-3">
                             <p
-                              className={`${litePoppins2.className} text-md mt-2`}
+                              className={`${litePoppins2.className} text-sm mt-2`}
                             >
                               "{data?.desc}"
                             </p>

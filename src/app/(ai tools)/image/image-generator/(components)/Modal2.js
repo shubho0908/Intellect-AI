@@ -26,6 +26,26 @@ function Modal2({ data }) {
     }
   }, [isCopied]);
 
+  const downloadImage = async () => {
+    const imageUrl = data?.img;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
+
   return (
     <>
       <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
@@ -162,6 +182,7 @@ function Modal2({ data }) {
                 color="default"
                 variant="ghost"
                 className="rounded-xl w-fit"
+                onClick={downloadImage}
               >
                 <RxDownload fontSize={21} className="text-white" />
                 Download

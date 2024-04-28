@@ -65,15 +65,19 @@ function Posts({ userPosts, userData }) {
                 <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
                   <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                     <div className="bottom px-4 absolute bottom-3">
-                      <p className={`${litePoppins.className} text-md mt-2`}>
-                        "{data?.prompt}"
+                      <p className={`${litePoppins.className} text-sm mt-2`}>
+                        "
+                        {data?.prompt?.length > 50
+                          ? data?.prompt?.slice(0, 50) + "..."
+                          : data?.prompt}
+                        "
                       </p>
                     </div>
                   </div>
                   <Image
                     removeWrapper
                     alt="Card background"
-                    className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.2]"
+                    className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
                     src={data?.urls[0]}
                   />
                 </Card>

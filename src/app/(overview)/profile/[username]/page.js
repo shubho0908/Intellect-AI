@@ -77,7 +77,7 @@ function Profile({ params }) {
           <div className="banner">
             <div class="bg-gradient-to-br from-pink-300 to-blue-400 h-[220px] w-full rounded-lg"></div>
           </div>
-          <div className="user-details flex flex-col items-center xl:w-[65%] w-full relative bottom-[5.5rem]">
+          <div className="user-details flex flex-col items-center relative bottom-[5.5rem]">
             <div className="flex flex-col items-start">
               <div className="dp flex items-end">
                 <Avatar
@@ -113,7 +113,7 @@ function Profile({ params }) {
                 >
                   {user?.role ? (
                     <Chip color="default" className="mb-3">
-                      💻 Software Developer
+                      💻 {user?.role}
                     </Chip>
                   ) : null}
                 </div>

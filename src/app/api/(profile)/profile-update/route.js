@@ -60,8 +60,6 @@ export async function PUT(req) {
       );
     }
 
-    console.log(userId, user._id);
-
     if (userId !== user?._id?.toString()) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },

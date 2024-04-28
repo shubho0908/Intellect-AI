@@ -12,7 +12,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 
 const poppins = Poppins({
@@ -35,6 +35,7 @@ function EditAccount({ userData, close }) {
   const [isSubmit, setIsSubmit] = useState(false);
   const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [profileImg, setProfileImg] = useState(userData?.profileImg);
 
   useEffect(() => {
     if (
@@ -59,6 +60,26 @@ function EditAccount({ userData, close }) {
     professionValue?.currentKey,
   ]);
 
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImg(e.target.result);
+        setChanges(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const professions = [
     "Designer",
     "Developer",
@@ -72,7 +93,11 @@ function EditAccount({ userData, close }) {
 
   const updateProfile = async () => {
     try {
+      if (!profileImg) {
+        return null;
+      }
       setIsSubmit(true);
+      uploadImage(profileImg);
       const response = await fetch("/api/profile-update", {
         method: "PUT",
         headers: {
@@ -82,7 +107,7 @@ function EditAccount({ userData, close }) {
           name: `${firstname} ${lastname}`,
           username: userName,
           summary,
-          profileImg: userData?.profileImg,
+          profileImg: profileImg ? profileImg : userData?.profileImg,
           visibility: isSelected,
           profession: professionValue?.currentKey,
         }),
@@ -105,6 +130,47 @@ function EditAccount({ userData, close }) {
     }
   };
 
+  const uploadImage = async (file) => {
+    try {
+      if (!file) {
+        return null;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        const newFile = reader.result;
+
+        try {
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                file: newFile,
+                upload_preset: "intellect",
+                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+                public_id: `images/profile/${Date.now()}`,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const data = await response.json();
+          setProfileImg(data.secure_url);
+        } catch (error) {
+          console.log("Error uploading image:", error.message);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.log("Error converting file to base64:", error.message);
+    }
+  };
+
   return (
     <>
       <ModalBody>
@@ -112,7 +178,7 @@ function EditAccount({ userData, close }) {
           <div className="profile flex items-center gap-8">
             <div className="dp flex items-end">
               <Avatar
-                src={userData?.profileImg}
+                src={profileImg ? profileImg : userData?.profileImg}
                 className="w-20 h-20 text-large"
               />
               <Button
@@ -120,9 +186,17 @@ function EditAccount({ userData, close }) {
                 color="primary"
                 className="rounded-full absolute left-[5.35rem]"
                 size="sm"
+                onClick={handleButtonClick}
               >
                 <FiEdit3 color="white" fontSize={15} />
               </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
             </div>
             <div>
               <p className={`${poppins.className} text-lg font-semibold`}>
