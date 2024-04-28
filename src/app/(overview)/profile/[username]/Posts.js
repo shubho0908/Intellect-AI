@@ -1,0 +1,106 @@
+"use client";
+
+import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
+import {
+  Card,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  useDisclosure,
+} from "@nextui-org/react";
+import { Poppins } from "next/font/google";
+import { useState } from "react";
+
+const poppins = Poppins({
+  weight: "500",
+  subsets: ["latin"],
+});
+
+const litePoppins = Poppins({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+function Posts({ userPosts, userData }) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [imgData, setImgData] = useState(null);
+
+  let formattedDate;
+  if (imgData) {
+    const date = new Date(imgData?.createdAt);
+
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    };
+
+    formattedDate = new Intl.DateTimeFormat("en-GB", options)?.format(date);
+  }
+
+  const modalData = {
+    img: imgData?.urls[0],
+    name: userData?.name,
+    prompt: imgData?.prompt,
+    dimensions: imgData?.miscData?.dimensions,
+    model: imgData?.miscData?.modelName,
+    created: formattedDate,
+    profile: userData?.profileImg,
+  };
+
+  return (
+    <>
+      <div className="all-posts relative z-0 flex items-center gap-6 flex-wrap">
+        {userPosts?.map((data, index) => {
+          return (
+            <>
+              <div
+                key={index}
+                onClick={() => {
+                  onOpen();
+                  setImgData(data);
+                }}
+              >
+                <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
+                  <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
+                    <div className="bottom px-4 absolute bottom-3">
+                      <p className={`${litePoppins.className} text-md mt-2`}>
+                        "{data?.prompt}"
+                      </p>
+                    </div>
+                  </div>
+                  <Image
+                    removeWrapper
+                    alt="Card background"
+                    className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.2]"
+                    src={data?.urls[0]}
+                  />
+                </Card>
+              </div>
+            </>
+          );
+        })}
+      </div>
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        size="4xl"
+        onOpenChange={onOpenChange}
+        className={`${litePoppins.className}`}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <Modal2 data={modalData} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+export default Posts;

@@ -62,7 +62,7 @@ export const POST = async (req) => {
     //Generate image using SDXL
     if (model === "Sdxl") {
       allImages = await replicate.run(
-        "lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+        "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
         {
           input: {
             seed: 2992471961,

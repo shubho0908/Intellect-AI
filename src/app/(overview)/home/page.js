@@ -108,7 +108,7 @@ function Home() {
     <>
       <div className="home sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="main-home m-4">
-          <div className="bottom mt-10">
+          <div className="mt-10">
             <p className={`${litePoppins.className} text-2xl`}>
               Recent Creations
             </p>

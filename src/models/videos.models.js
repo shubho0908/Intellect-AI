@@ -17,9 +17,6 @@ const videoSchema = new Schema(
       type: String,
       required: true,
     },
-    visibility: {
-      type: Boolean,
-    },
     miscData: {
       dimensions: {
         type: String,

@@ -25,6 +25,7 @@ const imageSchema = new Schema(
     },
     visibility: {
       type: Boolean,
+      default: false,
     },
     miscData: {
       dimensions: {

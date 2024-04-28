@@ -7,65 +7,52 @@ import { NextResponse } from "next/server";
 await ConnectDB();
 export async function PUT(req) {
   try {
-    const { name, username, profileImg, visibility, summary } =
+    const { name, username, profileImg, visibility, summary, profession } =
       await req.json();
 
-    // Check if refresh token is available
+    const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
+
     if (!refreshTokenValue) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
       );
     }
 
-    // Check if the refresh token is expired
+    //Check if refresh token is expired
     try {
       verifyToken(refreshTokenValue);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Session expired" },
-        { status: 404 }
+        { status: 401 }
       );
     }
 
-    // Check if access token is available
-    const accessToken = cookies().get("accessToken")?.value;
-    if (!accessToken) {
-      try {
-        // Try to generate a new access token using the refresh token
-        const payload = verifyToken(refreshTokenValue);
-        const newToken = generateAccessToken({ id: payload.id }, "1h");
-        cookies().set("accessToken", newToken);
-        return NextResponse.json(
-          {
-            success: true,
-            message: "New token generated",
-          },
-          { status: 200 }
-        );
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized access" },
-          { status: 404 }
-        );
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
       }
     }
 
-    // Verify the access token
-    let id;
-    try {
-      const payload = verifyToken(accessToken);
-      id = payload.id;
-    } catch (error) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
       );
     }
 
     //Check if user is available
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -73,7 +60,9 @@ export async function PUT(req) {
       );
     }
 
-    if (id !== user._id) {
+    console.log(userId, user._id);
+
+    if (userId !== user?._id?.toString()) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 404 }
@@ -81,7 +70,7 @@ export async function PUT(req) {
     }
 
     //Check if the new username is unique or not
-    if (username !== user.username) {
+    if (username !== user?.username) {
       const isUsernameExists = await User.findOne({ username });
       if (isUsernameExists) {
         return NextResponse.json(
@@ -97,6 +86,7 @@ export async function PUT(req) {
     user.summary = summary;
     user.profileImg = profileImg;
     user.visibility = visibility;
+    user.role = profession;
 
     await user.save();
 

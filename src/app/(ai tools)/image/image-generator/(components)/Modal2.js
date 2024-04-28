@@ -56,9 +56,9 @@ function Modal2({ data }) {
             <Avatar
               color="primary"
               className="cursor-pointer"
-              src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+              src={data?.profile}
             />
-            <p className="w-max ml-2 md:text-md text-sm">{data?.user}</p>
+            <p className="w-max ml-2 md:text-md text-sm">{data?.name}</p>
             {!isFollowed ? (
               <Button
                 color="primary"
@@ -129,11 +129,11 @@ function Modal2({ data }) {
             <div className="first flex items-center justify-between">
               <div className="dimension">
                 <p className="text-sm text-gray-500">Resolution</p>
-                <p className="text-sm mt-1">1024 x 1024px</p>
+                <p className="text-sm mt-1">{data?.dimensions}px</p>
               </div>
               <div className="created flex flex-col items-end">
                 <p className="text-sm text-gray-500">Created At</p>
-                <p className="text-sm mt-1">Jan 1, 2022</p>
+                <p className="text-sm mt-1">{data?.created}</p>
               </div>
             </div>
             <div className="second mt-4 flex items-center justify-between">
@@ -141,7 +141,7 @@ function Modal2({ data }) {
                 <p className="text-sm text-gray-500">Model</p>
                 <div className="model-name flex items-center  mt-2">
                   <PiMagicWand fontSize={18} className="text-white mr-2" />
-                  <p className="text-sm">Stable Diffusion</p>
+                  <p className="text-sm">{data?.model}</p>
                 </div>
               </div>
               <div className="category flex flex-col items-end">
