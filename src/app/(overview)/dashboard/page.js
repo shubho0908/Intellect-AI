@@ -41,7 +41,7 @@ function page() {
       <div className="dashboard sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="dashboard-data m-4 mt-10">
           <p className={`${poppins.className} text-2xl`}>Dashboard</p>
-          <div className="mt-8 flex gap-5 flex-wrap">
+          <div className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-4 gap-y-4">
             {library?.map((data, index) => {
               return (
                 <>

@@ -75,6 +75,7 @@ function EditAccount({ userData, close }) {
       reader.onload = (e) => {
         setProfileImg(e.target.result);
         setChanges(true);
+        console.log("loaded");
       };
       reader.readAsDataURL(file);
     }
@@ -93,11 +94,11 @@ function EditAccount({ userData, close }) {
 
   const updateProfile = async () => {
     try {
-      if (!profileImg) {
-        return null;
-      }
       setIsSubmit(true);
-      uploadImage(profileImg);
+      let newImage;
+      if (profileImg !== userData?.profileImg) {
+        newImage = await uploadImage(profileImg);
+      }
       const response = await fetch("/api/profile-update", {
         method: "PUT",
         headers: {
@@ -107,7 +108,7 @@ function EditAccount({ userData, close }) {
           name: `${firstname} ${lastname}`,
           username: userName,
           summary,
-          profileImg: profileImg ? profileImg : userData?.profileImg,
+          profile: newImage ? newImage : userData?.profileImg,
           visibility: isSelected,
           profession: professionValue?.currentKey,
         }),
@@ -116,7 +117,7 @@ function EditAccount({ userData, close }) {
       const { success, data, error } = await response.json();
       if (data) {
         setIsSubmit(false);
-        window.open(`/profile/${data?.username}`, "_self");
+        // window.open(`/profile/${data?.username}`, "_self");
       }
       if (error && error === "Username already exists") {
         setIsSubmit(false);
@@ -131,43 +132,31 @@ function EditAccount({ userData, close }) {
   };
 
   const uploadImage = async (file) => {
+    if (!file) {
+      return null;
+    }
+
     try {
-      if (!file) {
-        return null;
-      }
-
-      const reader = new FileReader();
-
-      reader.onload = async () => {
-        const newFile = reader.result;
-
-        try {
-          const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                file: newFile,
-                upload_preset: "intellect",
-                api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-                public_id: `images/profile/${Date.now()}`,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          const data = await response.json();
-          setProfileImg(data.secure_url);
-        } catch (error) {
-          console.log("Error uploading image:", error.message);
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            file,
+            upload_preset: "intellect",
+            api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+            public_id: `images/profile/${Date.now()}`,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      };
+      );
 
-      reader.readAsDataURL(file);
+      const data = await response.json();
+      return data?.secure_url;
     } catch (error) {
-      console.log("Error converting file to base64:", error.message);
+      console.log("Error uploading image:", error.message);
     }
   };
 
