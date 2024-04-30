@@ -75,7 +75,6 @@ function EditAccount({ userData, close }) {
       reader.onload = (e) => {
         setProfileImg(e.target.result);
         setChanges(true);
-        console.log("loaded");
       };
       reader.readAsDataURL(file);
     }

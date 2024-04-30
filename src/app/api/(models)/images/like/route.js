@@ -11,59 +11,46 @@ export const POST = async (req) => {
   try {
     const { imageId } = await req.json();
 
-  // Check if refresh token is available
-  const refreshTokenValue = cookies().get("refreshToken")?.value;
-  if (!refreshTokenValue) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 404 }
-    );
-  }
+    const accessTokenValue = cookies().get("accessToken")?.value;
+    const refreshTokenValue = cookies().get("refreshToken")?.value;
 
-  // Check if the refresh token is expired
-  try {
-    verifyToken(refreshTokenValue);
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Session expired" },
-      { status: 404 }
-    );
-  }
-
-  // Check if access token is available
-  const accessToken = cookies().get("accessToken")?.value;
-  if (!accessToken) {
-    try {
-      // Try to generate a new access token using the refresh token
-      const payload = verifyToken(refreshTokenValue);
-      const newToken = generateAccessToken({ id: payload.id }, "1h");
-      cookies().set("accessToken", newToken);
+    if (!refreshTokenValue) {
       return NextResponse.json(
-        {
-          success: true,
-          message: "New token generated",
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
       );
     }
-  }
 
-  // Verify the access token
-  let id;
-  try {
-    const payload = verifyToken(accessToken);
-    id = payload.id;
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 404 }
-    );
-  }
+    //Check if refresh token is expired
+    try {
+      verifyToken(refreshTokenValue);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: "Session expired" },
+        { status: 401 }
+      );
+    }
+
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
+      );
+    }
 
     const image = await Image.findById(imageId);
     if (!image) {
@@ -74,20 +61,27 @@ export const POST = async (req) => {
     }
 
     //Check if the image is already like by this user
-    const isLiked = image?.likes.includes(id);
+    const isLiked = image?.likes.includes(userId);
     //If not liked then add the like
     if (!isLiked) {
-      image?.likes.push(id);
+      image?.likes.push(userId);
       await image.save();
+      return NextResponse.json(
+        { success: true, message: "Image liked" },
+        { status: 200 }
+      );
     } else {
       //If already liked then dislike it
-      const newLikes = image?.likes.filter((userid) => userid !== id);
+      const newLikes = image?.likes.filter(
+        (userid) => userid.toString() !== userId.toString()
+      );
+      console.log(newLikes);
       image.likes = newLikes;
 
       await image.save();
 
       return NextResponse.json(
-        { success: true, message: "Image liked" },
+        { success: true, message: "Image disliked" },
         { status: 200 }
       );
     }

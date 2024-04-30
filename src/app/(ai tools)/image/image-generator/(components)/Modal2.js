@@ -1,7 +1,7 @@
 "use client";
 
 import { Image, Button, Avatar } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
 import {
@@ -12,11 +12,12 @@ import {
 import { PiMagicWand } from "react-icons/pi";
 import { RxDownload } from "react-icons/rx";
 import { IoBookmarkOutline } from "react-icons/io5";
-import { BiLike } from "react-icons/bi";
+import { BiLike, BiSolidLike } from "react-icons/bi";
 
 function Modal2({ data }) {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (isCopied) {
@@ -25,6 +26,25 @@ function Modal2({ data }) {
       }, 2000);
     }
   }, [isCopied]);
+
+  const getLikeData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/images/like?id=${data?.imgId}`);
+      const { success, likes, error } = await response.json();
+      if (success) {
+        console.log(likes);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+
+  useEffect(() => {
+    getLikeData();
+  }, [getLikeData]);
 
   const downloadImage = async () => {
     const imageUrl = data?.img;
@@ -43,6 +63,31 @@ function Modal2({ data }) {
       URL.revokeObjectURL(downloadLink.href);
     } catch (error) {
       console.error("Error downloading image:", error);
+    }
+  };
+
+  const LikePost = async () => {
+    try {
+      const response = await fetch("/api/images/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: data?.imgId,
+        }),
+      });
+      const { success, message, error } = await response.json();
+      if (success && message === "Image liked") {
+        setIsLiked(true);
+      } else if (success && message === "Image disliked") {
+        setIsLiked(false);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -174,9 +219,19 @@ function Modal2({ data }) {
                 color="default"
                 variant="ghost"
                 className="rounded-xl w-fit"
+                onClick={LikePost}
               >
-                <BiLike fontSize={21} className="text-white" />
-                Like
+                {isLiked ? (
+                  <>
+                    <BiSolidLike fontSize={21} className="text-white" />
+                    Liked
+                  </>
+                ) : (
+                  <>
+                    <BiLike fontSize={21} className="text-white" />
+                    Like
+                  </>
+                )}
               </Button>
               <Button
                 color="default"
