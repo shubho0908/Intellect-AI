@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 export const GET = async () => {
   try {
     await ConnectDB();
+<<<<<<< HEAD
 
     // Fetch all visible images
     const visibleImages = await Image.find({ visibility: true });
@@ -14,10 +15,27 @@ export const GET = async () => {
       return NextResponse.json({
         success: false,
         error: "No visible images found",
+=======
+    const visibleImages = await Image.find({ visibility: true });
+    if (!visibleImages) {
+      return NextResponse.json({
+        success: false,
+        error: "Images not found",
+        status: 404,
+      });
+    }
+    const userIds = visibleImages.map((image) => image.userId);
+
+    if (userIds.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: "No users found",
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
         status: 404,
       });
     }
 
+<<<<<<< HEAD
     // Extract unique user IDs from the images
     const userIds = [...new Set(visibleImages.map((image) => image.userId))];
 
@@ -42,6 +60,13 @@ export const GET = async () => {
     return NextResponse.json({
       success: true,
       data: imagesWithUserData,
+=======
+    const users = await User.find({ _id: { $in: userIds } });
+
+    return NextResponse.json({
+      success: true,
+      data: users,
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
       status: 200,
     });
   } catch (error) {

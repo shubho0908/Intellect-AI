@@ -41,7 +41,10 @@ function Posts({ userPosts, userData }) {
 
   const modalData = {
     imgId: imgData?._id,
+<<<<<<< HEAD
     userId: userData?._id,
+=======
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
     img: imgData?.urls[0],
     name: userData?.name,
     prompt: imgData?.prompt,

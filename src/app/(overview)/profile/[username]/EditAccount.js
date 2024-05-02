@@ -116,7 +116,7 @@ function EditAccount({ userData, close }) {
       const { success, data, error } = await response.json();
       if (data) {
         setIsSubmit(false);
-        window.open(`/profile/${data?.username}`, "_self");
+        // window.open(`/profile/${data?.username}`, "_self");
       }
       if (error && error === "Username already exists") {
         setIsSubmit(false);

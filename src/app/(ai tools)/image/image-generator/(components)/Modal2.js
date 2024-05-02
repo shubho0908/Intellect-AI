@@ -13,13 +13,19 @@ import { PiMagicWand } from "react-icons/pi";
 import { RxDownload } from "react-icons/rx";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
+<<<<<<< HEAD
 import Link from "next/link";
+=======
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
 
 function Modal2({ data }) {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+<<<<<<< HEAD
   const [user, setUser] = useState(null);
+=======
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
 
   useEffect(() => {
     if (isCopied) {
@@ -29,6 +35,7 @@ function Modal2({ data }) {
     }
   }, [isCopied]);
 
+<<<<<<< HEAD
   const getUserLikeData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -39,6 +46,17 @@ function Modal2({ data }) {
         setIsLiked(true);
       } else {
         setIsLiked(false);
+=======
+  const getLikeData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/images/like?id=${data?.imgId}`);
+      const { success, likes, error } = await response.json();
+      if (success) {
+        console.log(likes);
+      }
+      if (error) {
+        console.log(error);
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
       }
     } catch (error) {
       console.log(error.message);
@@ -46,6 +64,7 @@ function Modal2({ data }) {
   });
 
   useEffect(() => {
+<<<<<<< HEAD
     getUserLikeData();
   }, [getUserLikeData]);
 
@@ -66,6 +85,10 @@ function Modal2({ data }) {
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
+=======
+    getLikeData();
+  }, [getLikeData]);
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
 
   const downloadImage = async () => {
     const imageUrl = data?.img;

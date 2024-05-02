@@ -11,7 +11,11 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { IoBookmarkOutline } from "react-icons/io5";
+<<<<<<< HEAD
 import { useCallback, useEffect, useState } from "react";
+=======
+import { useState } from "react";
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 
 const litePoppins = Poppins({
@@ -28,6 +32,7 @@ function Home() {
   const [images, setImages] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
+<<<<<<< HEAD
   const getHomeData = useCallback(async () => {
     try {
       const response = await fetch("/api/home");
@@ -78,6 +83,8 @@ function Home() {
     onOpen();
   };
 
+=======
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
   return (
     <>
       <div className="home fadein sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
@@ -90,8 +97,13 @@ function Home() {
               See what others are making, discover prompts, and share your own
               creatives.
             </p>
+<<<<<<< HEAD
             <div className="all-posts relative z-0 flex items-start flex-wrap gap-5 mt-8">
               {images?.map((data, index) => {
+=======
+            <div className="all-posts relative z-0 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-4 gap-y-4 mt-8">
+              {posts?.map((data, index) => {
+>>>>>>> aee049db4372314be3471efd91f52a89deb3dc2c
                 return (
                   <>
                     <div
