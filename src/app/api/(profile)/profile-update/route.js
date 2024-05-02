@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 await ConnectDB();
 export async function PUT(req) {
   try {
-    const { name, username, profileImg, visibility, summary, profession } =
+    const { name, username, profile, visibility, summary, profession } =
       await req.json();
 
     const accessTokenValue = cookies().get("accessToken")?.value;
@@ -82,7 +82,7 @@ export async function PUT(req) {
     user.name = name;
     user.username = username;
     user.summary = summary;
-    user.profileImg = profileImg;
+    user.profileImg = profile;
     user.visibility = visibility;
     user.role = profession;
 

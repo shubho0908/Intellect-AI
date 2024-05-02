@@ -9,7 +9,6 @@ export const POST = async (req) => {
   try {
     await ConnectDB();
     const { image, ratio } = await req.json();
-    console.log(ratio);
 
     const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;

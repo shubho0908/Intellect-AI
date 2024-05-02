@@ -18,12 +18,6 @@ const collectionSchema = new Schema(
         },
       },
     ],
-    collectionName: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
     visibility: {
       type: Boolean,
       default: true,
