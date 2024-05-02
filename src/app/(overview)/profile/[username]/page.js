@@ -8,6 +8,7 @@ import {
   ModalHeader,
   Divider,
   useDisclosure,
+  Skeleton,
   Image,
 } from "@nextui-org/react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -50,7 +51,7 @@ function Profile({ params }) {
 
   useEffect(() => {
     fetchUserData();
-  }, [fetchUserData]);
+  }, []);
 
   const fetchMyData = useCallback(async () => {
     try {
@@ -68,7 +69,7 @@ function Profile({ params }) {
 
   useEffect(() => {
     fetchMyData();
-  }, [fetchMyData]);
+  }, []);
 
   return (
     <>
@@ -99,15 +100,25 @@ function Profile({ params }) {
                 )}
               </div>
               <div className="data mt-6">
-                <p
-                  className={`${poppins.className} text-xl flex items-center gap-2 cursor-pointer font-bold`}
+                <Skeleton
+                  isLoaded={user !== null}
+                  className={`rounded-lg ${!user ? "w-[200px]" : "w-fit"}`}
                 >
-                  {user?.name}
-                  <MdVerified className="text-blue-500" fontSize={22} />
-                </p>
-                <p className={`${poppins.className} text-gray-400`}>
-                  @{user?.username}
-                </p>
+                  <p
+                    className={`${poppins.className} text-xl flex items-center gap-2 cursor-pointer font-bold`}
+                  >
+                    {user?.name}
+                    <MdVerified className="text-blue-500" fontSize={22} />
+                  </p>
+                </Skeleton>
+                <Skeleton
+                  isLoaded={user !== null}
+                  className={`rounded-lg ${!user ? "w-[100px] mt-2" : "w-fit"}`}
+                >
+                  <p className={`${poppins.className} text-gray-400`}>
+                    @{user?.username}
+                  </p>
+                </Skeleton>
                 <div
                   className={`${litePoppins.className} tags mt-3 flex items-center gap-3`}
                 >
@@ -117,11 +128,18 @@ function Profile({ params }) {
                     </Chip>
                   ) : null}
                 </div>
-                <div className={`${litePoppins.className} summary`}>
-                  <p>
-                    {user?.summary ? user?.summary : "**No summary available**"}
-                  </p>
-                </div>
+                <Skeleton
+                  isLoaded={user !== null}
+                  className={`rounded-lg ${!user ? "w-[250px]" : "w-fit"}`}
+                >
+                  <div className={`${litePoppins.className} summary`}>
+                    <p>
+                      {user?.summary
+                        ? user?.summary
+                        : "**No summary available**"}
+                    </p>
+                  </div>
+                </Skeleton>
                 <div
                   className={`${litePoppins.className} stats  flex items-center mt-3 gap-3`}
                 >
@@ -144,12 +162,24 @@ function Profile({ params }) {
                     <Posts userPosts={userPosts} userData={user} />
                   ) : (
                     <>
-                      <div className="flex flex-col items-center">
-                        <Image src="/nothing.png" width={250} height={250} />
-                        <p className={`${poppins.className} text-gray-400`}>
-                          You don't have any posts.
-                        </p>
-                      </div>
+                      <Skeleton
+                        isLoaded={user !== null}
+                        className={`rounded-lg ${
+                          !user ? "w-[350px] h-[250px]" : "w-fit"
+                        }`}
+                      >
+                        <div className="flex flex-col items-center">
+                          <Image
+                            src="/nothing.png"
+                            width={250}
+                            height={250}
+                            alt="No post"
+                          />
+                          <p className={`${poppins.className} text-gray-400`}>
+                            You don't have any posts.
+                          </p>
+                        </div>
+                      </Skeleton>
                     </>
                   )}
                 </div>

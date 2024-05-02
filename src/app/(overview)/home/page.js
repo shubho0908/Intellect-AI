@@ -10,7 +10,6 @@ import {
   ModalBody,
   useDisclosure,
 } from "@nextui-org/react";
-import { IoBookmarkOutline } from "react-icons/io5";
 import { useCallback, useEffect, useState } from "react";
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 
@@ -115,7 +114,7 @@ function Home() {
                                 {data?.user?.username}
                               </p>
                             </div>
-                            <Button
+                            {/* <Button
                               isIconOnly
                               variant="ghost"
                               className="border-none"
@@ -124,7 +123,7 @@ function Home() {
                                 className="text-white"
                                 fontSize={26}
                               />
-                            </Button>
+                            </Button> */}
                           </div>
                           <div className="bottom px-4 absolute bottom-3">
                             <p

@@ -146,8 +146,8 @@ export const POST = async (req) => {
 
     const isPostExists = existingCollection?.data.some(
       (data) =>
-        data.imageID.toString() === postId.toString() ||
-        data.videoID.toString() === postId.toString()
+        data?.imageID?.toString() === postId.toString() ||
+        data?.videoID?.toString() === postId.toString()
     );
 
     if (isPostExists) {

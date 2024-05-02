@@ -208,30 +208,30 @@ function Modal2({ data }) {
               />
               <p className="w-max ml-2 md:text-md text-sm">{data?.name}</p>
             </Link>
-            {data?.userId !== user?._id ? (
-              <div>
-                {!isFollowed ? (
-                  <Button
-                    color="primary"
-                    className="rounded-full ml-4"
-                    onPress={() => setIsFollowed(true)}
-                  >
-                    <RiUserFollowLine fontSize={18} className="text-white" />
-                    Follow
-                  </Button>
-                ) : (
-                  <Button
-                    color="primary"
-                    variant="bordered"
-                    className="rounded-full ml-4 border-gray-600 text-white"
-                    onPress={() => setIsFollowed(false)}
-                  >
-                    <RiUserUnfollowLine fontSize={18} className="text-white" />
-                    Unfollow
-                  </Button>
-                )}
-              </div>
-            ) : null}
+            <div>
+              {!isFollowed ? (
+                <Button
+                  color="primary"
+                  className="rounded-full ml-4"
+                  isDisabled={data?.userId === user?._id}
+                  onPress={() => setIsFollowed(true)}
+                >
+                  <RiUserFollowLine fontSize={18} className="text-white" />
+                  Follow
+                </Button>
+              ) : (
+                <Button
+                  color="primary"
+                  isDisabled={data?.userId === user?._id}
+                  variant="bordered"
+                  className="rounded-full ml-4 border-gray-600 text-white"
+                  onPress={() => setIsFollowed(false)}
+                >
+                  <RiUserUnfollowLine fontSize={18} className="text-white" />
+                  Unfollow
+                </Button>
+              )}
+            </div>
           </div>
           {data && (
             <>

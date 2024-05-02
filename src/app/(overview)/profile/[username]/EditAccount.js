@@ -14,6 +14,7 @@ import {
 import { Poppins } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "400",
@@ -115,8 +116,9 @@ function EditAccount({ userData, close }) {
 
       const { success, data, error } = await response.json();
       if (data) {
+        saved("Profile updated successfully!");
         setIsSubmit(false);
-        // window.open(`/profile/${data?.username}`, "_self");
+        window.open(`/profile/${data?.username}`, "_self");
       }
       if (error && error === "Username already exists") {
         setIsSubmit(false);
@@ -159,8 +161,17 @@ function EditAccount({ userData, close }) {
     }
   };
 
+  //Toasts
+
+  const saved = (msg) =>
+    toast.success(msg, {
+      className: poppins.className,
+    });
+
   return (
     <>
+      <Toaster />
+
       <ModalBody>
         <div className="user-form mb-3">
           <div className="profile flex items-center gap-8">

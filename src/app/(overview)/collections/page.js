@@ -14,14 +14,14 @@ const litePoppins = Poppins({
 });
 
 function page() {
-  const [library, setLibrary] = useState(null);
+  const [collections, setCollections] = useState(null);
 
-  const fetchLibraryData = useCallback(async () => {
+  const fetchCollectionData = useCallback(async () => {
     try {
-      const response = await fetch("/api/library");
+      const response = await fetch("/api/collections");
       const { success, data, error } = await response.json();
       if (success) {
-        setLibrary(data?.imageUrls);
+        setCollections(data?.images);
       } else {
         console.error("Error fetching user data:", error);
       }
@@ -31,16 +31,16 @@ function page() {
   }, []);
 
   useEffect(() => {
-    fetchLibraryData();
+    fetchCollectionData();
   }, []);
 
   return (
     <>
-      <div className="dashboard sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
-        <div className="dashboard-data m-4 mt-10">
-          <p className={`${poppins.className} text-2xl`}>Dashboard</p>
+      <div className="collections sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
+        <div className="collections-data m-4 mt-10">
+          <p className={`${poppins.className} text-2xl`}>My Collections</p>
           <div className="mt-8 flex items-start flex-wrap gap-5">
-            {library?.map((data, index) => {
+            {collections?.map((data, index) => {
               return (
                 <>
                   <div key={index}>
@@ -49,7 +49,7 @@ function page() {
                         removeWrapper
                         alt="Card background"
                         className="z-0 w-full h-full object-cover"
-                        src={data}
+                        src={data.urls[0]}
                       />
                     </Card>
                   </div>
