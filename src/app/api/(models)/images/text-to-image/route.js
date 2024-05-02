@@ -109,34 +109,29 @@ export const POST = async (req) => {
       })
     );
 
-    const savedImages = await Promise.all(
-      uploadedImages.map(async (url) => {
-        const newImage = new Image({
-          userId,
-          url,
-          prompt,
-          miscData: {
-            dimensions: `${width}x${height}`,
-            modelName: model === "Sdxl" ? "Stable Diffusion XL" : "Dreamshaper",
-          },
-        });
-        await newImage.save();
-        return newImage._id;
-      })
-    );
+    const newImage = new Image({
+      userId,
+      urls: uploadedImages,
+      prompt,
+      miscData: {
+        dimensions: `${width}x${height}`,
+        modelName: "Stable Diffusion XL",
+      },
+    });
 
-    let library = await Library.findOne({ userId });
+    await newImage.save();
 
-    if (!library) {
-      library = new Library({
-        userId,
-        images: savedImages,
-      });
+    const library = await Library.findOne({ userId });
+    if (library) {
+      library?.images.push(newImage._id);
+      await library.save();
     } else {
-      library.images.push(...savedImages);
+      const newLibrary = new Library({
+        userId,
+        images: [newImage._id],
+      });
+      await newLibrary.save();
     }
-
-    await library.save();
 
     return NextResponse.json(
       { success: true, data: newImage },

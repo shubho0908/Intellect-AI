@@ -79,7 +79,7 @@ function Profile({ params }) {
             <div class="bg-gradient-to-br from-pink-300 to-blue-400 h-[220px] w-full rounded-lg"></div>
           </div>
           <div className="user-details flex flex-col items-center relative bottom-[5.5rem]">
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start max-w-[70%]">
               <div className="dp flex items-end">
                 <Avatar
                   isBordered

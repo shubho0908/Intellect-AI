@@ -128,7 +128,7 @@ function EditAccount({ userData, close }) {
       }
     } catch (error) {
       setIsSubmit(false);
-      console.log(error.message);
+      errorMsg(error.message);
     }
   };
 
@@ -157,7 +157,7 @@ function EditAccount({ userData, close }) {
       const data = await response.json();
       return data?.secure_url;
     } catch (error) {
-      console.log("Error uploading image:", error.message);
+      errorMsg(error.message);
     }
   };
 
@@ -165,6 +165,11 @@ function EditAccount({ userData, close }) {
 
   const saved = (msg) =>
     toast.success(msg, {
+      className: poppins.className,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
       className: poppins.className,
     });
 
