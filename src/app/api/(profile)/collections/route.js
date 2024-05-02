@@ -1,6 +1,7 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Collection } from "@/models/collections.models";
+import { Image } from "@/models/images.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -174,7 +175,6 @@ export const POST = async (req) => {
       {
         success: true,
         message: "Data added to collection",
-        data: existingCollection,
       },
       { status: 200 }
     );
@@ -187,10 +187,48 @@ export const POST = async (req) => {
 };
 
 //Get collection data
-export const GET = async (req) => {
+export const GET = async () => {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("id");
+    const accessTokenValue = cookies().get("accessToken")?.value;
+    const refreshTokenValue = cookies().get("refreshToken")?.value;
+
+    if (!refreshTokenValue) {
+      return NextResponse.json(
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
+      );
+    }
+
+    //Check if refresh token is expired
+    try {
+      verifyToken(refreshTokenValue);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: "Session expired" },
+        { status: 401 }
+      );
+    }
+
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
+      );
+    }
 
     const collections = await Collection.find({ userId });
     if (collections.length === 0) {
@@ -200,8 +238,14 @@ export const GET = async (req) => {
       );
     }
 
+    const imageIDs = collections.flatMap((collection) =>
+      collection.data.map((data) => data.imageID)
+    );
+
+    const images = await Image.find({ _id: { $in: imageIDs } });
+
     return NextResponse.json(
-      { success: true, data: collections },
+      { success: true, data: { collections, images } },
       { status: 200 }
     );
   } catch (error) {
