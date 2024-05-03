@@ -1,7 +1,7 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Collection } from "@/models/collections.models";
-import { Reply } from "@/models/comments.models";
+import { Comment, Reply } from "@/models/comments.models";
 import { Image } from "@/models/images.models";
 import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
@@ -13,57 +13,44 @@ export const DELETE = async (req) => {
     const { searchParams } = new URL(req.url);
     const postId = searchParams.get("postId");
 
-    // Check if refresh token is available
+    const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
+
     if (!refreshTokenValue) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
       );
     }
 
-    // Check if the refresh token is expired
+    //Check if refresh token is expired
     try {
       verifyToken(refreshTokenValue);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Session expired" },
-        { status: 404 }
+        { status: 401 }
       );
     }
 
-    // Check if access token is available
-    const accessToken = cookies().get("accessToken")?.value;
-    if (!accessToken) {
-      try {
-        // Try to generate a new access token using the refresh token
-        const payload = verifyToken(refreshTokenValue);
-        const newToken = generateAccessToken({ id: payload.id }, "1h");
-        cookies().set("accessToken", newToken);
-        return NextResponse.json(
-          {
-            success: true,
-            message: "New token generated",
-          },
-          { status: 200 }
-        );
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized access" },
-          { status: 404 }
-        );
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
       }
     }
 
-    // Verify the access token
-    let id;
-    try {
-      const payload = verifyToken(accessToken);
-      id = payload.id;
-    } catch (error) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
       );
     }
 
@@ -71,7 +58,7 @@ export const DELETE = async (req) => {
     await Image.findByIdAndDelete(postId);
 
     //Delete the image from library
-    const library = await Library.findOne({ userId: id });
+    const library = await Library.findOne({ userId });
     const filteredImages = library?.images?.filter(
       (imageId) => imageId !== postId
     );
@@ -79,26 +66,16 @@ export const DELETE = async (req) => {
     library.images = filteredImages;
     await library.save();
 
-    //Delete the image from collection
-    const collections = await Collection.find({ "data.postId": postId });
-    if (collections.length > 1) {
-      await Collection.deleteMany({ "data.postId": postId });
-    }
-    const filteredData = collections?.data?.filter(
-      (image) => image.postId !== postId
-    );
-    collections.data = filteredData;
-    await collections.save();
+    // Delete collections containing the removed image
+    await Collection.deleteMany({ "data.imageID": postId });
 
-    //Delete the image's comments
-    await Comment.deleteMany({ postId });
+    // Delete comments and replies related to the deleted image
     await Reply.deleteMany({ postId });
+    await Comment.deleteMany({ postId });
 
     return NextResponse.json(
-      { success: true, message: "Image deleted", id },
-      {
-        status: 200,
-      }
+      { success: true, message: "Image deleted", userId },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(

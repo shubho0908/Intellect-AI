@@ -163,14 +163,14 @@ function EditAccount({ userData, close }) {
 
   //Toasts
 
-  const saved = (msg) =>
+  const successMsg = (msg) =>
     toast.success(msg, {
-      className: poppins.className,
+      className: `${poppins.className} text-sm`,
     });
 
   const errorMsg = (msg) =>
     toast.error(msg, {
-      className: poppins.className,
+      className: `${poppins.className} text-sm`,
     });
 
   return (

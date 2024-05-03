@@ -274,7 +274,7 @@ function Modal2({ data }) {
                 </Button>
               </div>
             </div>
-            <div className="content mt-4 w-full md:max-w-[350px] text-sm bg-[#27272A] p-3 rounded-lg">
+            <div className="content mt-4 w-full md:max-w-[400px] text-sm bg-[#27272A] p-3 rounded-lg">
               {data?.prompt}
             </div>
           </div>

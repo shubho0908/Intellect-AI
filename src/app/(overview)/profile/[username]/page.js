@@ -41,12 +41,12 @@ function Profile({ params }) {
   //Toasts
   const successMsg = (msg) =>
     toast.success(msg, {
-      className: poppins.className,
+      className: `${poppins.className} text-sm`,
     });
 
   const errorMsg = (msg) =>
     toast.error(msg, {
-      className: poppins.className,
+      className: `${poppins.className} text-sm`,
     });
 
   const fetchUserData = useCallback(async () => {
@@ -120,6 +120,11 @@ function Profile({ params }) {
     }
   };
 
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    successMsg("Link copied to clipboard");
+  };
+
   return (
     <>
       <Toaster />
@@ -180,6 +185,7 @@ function Profile({ params }) {
                   <Button
                     isIconOnly
                     color="ghost"
+                    onClick={handleCopyUrl}
                     className={`${litePoppins.className}`}
                   >
                     <RiLink fontSize={18} className="text-white" />
@@ -244,7 +250,7 @@ function Profile({ params }) {
                   </div>
                 </div>
                 <Divider className="my-4" />
-                <div className="user-posts mt-8">
+                <div className="user-posts mt-8 flex flex-col items-center">
                   {userPosts?.length > 0 ? (
                     <Posts userPosts={userPosts} userData={user} />
                   ) : (
