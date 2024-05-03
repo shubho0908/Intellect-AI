@@ -14,6 +14,7 @@ import { RxDownload } from "react-icons/rx";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
 
 function Modal2({ data }) {
   const [isFollowed, setIsFollowed] = useState(false);
@@ -22,6 +23,17 @@ function Modal2({ data }) {
   const [isSaved, setIsSaved] = useState(false);
   const [user, setUser] = useState(null);
   const [collectionData, setCollectionData] = useState(null);
+
+  //Toasts
+  const successMsg = (msg) =>
+    toast.success(msg, {
+      className: `text-sm`,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
+      className: `text-sm`,
+    });
 
   useEffect(() => {
     if (isCopied) {
@@ -64,11 +76,11 @@ function Modal2({ data }) {
         setIsSaved(imageIDs.includes(imgId));
         setCollectionData(data?.collections);
       } else {
-        console.error("Error fetching collections:", error);
+        errorMsg(error);
         setIsSaved(false);
       }
     } catch (error) {
-      console.error("Error fetching collections:", error.message);
+      errorMsg(error.message);
       setIsSaved(false);
     }
   }, []);
@@ -84,10 +96,10 @@ function Modal2({ data }) {
       if (success) {
         setUser(data);
       } else {
-        console.error("Error fetching user data:", error);
+        errorMsg(error);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error.message);
+      errorMsg(error.message);
     }
   }, []);
 
@@ -111,7 +123,7 @@ function Modal2({ data }) {
 
       URL.revokeObjectURL(downloadLink.href);
     } catch (error) {
-      console.error("Error downloading image:", error);
+      errorMsg(error.message);
     }
   };
 
@@ -128,17 +140,18 @@ function Modal2({ data }) {
       });
       const { success, message, error } = await response.json();
       if (success && message === "Image liked") {
+        successMsg(message + " successfully!");
         setIsLiked(true);
       } else if (success && message === "Image disliked") {
         setIsLiked(false);
       }
       if (error) {
         setIsLiked(false);
-        console.log(error);
+        errorMsg(error);
       }
     } catch (error) {
       setIsLiked(false);
-      console.log(error.message);
+      errorMsg(error.message);
     }
   };
 
@@ -157,21 +170,29 @@ function Modal2({ data }) {
       const { success, data, error, message } = await response.json();
       if (success && message === "Data added to collection") {
         setIsSaved(true);
+        successMsg(message);
       } else if (success && message === "Data removed from collection") {
         setIsSaved(false);
       }
       if (error) {
         setIsSaved(false);
-        console.log(error);
+        errorMsg(error);
       }
     } catch (error) {
       setIsSaved(false);
-      console.log(error.message);
+      errorMsg(error.message);
     }
+  };
+
+  const handleCopyprompt = () => {
+    navigator.clipboard.writeText(data?.prompt);
+    setIsCopied(true);
+    successMsg("Copied to clipboard!");
   };
 
   return (
     <>
+      <Toaster />
       <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
         <div className="left hidden md:block">
           {data && (
@@ -263,7 +284,7 @@ function Modal2({ data }) {
                 <Button
                   isIconOnly
                   variant="bordered"
-                  onClick={() => setIsCopied(true)}
+                  onClick={handleCopyprompt}
                   className="rounded-lg ml-2 border-none text-white"
                 >
                   {!isCopied ? (
@@ -307,6 +328,7 @@ function Modal2({ data }) {
                 color="default"
                 variant="ghost"
                 className="rounded-xl w-fit"
+                isDisabled={!user?.userId && !data?.imgId}
                 onClick={LikePost}
               >
                 {isLiked ? (
@@ -333,6 +355,7 @@ function Modal2({ data }) {
               <Button
                 color="default"
                 variant="ghost"
+                isDisabled={!user?.userId && !data?.imgId}
                 className="rounded-xl w-fit"
                 onClick={() => SavePost(data)}
               >

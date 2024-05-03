@@ -71,13 +71,15 @@ function EditAccount({ userData, close }) {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (file && file.size <= 10000000) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfileImg(e.target.result);
         setChanges(true);
       };
       reader.readAsDataURL(file);
+    } else {
+      errorMsg(`File size should be less than 10MB`);
     }
   };
 
@@ -116,7 +118,7 @@ function EditAccount({ userData, close }) {
 
       const { success, data, error } = await response.json();
       if (data) {
-        saved("Profile updated successfully!");
+        successMsg("Profile updated successfully!");
         setIsSubmit(false);
         window.open(`/profile/${data?.username}`, "_self");
       }

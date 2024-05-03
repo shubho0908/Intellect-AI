@@ -77,6 +77,35 @@ function Home() {
     onOpen();
   };
 
+  function getTimeSince(timestamp) {
+    const now = new Date();
+    const createdDate = new Date(timestamp);
+
+    const seconds = Math.floor((now - createdDate) / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) {
+      return "just now";
+    } else if (minutes < 60) {
+      return `${minutes} min${minutes === 1 ? "" : "s"}`;
+    } else if (hours < 24) {
+      return `${hours} h`;
+    } else if (days < 7) {
+      return `${days} d`;
+    } else if (weeks < 4) {
+      return `${weeks} w`;
+    } else if (months < 12) {
+      return `${months} m`;
+    } else {
+      return `${years} y`;
+    }
+  }
+
   return (
     <>
       <div className="home fadein sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
@@ -91,6 +120,7 @@ function Home() {
             </p>
             <div className="all-posts relative z-0 flex items-start flex-wrap gap-5 mt-8">
               {images?.map((data, index) => {
+                const formattedDate = getTimeSince(data?.createdAt);
                 return (
                   <>
                     <div
@@ -124,6 +154,11 @@ function Home() {
                                 fontSize={26}
                               />
                             </Button> */}
+                            <p
+                              className={`${litePoppins2.className} text-white`}
+                            >
+                              {formattedDate}
+                            </p>
                           </div>
                           <div className="bottom px-4 absolute bottom-3">
                             <p
