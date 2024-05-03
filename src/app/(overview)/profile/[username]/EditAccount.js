@@ -26,7 +26,7 @@ function EditAccount({ userData, close }) {
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
 
-  const [isSelected, setIsSelected] = useState(true);
+  const [isSelected, setIsSelected] = useState(userData?.visibility);
   const [changes, setChanges] = useState(false);
   const [firstname, setFirstname] = useState(firstName);
   const [lastname, setLastname] = useState(lastName);

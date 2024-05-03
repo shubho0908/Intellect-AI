@@ -11,60 +11,48 @@ export const POST = async (req) => {
   try {
     const { userID } = await req.json();
 
-    // Check if refresh token is available
+    const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
+
     if (!refreshTokenValue) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
       );
     }
 
-    // Check if the refresh token is expired
+    //Check if refresh token is expired
     try {
       verifyToken(refreshTokenValue);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Session expired" },
-        { status: 404 }
+        { status: 401 }
       );
     }
 
-    // Check if access token is available
-    const accessToken = cookies().get("accessToken")?.value;
-    if (!accessToken) {
-      try {
-        // Try to generate a new access token using the refresh token
-        const payload = verifyToken(refreshTokenValue);
-        const newToken = generateAccessToken({ id: payload.id }, "1h");
-        cookies().set("accessToken", newToken);
-        return NextResponse.json(
-          {
-            success: true,
-            message: "New token generated",
-          },
-          { status: 200 }
-        );
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized access" },
-          { status: 404 }
-        );
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
       }
     }
 
-    // Verify the access token
-    let id;
-    try {
-      const payload = verifyToken(accessToken);
-      id = payload.id;
-    } catch (error) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access" },
-        { status: 404 }
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
       );
     }
-    if (id === userID) {
+
+    if (userId === userID) {
       return NextResponse.json(
         { success: false, error: "You cannot follow yourself" },
         { status: 404 }
@@ -73,7 +61,7 @@ export const POST = async (req) => {
 
     //Check if user exists
     const user = await User.findById(userID);
-    const myself = await User.findById(id);
+    const myself = await User.findById(userId);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -82,20 +70,20 @@ export const POST = async (req) => {
     }
 
     //Check if I'm already followed the user
-    const isAlreadyFollowed = user?.followers.includes(id);
+    const isAlreadyFollowed = user?.followers.includes(userId);
     if (isAlreadyFollowed) {
       //Unfollow the user
-      const removeMyself = user?.followers.filter((myId) => myId !== id);
+      const removeMyself = user?.followers.filter((myId) => myId.toString() !== userId.toString());
       user.followers = removeMyself;
 
       //Remove the user from my following
       const myFollowing = myself?.following.filter(
-        (userid) => userid !== userID
+        (userid) => userid.toString() !== userID.toString()
       );
       myself.following = myFollowing;
     } else {
       //Follow the user
-      user.followers.push(id);
+      user.followers.push(userId);
 
       //Add user to my following
       myself.following.push(userID);

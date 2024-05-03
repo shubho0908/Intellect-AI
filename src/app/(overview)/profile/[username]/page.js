@@ -15,8 +15,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
+import { RiLink, RiUserUnfollowLine } from "react-icons/ri";
 import Posts from "./Posts";
 import EditAccount from "./EditAccount";
+import { RiUserFollowLine } from "react-icons/ri";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "500",
@@ -33,6 +36,18 @@ function Profile({ params }) {
   const [user, setUser] = useState(null);
   const [myData, setMyData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [isFollowed, setIsFollowed] = useState(false);
+
+  //Toasts
+  const successMsg = (msg) =>
+    toast.success(msg, {
+      className: poppins.className,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
+      className: poppins.className,
+    });
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -42,10 +57,10 @@ function Profile({ params }) {
         setUser(data?.user);
         setUserPosts(data?.userPosts);
       } else {
-        console.error("Error fetching user data:", error);
+        errorMsg(error);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error.message);
+      errorMsg(error.message);
     }
   }, []);
 
@@ -60,10 +75,10 @@ function Profile({ params }) {
       if (success) {
         setMyData(data);
       } else {
-        console.error("Error fetching my data:", error);
+        errorMsg(error);
       }
     } catch (error) {
-      console.error("Error fetching my data:", error.message);
+      errorMsg(error.message);
     }
   }, []);
 
@@ -71,35 +86,107 @@ function Profile({ params }) {
     fetchMyData();
   }, []);
 
+  useEffect(() => {
+    if (myData?.following.includes(user?._id)) {
+      setIsFollowed(true);
+    }
+  }, [myData?.following, user?._id]);
+
+  const FollowUser = async () => {
+    try {
+      const response = await fetch("/api/follow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userID: user?._id,
+        }),
+      });
+
+      const { success, data, error } = await response.json();
+      if (success && data === "Unfollowed successfully") {
+        setIsFollowed(false);
+        successMsg(data);
+      } else if (success && data === "Followed successfully") {
+        setIsFollowed(true);
+        successMsg(data);
+      }
+      if (error) {
+        errorMsg(error);
+      }
+    } catch (error) {
+      errorMsg(error.message);
+    }
+  };
+
   return (
     <>
+      <Toaster />
       <div className="profile fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
         <div className="user-data">
           <div className="banner">
             <div class="bg-gradient-to-br from-pink-300 to-blue-400 h-[220px] w-full rounded-lg"></div>
           </div>
           <div className="user-details flex flex-col items-center relative bottom-[5.5rem]">
-            <div className="flex flex-col items-start max-w-[70%]">
-              <div className="dp flex items-end">
-                <Avatar
-                  isBordered
-                  color="primary"
-                  src={user?.profileImg}
-                  className="w-[10rem] h-[10rem] text-large"
-                />
-                {myData?._id === user?._id && (
+            <div className="flex flex-col items-start max-w-[68%] min-w-[35%]">
+              <div className="flex items-end justify-between w-full">
+                <div className="dp flex items-end w-full">
+                  <Avatar
+                    isBordered
+                    color="primary"
+                    src={user?.profileImg}
+                    className="w-[10rem] h-[10rem] text-large"
+                  />
+                  {myData?._id === user?._id && (
+                    <Button
+                      isIconOnly
+                      onClick={onOpen}
+                      color="primary"
+                      className="rounded-full relative right-10"
+                      size="sm"
+                    >
+                      <FiEdit3 color="white" fontSize={15} />
+                    </Button>
+                  )}
+                </div>
+                <div className="btns flex items-center gap-4">
+                  {!isFollowed ? (
+                    <Button
+                      color="primary"
+                      isDisabled={user?._id === myData?._id}
+                      onClick={FollowUser}
+                      className={`rounded-full ml-4 ${litePoppins.className}`}
+                    >
+                      <RiUserFollowLine fontSize={18} className="text-white" />
+                      Follow
+                    </Button>
+                  ) : (
+                    <Button
+                      color="primary"
+                      isDisabled={user?._id === myData?._id}
+                      onClick={FollowUser}
+                      variant="bordered"
+                      className={`rounded-full ml-4 border-gray-600 text-white ${litePoppins.className}`}
+                    >
+                      <RiUserUnfollowLine
+                        fontSize={18}
+                        className="text-white"
+                      />
+                      Unfollow
+                    </Button>
+                  )}
+
                   <Button
                     isIconOnly
-                    onClick={onOpen}
-                    color="primary"
-                    className="rounded-full relative right-10"
-                    size="sm"
+                    color="ghost"
+                    className={`${litePoppins.className}`}
                   >
-                    <FiEdit3 color="white" fontSize={15} />
+                    <RiLink fontSize={18} className="text-white" />
                   </Button>
-                )}
+                </div>
               </div>
-              <div className="data mt-6">
+              <div className="data mt-6 w-full">
                 <Skeleton
                   isLoaded={user !== null}
                   className={`rounded-lg ${!user ? "w-[200px]" : "w-fit"}`}
