@@ -15,6 +15,18 @@ import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
+import { Poppins } from "next/font/google";
+
+
+const litePoppins = Poppins({
+  weight: "500",
+  subsets: ["latin"],
+});
+
+const litePoppins2 = Poppins({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 function Modal2({ data }) {
   const [isFollowed, setIsFollowed] = useState(false);
@@ -27,12 +39,12 @@ function Modal2({ data }) {
   //Toasts
   const successMsg = (msg) =>
     toast.success(msg, {
-      className: `text-sm`,
+      className: `${litePoppins2.className} text-sm`,
     });
 
   const errorMsg = (msg) =>
     toast.error(msg, {
-      className: `text-sm`,
+      className: `${litePoppins2.className} text-sm`,
     });
 
   useEffect(() => {
@@ -192,7 +204,6 @@ function Modal2({ data }) {
 
   return (
     <>
-      <Toaster />
       <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
         <div className="left hidden md:block">
           {data && (

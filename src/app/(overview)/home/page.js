@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
+import { Toaster } from "react-hot-toast";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -108,6 +109,7 @@ function Home() {
 
   return (
     <>
+      <Toaster />
       <div className="home fadein sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="main-home m-4">
           <div className="mt-10">
@@ -141,7 +143,9 @@ function Home() {
                               <p
                                 className={`${litePoppins.className} text-white font-medium`}
                               >
-                                {data?.user?.username}
+                                {data?.user?.username?.length > 10
+                                  ? `${data?.user?.username.slice(0, 10)}...`
+                                  : data?.user?.username}
                               </p>
                             </div>
                             {/* <Button
@@ -155,7 +159,7 @@ function Home() {
                               />
                             </Button> */}
                             <p
-                              className={`${litePoppins2.className} text-white`}
+                              className={`${litePoppins2.className} text-sm text-white`}
                             >
                               {formattedDate}
                             </p>

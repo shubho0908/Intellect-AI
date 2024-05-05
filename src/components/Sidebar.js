@@ -99,7 +99,12 @@ function Sidebar() {
                       ? `${user?.name.slice(0, 10)}...`
                       : user?.name}
                   </p>
-                  <p className="text-sm text-gray-400">@{user?.username}</p>
+                  <p className="text-sm text-gray-400">
+                    @
+                    {user?.username?.length > 10
+                      ? `${user?.username.slice(0, 10)}...`
+                      : user?.username}
+                  </p>
                 </div>
               </Skeleton>
             </div>

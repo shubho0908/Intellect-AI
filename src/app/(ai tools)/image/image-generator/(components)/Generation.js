@@ -9,8 +9,9 @@ import {
   Select,
   SelectItem,
   Skeleton,
+  CircularProgress,
+  Chip,
 } from "@nextui-org/react";
-import { MdDeleteOutline } from "react-icons/md";
 import Playground from "@/components/Playground";
 import Modaal from "./Modaal";
 import RelatedImages from "./RelatedImages";
@@ -18,7 +19,7 @@ import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";
 import { prompts } from "@/others/Prompts";
 import Menu from "./Menu";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "600",
@@ -29,7 +30,7 @@ const litePoppins = Poppins({
   weight: "400",
   subsets: ["latin"],
 });
-function page({ ModelData }) {
+function page({ ModelData, Accuracy }) {
   const [modelData, setModelData] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [useAi, setUseAi] = useState(false);
@@ -37,12 +38,18 @@ function page({ ModelData }) {
   const [totalImages, setTotalImages] = useState(4);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [value, setValue] = useState(new Set([]));
+  const [isPublished, setIsPublished] = useState(false);
 
   useEffect(() => {
     if (ModelData !== null) {
       setModelData(ModelData);
     }
   }, [ModelData]);
+
+  const successToast = (data) =>
+    toast.success(data, {
+      className: litePoppins.className,
+    });
 
   const errorToast = (err) =>
     toast.error(`${err}`, {
@@ -108,6 +115,32 @@ function page({ ModelData }) {
     }
   };
 
+  const publishImage = async () => {
+    try {
+      setIsPublished("loading");
+      const response = await fetch("/api/images/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: modelData?._id,
+        }),
+      });
+
+      const { success, message, error } = await response.json();
+      if (success && message === "Image published!") {
+        successToast(message);
+        setIsPublished(true);
+      }
+      if (error) {
+        errorToast(error);
+      }
+    } catch (error) {
+      errorToast(error.message);
+    }
+  };
+
   const models = [
     {
       value: "Dreamshaper-xl-turbo",
@@ -170,6 +203,7 @@ function page({ ModelData }) {
                       color="primary"
                       variant="solid"
                       className="rounded-lg"
+                      onClick={publishImage}
                     >
                       <RxUpload
                         fontSize={21}
@@ -181,52 +215,66 @@ function page({ ModelData }) {
                   <Skeleton
                     isLoaded={modelData !== null}
                     className="rounded-lg mt-2 mb-2 w-fit"
-                  >
-                    <Button
-                      color="danger"
-                      variant="solid"
-                      className="rounded-lg bg-red-600"
-                    >
-                      <MdDeleteOutline fontSize={22} className="text-white" />
-                      Delete
-                    </Button>
-                  </Skeleton>
+                  ></Skeleton>
                 </div>
 
-                <div className="more-details">
-                  <Skeleton
-                    isLoaded={modelData !== null}
-                    className="rounded-lg mt-2 mb-2"
-                  >
-                    <div className="model">
-                      <p className="text-gray-400">Model</p>
-                      <div className="model-name flex items-center">
-                        <PiMagicWand
-                          fontSize={22}
-                          className="text-white mr-2"
-                        />
-                        <p>{modelData?.miscData?.modelName}</p>
+                <div className="more-details flex items-start gap-[3.8rem]">
+                  <div className="left flex flex-col">
+                    <Skeleton
+                      isLoaded={modelData !== null}
+                      className="rounded-lg mt-2 mb-2"
+                    >
+                      <div className="model">
+                        <p className="text-gray-400">Model</p>
+                        <div className="model-name flex items-center">
+                          <PiMagicWand
+                            fontSize={22}
+                            className="text-white mr-2"
+                          />
+                          <p>{modelData?.miscData?.modelName}</p>
+                        </div>
                       </div>
-                    </div>
-                  </Skeleton>
-                  <Skeleton
-                    isLoaded={modelData !== null}
-                    className="rounded-lg mt-2 mb-2"
-                  >
-                    <div className="dimension mt-4">
-                      <p className="text-gray-400">Resolution</p>
-                      <p>{modelData?.miscData?.dimensions}</p>
-                    </div>
-                  </Skeleton>
-                  <Skeleton
-                    isLoaded={modelData !== null}
-                    className="rounded-lg mt-2 mb-2"
-                  >
-                    <div className="created mt-4">
-                      <p className="text-gray-400">Created At</p>
-                      <p>{formattedDate}</p>
-                    </div>
-                  </Skeleton>
+                    </Skeleton>
+                    <Skeleton
+                      isLoaded={modelData !== null}
+                      className="rounded-lg mt-2 mb-2"
+                    >
+                      <div className="dimension mt-4">
+                        <p className="text-gray-400">Resolution</p>
+                        <p>{modelData?.miscData?.dimensions}</p>
+                      </div>
+                    </Skeleton>
+                    <Skeleton
+                      isLoaded={modelData !== null}
+                      className="rounded-lg mt-2 mb-2"
+                    >
+                      <div className="created mt-4">
+                        <p className="text-gray-400">Created At</p>
+                        <p>{formattedDate}</p>
+                      </div>
+                    </Skeleton>
+                  </div>
+                  <div className="right flex flex-col items-center">
+                    <Skeleton
+                      isLoaded={modelData !== null}
+                      className="rounded-lg"
+                    >
+                      <p className="text-gray-400 text-center">Accuracy</p>
+
+                      <CircularProgress
+                        classNames={{
+                          svg: "w-32 h-32 drop-shadow-md",
+                          indicator: "stroke-[#0266D9]",
+                          track: "stroke-white/10",
+                          value: "text-2xl font-semibold text-white",
+                        }}
+                        value={Accuracy}
+                        strokeWidth={4}
+                        showValueLabel={true}
+                      />
+                      
+                    </Skeleton>
+                  </div>
                 </div>
               </div>
             </div>

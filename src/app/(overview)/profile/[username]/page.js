@@ -148,7 +148,9 @@ function Profile({ params }) {
                       isIconOnly
                       onClick={onOpen}
                       color="primary"
-                      className="rounded-full relative right-10"
+                      className={`rounded-full relative right-10 ${
+                        !myData?._id && !user?._id ? "hidden" : ""
+                      }`}
                       size="sm"
                     >
                       <FiEdit3 color="white" fontSize={15} />
@@ -227,9 +229,7 @@ function Profile({ params }) {
                 >
                   <div className={`${litePoppins.className} summary`}>
                     <p>
-                      {user?.summary
-                        ? user?.summary
-                        : "**No summary available**"}
+                      {user?.summary ? user?.summary : "No summary available"}
                     </p>
                   </div>
                 </Skeleton>
@@ -258,7 +258,7 @@ function Profile({ params }) {
                       <Skeleton
                         isLoaded={user !== null}
                         className={`rounded-lg ${
-                          !user ? "w-[350px] h-[250px]" : "w-fit"
+                          !user ? "w-full h-[250px]" : "w-fit"
                         }`}
                       >
                         <div className="flex flex-col items-center">

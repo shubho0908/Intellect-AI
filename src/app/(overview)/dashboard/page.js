@@ -93,12 +93,7 @@ function page() {
                 //   </div>
                 // </>
                 <>
-                  <div
-                    key={index}
-                    onClick={() => {
-                      handleCardClick(data);
-                    }}
-                  >
+                  <div key={index}>
                     <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
                       <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                         <div className="bottom px-4 gap-4 w-full h-full flex flex-col items-center justify-center">

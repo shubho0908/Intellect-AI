@@ -33,6 +33,7 @@ function page() {
   const [isClicked, setIsClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [Data, setData] = useState(null);
+  const [accuracy, setAccuracy] = useState(0)
 
   useEffect(() => {
     setTimeout(() => {
@@ -64,9 +65,10 @@ function page() {
         }),
       });
 
-      const { success, data, error } = await response.json();
+      const { success, data, error, accuracy } = await response.json();
       if (success) {
         setData(data);
+        setAccuracy(accuracy)
       } else {
         errorToast(error);
       }
@@ -78,7 +80,7 @@ function page() {
   if (isClicked) {
     return (
       <>
-        <Generation ModelData={Data} />
+        <Generation ModelData={Data} Accuracy={accuracy} />
       </>
     );
   }

@@ -60,7 +60,7 @@ export const GET = async () => {
 
     const images = await Image.find({ _id: { $in: library.images } }, "urls");
 
-    const imageUrls = images.flatMap((img) => img.urls);
+    const imageUrls = images.flatMap((img) => img.urls[0]);
 
     return NextResponse.json(
       { success: true, data: { library, imageUrls } },

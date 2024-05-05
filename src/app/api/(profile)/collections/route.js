@@ -160,12 +160,6 @@ export const GET = async () => {
     }
 
     const collections = await Collection.find({ userId });
-    if (collections.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "Collections not found" },
-        { status: 404 }
-      );
-    }
 
     const imageIDs = collections.flatMap((collection) =>
       collection.data.map((data) => data.imageID)

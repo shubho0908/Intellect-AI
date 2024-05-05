@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 import { UploadImage } from "@/lib/cloudinary";
+import { calculateSemanticSimilarity } from "@/lib/accuracy";
 
 export const POST = async (req) => {
   try {
@@ -109,6 +110,18 @@ export const POST = async (req) => {
       })
     );
 
+    //Generate prompt
+    const input = {
+      image: uploadedImages[0],
+    };
+
+    const output = await replicate.run(
+      "methexis-inc/img2prompt:50adaf2d3ad20a6f911a8a9e3ccf777b263b8596fbd2c8fc26e8888f8a0edbb5",
+      { input }
+    );
+
+    const accuracy = calculateSemanticSimilarity(prompt, output);
+
     const newImage = new Image({
       userId,
       urls: uploadedImages,
@@ -134,7 +147,7 @@ export const POST = async (req) => {
     }
 
     return NextResponse.json(
-      { success: true, data: newImage },
+      { success: true, data: newImage, accuracy: accuracy.toFixed(2) },
       { status: 201 }
     );
   } catch (error) {
