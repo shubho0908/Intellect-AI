@@ -3,6 +3,7 @@ import { Button, Card, Image } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { useCallback, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "500",
@@ -16,6 +17,17 @@ const litePoppins = Poppins({
 
 function page() {
   const [collections, setCollections] = useState(null);
+
+  //Toasts
+  const successMsg = (msg) =>
+    toast.success(msg, {
+      className: `${litePoppins.className} text-sm`,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
+      className: `${litePoppins.className} text-sm`,
+    });
 
   const fetchCollectionData = useCallback(async () => {
     try {
@@ -35,8 +47,29 @@ function page() {
     fetchCollectionData();
   }, []);
 
+  const RemovePost = async (id) => {
+    try {
+      const response = await fetch(`/api/collections?id=${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const { success, error, message } = await response.json();
+      if (success && message === "Post removed from collection!") {
+        successMsg(message);
+      }
+      if (error) {
+        errorMsg(error);
+      }
+    } catch (error) {
+      errorMsg(error.message);
+    }
+  };
+
   return (
     <>
+      <Toaster />
       <div className="collections sm:mt-0 sm:ml-[120px] md:ml-[320px] mb-14">
         <div className="collections-data m-4 mt-10">
           <p className={`${poppins.className} text-2xl`}>My Collections</p>
@@ -55,6 +88,7 @@ function page() {
                           </p>
                           <Button
                             isIconOnly
+                            onClick={() => RemovePost(data?._id)}
                             className={`${litePoppins.className} w-1/2 bg-red-600`}
                           >
                             <MdDelete

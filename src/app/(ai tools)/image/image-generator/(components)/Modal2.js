@@ -14,7 +14,7 @@ import { RxDownload } from "react-icons/rx";
 import { IoBookmark, IoBookmarkOutline, IoHeartOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Poppins } from "next/font/google";
 
 const litePoppins = Poppins({

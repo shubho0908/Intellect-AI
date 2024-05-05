@@ -178,3 +178,90 @@ export const GET = async () => {
     );
   }
 };
+
+export const DELETE = async (req) => {
+  try {
+    const { searchParams } = new URL(req.url);
+    const postId = searchParams.get("id");
+
+    const accessTokenValue = cookies().get("accessToken")?.value;
+    const refreshTokenValue = cookies().get("refreshToken")?.value;
+
+    if (!refreshTokenValue) {
+      return NextResponse.json(
+        { success: false, error: "Missing refresh token" },
+        { status: 401 }
+      );
+    }
+
+    //Check if refresh token is expired
+    try {
+      verifyToken(refreshTokenValue);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: "Session expired" },
+        { status: 401 }
+      );
+    }
+
+    let userId;
+
+    try {
+      const decodedAccess = verifyToken(accessTokenValue);
+      userId = decodedAccess?.id;
+    } catch (error) {
+      const decodedRefresh = verifyToken(refreshTokenValue);
+      userId = decodedRefresh?.id;
+      if (userId) {
+        const newAccessToken = generateAccessToken({ id: userId }, "1h");
+        cookies().set("accessToken", newAccessToken);
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Invalid tokens" },
+        { status: 401 }
+      );
+    }
+
+    const existingCollection = await Collection.findOne({ userId });
+    if (!existingCollection) {
+      return NextResponse.json(
+        { success: false, error: "Collection not found" },
+        { status: 404 }
+      );
+    }
+
+    const isPostExists = existingCollection?.data?.some(
+      (post) =>
+        post.imageID.toString() === postId.toString() || post.videoID === postId
+    );
+
+    if (!isPostExists) {
+      return NextResponse.json(
+        { success: false, error: "Post not found in collection" },
+        { status: 404 }
+      );
+    }
+
+    existingCollection.data = existingCollection.data?.filter(
+      (post) => post.imageID.toString() !== postId.toString()
+    );
+
+    await existingCollection?.save();
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Post removed from collection!",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+};
