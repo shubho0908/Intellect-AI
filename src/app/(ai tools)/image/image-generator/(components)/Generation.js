@@ -152,6 +152,7 @@ function page({ ModelData, Accuracy }) {
     },
   ];
 
+
   return (
     <>
       <div className="image-gen flex items-start justify-between">
@@ -169,7 +170,7 @@ function page({ ModelData, Accuracy }) {
             </Skeleton>
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
-                <Menu />
+                <Menu image={modelData?.urls[0]} />
                 <Skeleton isLoaded={modelData !== null} className="rounded-lg">
                   <Image
                     isZoomed

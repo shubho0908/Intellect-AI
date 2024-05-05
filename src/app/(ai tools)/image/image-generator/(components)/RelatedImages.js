@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
-import { RxUpload } from "react-icons/rx";
+import { RxDownload, RxUpload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
 import Menu from "./Menu";
@@ -108,6 +108,26 @@ function RelatedImages({ Data }) {
     formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
   }
 
+  const downloadImage = async (img) => {
+    const imageUrl = img;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
+
   return (
     <>
       <div className="related-images">
@@ -155,7 +175,6 @@ function RelatedImages({ Data }) {
                       <div className="left hidden md:block">
                         {context && (
                           <>
-                            <Menu />
                             <Image
                               src={context}
                               alt="image"
@@ -190,6 +209,7 @@ function RelatedImages({ Data }) {
                           {!isFollowed ? (
                             <Button
                               color="primary"
+                              isDisabled
                               className="rounded-full"
                               onPress={() => setIsFollowed(true)}
                             >
@@ -202,6 +222,7 @@ function RelatedImages({ Data }) {
                           ) : (
                             <Button
                               color="primary"
+                              isDisabled
                               variant="bordered"
                               className="rounded-full border-gray-600 text-white"
                               onPress={() => setIsFollowed(false)}
@@ -316,10 +337,11 @@ function RelatedImages({ Data }) {
                           <Button
                             color="primary"
                             variant="solid"
+                            onClick={()=>downloadImage(context)}
                             className="rounded-xl mt-10 w-full"
                           >
-                            <RxUpload fontSize={21} className="text-white" />
-                            Publish
+                            <RxDownload fontSize={21} className="text-white" />
+                            Download
                           </Button>
                         </div>
                       </div>

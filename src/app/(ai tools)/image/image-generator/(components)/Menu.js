@@ -15,7 +15,27 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 
-function Menu() {
+const downloadImage = async (img) => {
+  const imageUrl = img;
+
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = "download.png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    URL.revokeObjectURL(downloadLink.href);
+  } catch (error) {
+    console.error("Error downloading image:", error);
+  }
+};
+
+function Menu({ image }) {
   return (
     <>
       <div className="menu relative z-[2]">
@@ -33,11 +53,14 @@ function Menu() {
             </Button>
           </DropdownTrigger>
           <DropdownMenu aria-label="Static Actions">
-            <DropdownItem key="new" className="flex items-center">
+            <DropdownItem
+              onClick={() => downloadImage(image)}
+              key="new"
+              className="flex items-center"
+            >
               Download
             </DropdownItem>
             <DropdownItem key="copy">Save to collection</DropdownItem>
-            <DropdownItem key="edit">Share</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>

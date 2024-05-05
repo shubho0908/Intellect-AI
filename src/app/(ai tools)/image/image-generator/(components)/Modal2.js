@@ -11,12 +11,11 @@ import {
 } from "react-icons/md";
 import { PiMagicWand } from "react-icons/pi";
 import { RxDownload } from "react-icons/rx";
-import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
+import { IoBookmark, IoBookmarkOutline, IoHeartOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
-
 
 const litePoppins = Poppins({
   weight: "500",
@@ -35,6 +34,7 @@ function Modal2({ data }) {
   const [isSaved, setIsSaved] = useState(false);
   const [user, setUser] = useState(null);
   const [collectionData, setCollectionData] = useState(null);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   //Toasts
   const successMsg = (msg) =>
@@ -74,6 +74,25 @@ function Modal2({ data }) {
   useEffect(() => {
     getUserLikeData();
   }, [data?.userId, data?.imgId]);
+
+  const getTotalLikes = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/images/like?id=${data?.imgId}`);
+      const { success, likes, error } = await response.json();
+      if (success) {
+        setTotalLikes(likes);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+
+  useEffect(() => {
+    getTotalLikes();
+  }, [data?.imgId, isLiked]);
 
   const getCollectionData = useCallback(async (imgId) => {
     try {
@@ -208,6 +227,10 @@ function Modal2({ data }) {
         <div className="left hidden md:block">
           {data && (
             <>
+              <div className="rounded-xl p-2 bg-pink-700/80 shadow-lg flex items-center w-fit absolute z-[5] m-3 backdrop:blur-md">
+                <IoHeartOutline fontSize={26} className="text-white mr-2" />
+                {totalLikes}
+              </div>
               <Image
                 src={data?.img}
                 alt="image"
