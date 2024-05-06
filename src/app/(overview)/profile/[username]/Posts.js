@@ -7,6 +7,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  Skeleton,
   useDisclosure,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -57,33 +58,57 @@ function Posts({ userPosts, userData }) {
         {userPosts?.map((data, index) => {
           return (
             <>
-              <div
-                key={index}
-                onClick={() => {
-                  onOpen();
-                  setImgData(data);
-                }}
-              >
-                <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
-                  <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
-                    <div className="bottom px-4 absolute bottom-3">
-                      <p className={`${litePoppins.className} text-sm mt-2`}>
-                        "
-                        {data?.prompt?.length > 50
-                          ? data?.prompt?.slice(0, 50) + "..."
-                          : data?.prompt}
-                        "
+              {data?.miscData?.modelName === "Instant ID" ||
+              data?.miscData?.modelName === "Stable Diffusion XL" ? (
+                <div
+                  key={index}
+                  onClick={() => {
+                    onOpen();
+                    setImgData(data);
+                  }}
+                >
+                  <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
+                    <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
+                      <div className="bottom px-4 absolute bottom-3">
+                        <p className={`${litePoppins.className} text-sm mt-2`}>
+                          "
+                          {data?.prompt?.length > 50
+                            ? data?.prompt?.slice(0, 50) + "..."
+                            : data?.prompt}
+                          "
+                        </p>
+                      </div>
+                    </div>
+                    <Image
+                      removeWrapper
+                      alt="Card background"
+                      className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
+                      src={data?.urls[0]}
+                    />
+                  </Card>
+                </div>
+              ) : (
+                <>
+                  <Skeleton
+                    isLoaded={userPosts !== null}
+                    className={`rounded-lg ${
+                      !userPosts ? "w-full h-[250px]" : "w-fit"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <Image
+                        src="/nothing.png"
+                        width={250}
+                        height={250}
+                        alt="No post"
+                      />
+                      <p className={`${poppins.className} text-gray-400`}>
+                        User don't have any posts.
                       </p>
                     </div>
-                  </div>
-                  <Image
-                    removeWrapper
-                    alt="Card background"
-                    className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
-                    src={data?.urls[0]}
-                  />
-                </Card>
-              </div>
+                  </Skeleton>
+                </>
+              )}
             </>
           );
         })}

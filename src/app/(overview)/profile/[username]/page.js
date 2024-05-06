@@ -269,7 +269,7 @@ function Profile({ params }) {
                             alt="No post"
                           />
                           <p className={`${poppins.className} text-gray-400`}>
-                            You don't have any posts.
+                            User don't have any posts.
                           </p>
                         </div>
                       </Skeleton>

@@ -125,6 +125,24 @@ function page() {
                 </>
               );
             })}
+
+            {library && !library.length > 0 && (
+              <>
+                <div className="w-full flex flex-col items-center justify-center mt-14">
+                  <Image
+                    src="/empty-dashboard.png"
+                    width={300}
+                    height={300}
+                    alt="empty"
+                  />
+                  <p
+                    className={`${poppins.className} mt-4 text-xl w-2/3 text-center`}
+                  >
+                    Your dashboard is empty! Go and creation some masterpieces.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

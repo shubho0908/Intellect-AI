@@ -10,6 +10,7 @@ import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import { Avatar, Button, Skeleton } from "@nextui-org/react";
 import { FiMinusCircle } from "react-icons/fi";
+import toast, { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "400",
@@ -24,23 +25,32 @@ function Sidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
 
+  //Toasts
+  const successMsg = (msg) =>
+    toast.success(msg, {
+      className: `${poppins.className} text-sm`,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
+      className: `${poppins.className} text-sm`,
+    });
+
   const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch("/api/login");
-      const { success, data, error } = await response.json();
+      const { success, data } = await response.json();
       if (success) {
         setUser(data);
-      } else {
-        console.error("Error fetching user data:", error);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error.message);
+      errorMsg(error.message);
     }
   }, []);
 
   useEffect(() => {
     fetchUserData();
-  }, [fetchUserData]);
+  }, []);
 
   const Logout = async () => {
     try {
@@ -53,13 +63,15 @@ function Sidebar() {
 
       const { success } = await response.json();
       if (success) {
-        alert("Logged out successfully");
-        window.location.reload();
+        successMsg("Logged out successfully");
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
-        alert("Error occured while logging out");
+        errorMsg("Something went wrong");
       }
     } catch (error) {
-      console.log(error.message);
+      errorMsg(error.message);
     }
   };
 
@@ -69,6 +81,7 @@ function Sidebar() {
 
   return (
     <>
+      <Toaster />
       <div className="sidebar-wrapper h-[100vh] shadow-xl bg-[#120f0f70] border-gray-800 border-r-2 backdrop-blur-xl z-[21] fixed overflow-auto scrollbar-hide">
         <div
           className={`sidebar z-[21] flex flex-col w-fit p-6 md:px-10 ${poppins.className}`}

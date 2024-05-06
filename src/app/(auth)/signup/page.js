@@ -6,7 +6,6 @@ import {
   CardBody,
   Checkbox,
   Divider,
-  Image,
   Input,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import toast, { Toaster } from "react-hot-toast";
+import Image from "next/image";
 
 const poppins = Poppins({
   weight: "400",

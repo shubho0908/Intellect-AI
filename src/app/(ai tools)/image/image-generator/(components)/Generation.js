@@ -19,7 +19,8 @@ import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";
 import { prompts } from "@/others/Prompts";
 import Menu from "./Menu";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { MdOutlineFileDownloadDone } from "react-icons/md";
 
 const poppins = Poppins({
   weight: "600",
@@ -152,9 +153,9 @@ function page({ ModelData, Accuracy }) {
     },
   ];
 
-
   return (
     <>
+      <Toaster />
       <div className="image-gen flex items-start justify-between">
         <div className="left p-6 relative mt-0 ml-0 sm:ml-[120px] md:ml-[320px]">
           <div className="top ">
@@ -204,13 +205,26 @@ function page({ ModelData, Accuracy }) {
                       color="primary"
                       variant="solid"
                       className="rounded-lg"
+                      isDisabled={isPublished}
                       onClick={publishImage}
                     >
-                      <RxUpload
-                        fontSize={21}
-                        className="text-white xsm:block hidden"
-                      />
-                      Publish
+                      {!isPublished ? (
+                        <>
+                          <RxUpload
+                            fontSize={21}
+                            className="text-white xsm:block hidden"
+                          />
+                          Publish
+                        </>
+                      ) : (
+                        <>
+                          <MdOutlineFileDownloadDone
+                            fontSize={21}
+                            className="text-white xsm:block hidden"
+                          />
+                          Published
+                        </>
+                      )}
                     </Button>
                   </Skeleton>
                   <Skeleton
@@ -273,7 +287,6 @@ function page({ ModelData, Accuracy }) {
                         strokeWidth={4}
                         showValueLabel={true}
                       />
-                      
                     </Skeleton>
                   </div>
                 </div>

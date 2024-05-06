@@ -187,6 +187,24 @@ function Home() {
                   </>
                 );
               })}
+
+              {!images && (
+                <>
+                  <div className="w-full flex flex-col items-center justify-center mt-14">
+                    <Image
+                      src="/empty-home.png"
+                      width={350}
+                      height={350}
+                      alt="empty"
+                    />
+                    <p
+                      className={`${litePoppins.className} mt-2 text-xl w-2/3 text-center`}
+                    >
+                      No creations yet!
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -2,8 +2,8 @@
 import { Button, Card, Image } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { useCallback, useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
+import { BsBookmarkXFill } from "react-icons/bs";
 
 const poppins = Poppins({
   weight: "500",
@@ -58,6 +58,9 @@ function page() {
       const { success, error, message } = await response.json();
       if (success && message === "Post removed from collection!") {
         successMsg(message);
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
       }
       if (error) {
         errorMsg(error);
@@ -88,10 +91,11 @@ function page() {
                           </p>
                           <Button
                             isIconOnly
+                            color="primary"
                             onClick={() => RemovePost(data?._id)}
-                            className={`${litePoppins.className} w-1/2 bg-red-600`}
+                            className={`${litePoppins.className} w-1/2`}
                           >
-                            <MdDelete
+                            <BsBookmarkXFill
                               fontSize={22}
                               className="text-white mr-3"
                             />
@@ -110,6 +114,22 @@ function page() {
                 </>
               );
             })}
+
+            {collections && !collections.length > 0 && (
+              <>
+                <div className="w-full flex flex-col items-center justify-center mt-14">
+                  <Image
+                    src="/empty.png"
+                    width={300}
+                    height={300}
+                    alt="empty"
+                  />
+                  <p className={`${poppins.className} mt-4 text-xl w-2/3 text-center`}>
+                    Your collection is empty! Go and save some creations.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
