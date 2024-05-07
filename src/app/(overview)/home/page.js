@@ -25,7 +25,7 @@ const litePoppins2 = Poppins({
 });
 function Home() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [images, setImages] = useState(null);
+  const [homeData, setHomeData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
   const getHomeData = useCallback(async () => {
@@ -33,7 +33,7 @@ function Home() {
       const response = await fetch("/api/home");
       const { success, data, error } = await response.json();
       if (success) {
-        setImages(data);
+        setHomeData(data);
       }
       if (error) {
         console.log(error);
@@ -64,14 +64,16 @@ function Home() {
     const newData = {
       img: data?.urls[0],
       imgId: data?._id,
-      userId: data?.user?._id,
-      name: data?.user?.name,
+      userId: data?.userId?._id,
+      name: data?.userId?.name,
       prompt: data?.prompt,
       dimensions: data?.miscData?.dimensions,
       created: formattedDate,
       model: data?.miscData?.modelName,
-      profile: data?.user?.profileImg,
-      username: data?.user?.username,
+      profile: data?.userId?.profileImg,
+      username: data?.userId?.username,
+      followers: data?.userId?.followers,
+      following: data?.userId?.following,
     };
 
     setSelectedData(newData);
@@ -121,7 +123,7 @@ function Home() {
               creatives.
             </p>
             <div className="all-posts relative z-0 flex items-start flex-wrap gap-5 mt-8">
-              {images?.map((data, index) => {
+              {homeData?.map((data, index) => {
                 const formattedDate = getTimeSince(data?.createdAt);
                 return (
                   <>
@@ -137,15 +139,15 @@ function Home() {
                             <div className="flex items-center gap-4">
                               <Avatar
                                 size="md"
-                                src={data?.user?.profileImg}
+                                src={data?.userId?.profileImg}
                                 className="z-0"
                               />
                               <p
                                 className={`${litePoppins.className} text-white font-medium`}
                               >
-                                {data?.user?.username?.length > 10
-                                  ? `${data?.user?.username.slice(0, 10)}...`
-                                  : data?.user?.username}
+                                {data?.userId?.username?.length > 10
+                                  ? `${data?.userId?.username.slice(0, 10)}...`
+                                  : data?.userId?.username}
                               </p>
                             </div>
                             {/* <Button
@@ -188,7 +190,7 @@ function Home() {
                 );
               })}
 
-              {!images && (
+              {homeData && !homeData.length > 0 && (
                 <>
                   <div className="w-full flex flex-col items-center justify-center mt-14">
                     <Image

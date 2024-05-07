@@ -60,7 +60,7 @@ export const DELETE = async (req) => {
     //Delete the image from library
     const library = await Library.findOne({ userId });
     const filteredImages = library?.images?.filter(
-      (imageId) => imageId !== postId
+      (imageId) => imageId.toString() !== postId.toString()
     );
 
     library.images = filteredImages;

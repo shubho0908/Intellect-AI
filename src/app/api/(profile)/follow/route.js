@@ -95,7 +95,7 @@ export const POST = async (req) => {
     return NextResponse.json(
       {
         success: true,
-        data: isAlreadyFollowed
+        message: isAlreadyFollowed
           ? "Unfollowed successfully"
           : "Followed successfully",
       },

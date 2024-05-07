@@ -120,7 +120,9 @@ function EditAccount({ userData, close }) {
       if (data) {
         successMsg("Profile updated successfully!");
         setIsSubmit(false);
-        window.open(`/profile/${data?.username}`, "_self");
+        setTimeout(() => {
+          window.open(`/profile/${data?.username}`, "_self");
+        }, 500);
       }
       if (error && error === "Username already exists") {
         setIsSubmit(false);

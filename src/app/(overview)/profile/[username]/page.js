@@ -250,7 +250,11 @@ function Profile({ params }) {
                   </div>
                 </div>
                 <Divider className="my-4" />
-                <div className="user-posts mt-8 flex flex-col items-center">
+                <div
+                  className={`user-posts mt-8 flex flex-col ${
+                    userPosts?.length > 0 ? "items-start" : "items-center"
+                  }`}
+                >
                   {userPosts?.length > 0 ? (
                     <Posts userPosts={userPosts} userData={user} />
                   ) : (

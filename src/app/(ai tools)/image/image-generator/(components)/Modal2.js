@@ -17,11 +17,6 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { Poppins } from "next/font/google";
 
-const litePoppins = Poppins({
-  weight: "500",
-  subsets: ["latin"],
-});
-
 const litePoppins2 = Poppins({
   weight: "400",
   subsets: ["latin"],
@@ -33,7 +28,6 @@ function Modal2({ data }) {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [user, setUser] = useState(null);
-  const [collectionData, setCollectionData] = useState(null);
   const [totalLikes, setTotalLikes] = useState(0);
 
   //Toasts
@@ -58,7 +52,7 @@ function Modal2({ data }) {
   const getUserLikeData = useCallback(async () => {
     try {
       const response = await fetch(
-        `/api/images/check-like?userId=${data?.userId}&imageId=${data?.imgId}`
+        `/api/images/check-like?imageId=${data?.imgId}`
       );
       const { message } = await response.json();
       if (message === "Image liked") {
@@ -73,7 +67,7 @@ function Modal2({ data }) {
 
   useEffect(() => {
     getUserLikeData();
-  }, [data?.userId, data?.imgId]);
+  }, [data?.imgId]);
 
   const getTotalLikes = useCallback(async () => {
     try {
@@ -105,7 +99,6 @@ function Modal2({ data }) {
         );
 
         setIsSaved(imageIDs.includes(imgId));
-        setCollectionData(data?.collections);
       } else {
         errorMsg(error);
         setIsSaved(false);
@@ -221,6 +214,40 @@ function Modal2({ data }) {
     successMsg("Copied to clipboard!");
   };
 
+  useEffect(() => {
+    if (data?.userId && user?.following?.includes(data.userId)) {
+      setIsFollowed(true);
+    }
+  }, [user?.following, data?.userId]);
+
+  const FollowUser = async () => {
+    try {
+      const response = await fetch("/api/follow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userID: data?.userId,
+        }),
+      });
+
+      const { success, message, error } = await response.json();
+      if (success && message === "Unfollowed successfully") {
+        setIsFollowed(false);
+        successMsg(message);
+      } else if (success && message === "Followed successfully") {
+        setIsFollowed(true);
+        successMsg(message);
+      }
+      if (error) {
+        errorMsg(error);
+      }
+    } catch (error) {
+      errorMsg(error.message);
+    }
+  };
+
   return (
     <>
       <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start mt-4">
@@ -269,7 +296,7 @@ function Modal2({ data }) {
                   color="primary"
                   className="rounded-full ml-4"
                   isDisabled={data?.userId === user?._id}
-                  onPress={() => setIsFollowed(true)}
+                  onPress={FollowUser}
                 >
                   <RiUserFollowLine fontSize={18} className="text-white" />
                   Follow
@@ -280,7 +307,7 @@ function Modal2({ data }) {
                   isDisabled={data?.userId === user?._id}
                   variant="bordered"
                   className="rounded-full ml-4 border-gray-600 text-white"
-                  onPress={() => setIsFollowed(false)}
+                  onPress={FollowUser}
                 >
                   <RiUserUnfollowLine fontSize={18} className="text-white" />
                   Unfollow

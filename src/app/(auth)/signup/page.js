@@ -28,6 +28,7 @@ function Login() {
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [isClicked, setIsCliked] = useState(false);
 
   const welcome = (name) =>
     toast.success(`Welcome, ${name}!`, {
@@ -40,8 +41,10 @@ function Login() {
 
   const Signup = async () => {
     try {
+      setIsCliked(true);
       if (email == null || password == null || name == null) {
         errorToast("Please fill all the fields");
+        setIsCliked(false);
       }
       const response = await fetch("/api/register", {
         method: "POST",
@@ -53,15 +56,18 @@ function Login() {
 
       const { success, data, error } = await response.json();
       if (success == true) {
+        setIsCliked(false);
         welcome(data?.name);
         setTimeout(() => {
           window.location.reload();
         }, 500);
       } else {
         errorToast(error);
+        setIsCliked(false);
       }
     } catch (error) {
       errorToast(error.message);
+      setIsCliked(false);
     }
   };
 
@@ -136,7 +142,9 @@ function Login() {
                 </Checkbox>
               </div>
 
-              <Button onClick={Signup} isDisabled={!isSelected} color="primary">
+              <Button
+              isLoading={isClicked}
+              onClick={Signup} isDisabled={!isSelected} color="primary">
                 Sign Up
               </Button>
               <Divider orientation="horizontal" className="mt-4 mb-1" />
