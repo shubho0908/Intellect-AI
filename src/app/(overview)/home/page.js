@@ -28,7 +28,7 @@ function Home() {
   const [homeData, setHomeData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const getHomeData = useCallback(async () => {
+  const getHomeData = async () => {
     try {
       const response = await fetch("/api/home");
       const { success, data, error } = await response.json();
@@ -41,7 +41,7 @@ function Home() {
     } catch (error) {
       console.log(error.message);
     }
-  });
+  };
 
   useEffect(() => {
     getHomeData();

@@ -60,7 +60,7 @@ function page() {
         successMsg(message);
         setTimeout(() => {
           window.location.reload();
-        }, 800);
+        }, 500);
       }
       if (error) {
         errorMsg(error);

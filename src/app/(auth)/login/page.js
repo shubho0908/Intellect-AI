@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  Divider,
-  Input,
-} from "@nextui-org/react";
+import { Button, Card, CardBody, Divider, Input } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { useState } from "react";
@@ -25,6 +19,7 @@ function Login() {
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [isClicked, setIsCliked] = useState(false);
 
   const welcome = (name) =>
     toast.success(`Welcome back, ${name}!`, {
@@ -37,8 +32,10 @@ function Login() {
 
   const Login = async () => {
     try {
+      setIsCliked(true);
       if (email == null || password == null) {
         errorToast("Please fill all the fields");
+        setIsCliked(false);
       }
       const response = await fetch("/api/login", {
         method: "POST",
@@ -55,9 +52,11 @@ function Login() {
           window.location.reload();
         }, 500);
       } else {
+        setIsCliked(false);
         errorToast(error);
       }
     } catch (error) {
+      setIsCliked(false);
       errorToast(error.message);
     }
   };
@@ -114,7 +113,7 @@ function Login() {
                 type={isVisible ? "text" : "password"}
               />
 
-              <Button onClick={Login} color="primary">
+              <Button isLoading={isClicked} onClick={Login} color="primary">
                 Log In
               </Button>
               <Divider orientation="horizontal" className="mt-4 mb-1" />

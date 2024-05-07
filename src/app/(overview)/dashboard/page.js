@@ -61,6 +61,9 @@ function page() {
       const { success, message, error } = await response.json();
       if (success && message === "Image deleted") {
         successMsg(message + " successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }
       if (error) {
         errorMsg(error);

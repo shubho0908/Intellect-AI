@@ -56,7 +56,6 @@ function Login() {
 
       const { success, data, error } = await response.json();
       if (success == true) {
-        setIsCliked(false);
         welcome(data?.name);
         setTimeout(() => {
           window.location.reload();
