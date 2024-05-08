@@ -4,6 +4,7 @@ import React from "react";
 import { Image, Card, Chip } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import Modaal from "./Modaal";
+import { Toaster } from "react-hot-toast";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -51,6 +52,7 @@ function page() {
 
   return (
     <>
+      <Toaster />
       <div className="avatar fadein flex flex-col items-center sm:ml-[120px] md:ml-[330px] mr-0 sm:mr-4 p-4">
         <div className="top flex items-center justify-between mt-10">
           <div className="left ml-8">

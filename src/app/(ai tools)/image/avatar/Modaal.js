@@ -16,7 +16,11 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
-import { MdOutlineDone, MdDone, MdBookmarkAdd, MdDelete } from "react-icons/md";
+import {
+  MdOutlineDone,
+  MdDone,
+  MdOutlineFileDownloadDone,
+} from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { HiOutlineDownload, HiOutlineUpload } from "react-icons/hi";
 import {
@@ -26,6 +30,7 @@ import {
   cyberpunk,
   traditional,
 } from "./prompts";
+import toast from "react-hot-toast";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -49,6 +54,20 @@ export default function Modaal() {
   const [isCreateAvatar, setIsCreateAvatar] = useState(false);
   const [avatarIMG, setAvatarIMG] = useState(null);
   const [prompt, setPrompt] = useState(null);
+  const [avatarData, setAvatarData] = useState(null);
+  const [isPublished, setIsPublished] = useState(false);
+
+  //Toasts
+
+  const successToast = (data) =>
+    toast.success(data, {
+      className: litePoppins2.className,
+    });
+
+  const errorToast = (err) =>
+    toast.error(`${err}`, {
+      className: litePoppins2.className,
+    });
 
   const handleFileDrop = (event) => {
     event.preventDefault();
@@ -98,13 +117,13 @@ export default function Modaal() {
           const data = await response.json();
           setUploadedIMG(data.secure_url);
         } catch (error) {
-          console.log("Error uploading image:", error.message);
+          errorToast(error.message);
         }
       };
 
       reader.readAsDataURL(file);
     } catch (error) {
-      console.log("Error converting file to base64:", error.message);
+      errorToast(error.message);
     }
   };
 
@@ -218,12 +237,16 @@ export default function Modaal() {
         },
       });
 
-      const { success, data, error } = await response.json();
+      const { success, image, data, error } = await response.json();
       if (success) {
-        setAvatarIMG(data);
+        setAvatarIMG(image);
+        setAvatarData(data);
+      }
+      if (error) {
+        errorToast(error);
       }
     } catch (error) {
-      console.log(error.message);
+      errorToast(error.message);
     }
   };
 
@@ -243,7 +266,32 @@ export default function Modaal() {
 
       URL.revokeObjectURL(downloadLink.href);
     } catch (error) {
-      console.error("Error downloading image:", error);
+      errorToast(error.message);
+    }
+  };
+
+  const publishImage = async () => {
+    try {
+      const response = await fetch("/api/images/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: avatarData?._id,
+        }),
+      });
+
+      const { success, message, error } = await response.json();
+      if (success && message === "Image published!") {
+        successToast(message);
+        setIsPublished(true);
+      }
+      if (error) {
+        errorToast(error);
+      }
+    } catch (error) {
+      errorToast(error.message);
     }
   };
 
@@ -707,52 +755,32 @@ export default function Modaal() {
                                   />
                                 </Button>
                               </Tooltip>
-                              <Tooltip
-                                showArrow={true}
-                                placement="right"
-                                color="primary"
-                                className={litePoppins2.className}
-                                content="Save to collection"
-                              >
-                                <Button
-                                  isIconOnly
-                                  className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
-                                >
-                                  <MdBookmarkAdd
-                                    fontSize={22}
-                                    className="text-white"
-                                  />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip
-                                showArrow={true}
-                                placement="right"
-                                color="danger"
-                                className={`${litePoppins2.className} bg-red-600`}
-                                content="Delete"
-                              >
-                                <Button
-                                  isIconOnly
-                                  className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
-                                >
-                                  <MdDelete
-                                    fontSize={22}
-                                    className="text-white"
-                                  />
-                                </Button>
-                              </Tooltip>
                             </div>
                           </div>
                           <div className="buttons flex items-center justify-between mt-4">
                             <Button
                               color="primary"
+                              onClick={publishImage}
+                              isDisabled={isPublished}
                               className={`${litePoppins.className} w-full`}
                             >
-                              <HiOutlineUpload
-                                fontSize={22}
-                                className="text-white"
-                              />
-                              Publish
+                              {!isPublished ? (
+                                <>
+                                  <HiOutlineUpload
+                                    fontSize={21}
+                                    className="text-white xsm:block hidden"
+                                  />
+                                  Publish
+                                </>
+                              ) : (
+                                <>
+                                  <MdOutlineFileDownloadDone
+                                    fontSize={21}
+                                    className="text-white xsm:block hidden"
+                                  />
+                                  Published
+                                </>
+                              )}
                             </Button>
                           </div>
                         </div>

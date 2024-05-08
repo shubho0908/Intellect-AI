@@ -18,8 +18,8 @@ import RelatedImages from "./RelatedImages";
 import { RxUpload } from "react-icons/rx";
 import { PiMagicWand } from "react-icons/pi";
 import { prompts } from "@/others/Prompts";
-import Menu from "./Menu";
 import toast, { Toaster } from "react-hot-toast";
+import { GoDownload } from "react-icons/go";
 import { MdOutlineFileDownloadDone } from "react-icons/md";
 
 const poppins = Poppins({
@@ -118,7 +118,6 @@ function page({ ModelData, Accuracy }) {
 
   const publishImage = async () => {
     try {
-      setIsPublished("loading");
       const response = await fetch("/api/images/publish", {
         method: "POST",
         headers: {
@@ -153,6 +152,26 @@ function page({ ModelData, Accuracy }) {
     },
   ];
 
+  const downloadImage = async (img) => {
+    const imageUrl = img;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      errorMsg(error.message);
+    }
+  };
+
   return (
     <>
       <Toaster />
@@ -171,7 +190,6 @@ function page({ ModelData, Accuracy }) {
             </Skeleton>
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
-                <Menu image={modelData?.urls[0]} />
                 <Skeleton isLoaded={modelData !== null} className="rounded-lg">
                   <Image
                     isZoomed
@@ -230,7 +248,20 @@ function page({ ModelData, Accuracy }) {
                   <Skeleton
                     isLoaded={modelData !== null}
                     className="rounded-lg mt-2 mb-2 w-fit"
-                  ></Skeleton>
+                  >
+                    <Button
+                      color="primary"
+                      variant="solid"
+                      className="rounded-lg"
+                      onClick={() => downloadImage(modelData?.urls[0])}
+                    >
+                      <GoDownload
+                        fontSize={21}
+                        className="text-white xsm:block hidden"
+                      />
+                      Download
+                    </Button>
+                  </Skeleton>
                 </div>
 
                 <div className="more-details flex items-start gap-[3.8rem]">
