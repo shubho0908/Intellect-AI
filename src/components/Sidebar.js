@@ -6,11 +6,24 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { useCallback, useEffect, useState } from "react";
 import { GoHome, GoFileDirectory } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { IoVideocamOutline, IoImageOutline } from "react-icons/io5";
+import {
+  IoVideocamOutline,
+  IoImageOutline,
+  IoSearchOutline,
+} from "react-icons/io5";
 import { usePathname } from "next/navigation";
-import { Avatar, Button, Skeleton } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  Skeleton,
+  useDisclosure,
+} from "@nextui-org/react";
 import { FiMinusCircle } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
+import Search from "./Search";
 
 const poppins = Poppins({
   weight: "400",
@@ -18,6 +31,7 @@ const poppins = Poppins({
 });
 
 function Sidebar() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isDown, setIsDown] = useState({
     image: false,
     video: false,
@@ -136,6 +150,13 @@ function Sidebar() {
               <GoHome fontSize={23} className="text-white md:mr-5" />
               <p className="hidden md:block">Home</p>
             </Link>
+            <div
+              onClick={onOpen}
+              className={`hover:bg-[#0266D9] p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1 cursor-pointer`}
+            >
+              <IoSearchOutline fontSize={23} className="text-white md:mr-5" />
+              <p className="hidden md:block">Search</p>
+            </div>
             <Link
               href="/dashboard"
               className={`hover:bg-[#0266D9] ${
@@ -302,6 +323,27 @@ function Sidebar() {
           </Button>
         </div>
       </div>
+
+      {/* Modal  */}
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        isDismissable={false}
+        placement="top"
+        size="2xl"
+        onOpenChange={onOpenChange}
+        className={`${poppins.className} my-modal`}
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalBody className="">
+                <Search close={onClose} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

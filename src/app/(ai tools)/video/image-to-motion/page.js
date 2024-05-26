@@ -414,7 +414,7 @@ function page() {
                           <div className="compare flex items-start gap-5">
                             <div className="left text-center mt-6">
                               <p>ORIGINAL</p>
-                              <div className="flex flex-row-reverse">
+                              <div className="flex flex-row-reverse mt-2">
                                 <Image
                                   className="rounded-xl aspect-square object-cover z-[1]"
                                   src={uploadedIMG}
@@ -446,7 +446,7 @@ function page() {
                             <div className="right text-center mt-6">
                               <p>VIDEO</p>
 
-                              <div className="img-tools flex items-start">
+                              <div className="img-tools flex items-start mt-2">
                                 <video
                                   width="500"
                                   height="400"
@@ -476,23 +476,7 @@ function page() {
                                       />
                                     </Button>
                                   </Tooltip>
-                                  <Tooltip
-                                    showArrow={true}
-                                    placement="right"
-                                    color="primary"
-                                    className={litePoppins2.className}
-                                    content="Save to collection"
-                                  >
-                                    <Button
-                                      isIconOnly
-                                      className="rounded-lg bg-[#1e1b1a75] backdrop-blur-sm"
-                                    >
-                                      <MdBookmarkAdd
-                                        fontSize={22}
-                                        className="text-white"
-                                      />
-                                    </Button>
-                                  </Tooltip>
+                                  
                                 </div>
                               </div>
                             </div>

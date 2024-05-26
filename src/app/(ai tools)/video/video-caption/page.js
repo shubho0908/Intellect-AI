@@ -162,12 +162,13 @@ function page() {
   const generateVideo = async () => {
     try {
       setIsSubmitClicked(true);
+      const fontSizeValue = parseInt(fontSize?.currentKey, 10);
       const response = await fetch("/api/videos/video-subtitle", {
         method: "POST",
         body: JSON.stringify({
           video: uploadedVideo,
           font: fontStyle?.currentKey,
-          fontSize: fontSize?.currentKey,
+          fontSize: fontSizeValue,
           color,
           highlightColor,
         }),
@@ -187,7 +188,7 @@ function page() {
     }
   };
 
-  const fontSizes = [2, 4, 6, , 7, 8, 10];
+  const fontSizes = ["2 rem", "4 rem", "6 rem", "7 rem", "8 rem", "10 rem"];
 
   const download = async (data) => {
     const downloadUrl = data;
@@ -320,6 +321,42 @@ function page() {
                 </div>
               </CardBody>
             </Card>
+          </div>
+        </div>
+        <div
+          className={`${litePoppins.className} text-[2rem] flex flex-col items-center mt-[7rem]`}
+        >
+          <p className="text-[2rem]">Example</p>
+          <div className="videos-compare mt-8 flex items-center">
+            <div className="vid text-sm flex flex-col-reverse">
+              <video
+                width="550"
+                height="550"
+                loop
+                autoPlay
+                controls
+                preload="none"
+                className="rounded-xl shadow-lg mr-6"
+              >
+                <source src="/caption/input.mp4" type="video/mp4" />
+              </video>
+              <p className={`${litePoppins.className} text-lg text-center mb-2`}>ORIGINAL</p>
+            </div>
+            <div className="vid text-sm flex flex-col-reverse">
+              <video
+                width="550"
+                height="550"
+                loop
+                autoPlay
+                controls
+                muted
+                preload="none"
+                className="rounded-xl shadow-lg"
+              >
+                <source src="/caption/demo.mp4" type="video/mp4" />
+              </video>
+              <p className={`${litePoppins.className} text-lg text-center mb-2`}>GENERATED</p>
+            </div>
           </div>
         </div>
       </div>
@@ -571,7 +608,7 @@ function page() {
                                     key={size}
                                     value={size}
                                   >
-                                    {size.toString()} rem
+                                    {size}
                                   </SelectItem>
                                 ))}
                               </Select>
@@ -636,7 +673,7 @@ function page() {
                         </video>
                         <Button
                           className={`${litePoppins.className} mt-4`}
-                          onClick={()=> download(CaptionedVideo)}
+                          onClick={() => download(CaptionedVideo)}
                           color="primary"
                         >
                           Download video

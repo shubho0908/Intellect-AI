@@ -49,7 +49,7 @@ function Profile({ params }) {
       className: `${poppins.className} text-sm`,
     });
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = async () => {
     try {
       const response = await fetch(`/api/user?username=${params?.username}`);
       const { success, data, error } = await response.json();
@@ -62,13 +62,13 @@ function Profile({ params }) {
     } catch (error) {
       errorMsg(error.message);
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  const fetchMyData = useCallback(async () => {
+  const fetchMyData = async () => {
     try {
       const response = await fetch("/api/login");
       const { success, data, error } = await response.json();
@@ -80,7 +80,7 @@ function Profile({ params }) {
     } catch (error) {
       errorMsg(error.message);
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchMyData();

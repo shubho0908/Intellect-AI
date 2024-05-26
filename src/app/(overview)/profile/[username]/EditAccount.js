@@ -286,20 +286,6 @@ function EditAccount({ userData, close }) {
                   </SelectItem>
                 ))}
               </Select>
-              <div
-                className={`${poppins.className} flex flex-col gap-2 ml-[1.8rem]`}
-              >
-                <p className="text-sm">Account type?</p>
-                <div className="flex items-center">
-                  <Switch
-                    isSelected={isSelected}
-                    onValueChange={setIsSelected}
-                  ></Switch>
-                  <p className="text-small text-default-500">
-                    {isSelected ? "Public" : "Private"}
-                  </p>
-                </div>
-              </div>
             </div>
             <div className={`${poppins.className} summary mt-6`}>
               <Textarea

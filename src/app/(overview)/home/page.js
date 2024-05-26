@@ -10,7 +10,7 @@ import {
   ModalBody,
   useDisclosure,
 } from "@nextui-org/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 import { Toaster } from "react-hot-toast";
 
@@ -30,7 +30,14 @@ function Home() {
 
   const getHomeData = async () => {
     try {
-      const response = await fetch("/api/home");
+      const response = await fetch("/api/home", {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      });
       const { success, data, error } = await response.json();
       if (success) {
         setHomeData(data);
@@ -123,7 +130,7 @@ function Home() {
               creatives.
             </p>
             <div className="all-posts relative z-0 flex items-start flex-wrap gap-5 mt-8">
-              {homeData?.map((data, index) => {
+              {homeData?.reverse()?.map((data, index) => {
                 const formattedDate = getTimeSince(data?.createdAt);
                 return (
                   <>
@@ -133,7 +140,7 @@ function Home() {
                         handleCardClick(data);
                       }}
                     >
-                      <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
+                      <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[270px] w-[270px] relative group">
                         <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
                           <div className="flex top items-center justify-between w-full px-4">
                             <div className="flex items-center gap-4">
