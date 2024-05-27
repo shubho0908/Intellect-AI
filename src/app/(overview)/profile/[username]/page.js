@@ -125,6 +125,17 @@ function Profile({ params }) {
     successMsg("Link copied to clipboard");
   };
 
+  const professions = {
+    "Designer": "🎨",
+    "Developer": "💻",
+    "Freelancer": "👨🏻‍💻",
+    "Content Creator": "🎥",
+    "Musician": "🎶",
+    "Photographer": "📷",
+    "Writer": "📝",
+    "Others": "🤙🏻",
+  }
+
   return (
     <>
       <Toaster />
@@ -219,7 +230,7 @@ function Profile({ params }) {
                 >
                   {user?.role ? (
                     <Chip color="default" className="mb-3">
-                      💻 {user?.role}
+                      {professions[user?.role]} {user?.role}
                     </Chip>
                   ) : null}
                 </div>

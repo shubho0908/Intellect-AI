@@ -2,7 +2,18 @@
 
 import { Poppins } from "next/font/google";
 import Generation from "./(components)/Generation";
-import { Button, Image, Input, Skeleton } from "@nextui-org/react";
+import {
+  Button,
+  Image,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Progress,
+  Skeleton,
+  useDisclosure,
+} from "@nextui-org/react";
 import { PiMagicWand } from "react-icons/pi";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -17,23 +28,11 @@ const litePoppins2 = Poppins({
   subsets: ["latin"],
 });
 
-const allImages = [
-  "https://replicate.delivery/pbxt/koQLfGV4o8yWGi4reeIvJQwCxmxrD3S7iQFGre8IfISrpnCTC/out-0.png",
-  "https://replicate.delivery/pbxt/CHnlYaFyiezoOyC5RS6qHiK6rKpG3KME2e65dpzDFHtJBVYSA/out-0.png",
-  "https://replicate.delivery/pbxt/mdSJbcSteRwevUIWG1nl5HIPg3DKTtieJxoLAf7JD5eXDpCTC/out-0.png",
-  "https://replicate.delivery/pbxt/mgsk9Y7uzU4hCpoLn8kmeIdHVmdfz9b3DBR276mRd8ie4i2kA/out-0.png",
-  "https://replicate.delivery/pbxt/zN4lsQv0j85WL9ix5WIFJ8ed8tIgdkg9jAVmUI1ie3L109DSA/out-0.png",
-  "https://replicate.delivery/pbxt/JozcWrqHFpIAHdcswjPfWzU3arftr0HmWUWRT1DMJrxn89DSA/out-0.png",
-  "https://replicate.delivery/pbxt/VHFfxS2zJYVMVy4Itjzw4ChNdQtEah9wkcUvyPDcPud72eDSA/out-0.png",
-  "https://replicate.delivery/pbxt/C3TyPTuH1ALBBZ2IcgAcq7H8c2Ednsep2J14EmXyW3WhDnnIA/out-0.png",
-];
-
 function page() {
   const [prompt, setPrompt] = useState("");
-  const [isClicked, setIsClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [Data, setData] = useState(null);
-  const [accuracy, setAccuracy] = useState(0)
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,6 +42,12 @@ function page() {
     }, 2000);
   }, [isLoading]);
 
+  useEffect(() => {
+    if (Data !== null) {
+      onClose();
+    }
+  }, [Data]);
+
   const errorToast = (err) =>
     toast.error(`${err}`, {
       className: litePoppins.className,
@@ -50,7 +55,7 @@ function page() {
 
   const firstGeneration = async () => {
     try {
-      setIsClicked(true);
+      onOpen();
       const response = await fetch("/api/images/text-to-image", {
         method: "POST",
         headers: {
@@ -61,14 +66,12 @@ function page() {
           height: 1024,
           width: 1024,
           numberOfOutputs: 4,
-          model: "Sdxl",
         }),
       });
 
-      const { success, data, error, accuracy } = await response.json();
+      const { success, data, error } = await response.json();
       if (success) {
         setData(data);
-        setAccuracy(accuracy)
       } else {
         errorToast(error);
       }
@@ -77,10 +80,21 @@ function page() {
     }
   };
 
-  if (isClicked) {
+  const allImages = [
+    "https://replicate.delivery/pbxt/koQLfGV4o8yWGi4reeIvJQwCxmxrD3S7iQFGre8IfISrpnCTC/out-0.png",
+    "https://replicate.delivery/pbxt/CHnlYaFyiezoOyC5RS6qHiK6rKpG3KME2e65dpzDFHtJBVYSA/out-0.png",
+    "https://replicate.delivery/pbxt/mdSJbcSteRwevUIWG1nl5HIPg3DKTtieJxoLAf7JD5eXDpCTC/out-0.png",
+    "https://replicate.delivery/pbxt/mgsk9Y7uzU4hCpoLn8kmeIdHVmdfz9b3DBR276mRd8ie4i2kA/out-0.png",
+    "https://replicate.delivery/pbxt/zN4lsQv0j85WL9ix5WIFJ8ed8tIgdkg9jAVmUI1ie3L109DSA/out-0.png",
+    "https://replicate.delivery/pbxt/JozcWrqHFpIAHdcswjPfWzU3arftr0HmWUWRT1DMJrxn89DSA/out-0.png",
+    "https://replicate.delivery/pbxt/VHFfxS2zJYVMVy4Itjzw4ChNdQtEah9wkcUvyPDcPud72eDSA/out-0.png",
+    "https://replicate.delivery/pbxt/C3TyPTuH1ALBBZ2IcgAcq7H8c2Ednsep2J14EmXyW3WhDnnIA/out-0.png",
+  ];
+
+  if (Data !== null) {
     return (
       <>
-        <Generation ModelData={Data} Accuracy={accuracy} />
+        <Generation ModelData={Data} />
       </>
     );
   }
@@ -315,6 +329,92 @@ function page() {
           </div>
         </div>
       </div>
+
+      {/* Modal  */}
+
+      <Modal
+        backdrop="blur"
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        isDismissable={false}
+        size="2xl"
+        onClose={() => {
+          onClose();
+        }}
+        className={`${litePoppins.className} my-modal`}
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <div className="creating-avatar fadein flex flex-col items-center w-full p-5">
+                  <p className={`${litePoppins.className} text-xl`}>
+                    Generating your image
+                  </p>
+                  <p className={`${litePoppins2.className} mt-2 text-gray-400`}>
+                    Please wait... this process may take a while.
+                  </p>
+                  <Progress
+                    size="sm"
+                    isIndeterminate
+                    aria-label="Loading..."
+                    className="max-w-md py-5"
+                  />
+                  <div
+                    x-data="{}"
+                    x-init="$nextTick(() => {
+        let ul = $refs.logos;
+        ul.insertAdjacentHTML('afterend', ul.outerHTML);
+        ul.nextSibling.setAttribute('aria-hidden', 'true');
+    })"
+                    className="sm:w-[80%] w-full mt-6 inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+                  >
+                    <ul
+                      x-ref="logos"
+                      className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                    >
+                      {allImages?.map((image, index) => {
+                        return (
+                          <>
+                            <li key={index}>
+                              <Image
+                                className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                src={image}
+                                width={150}
+                                height={150}
+                              />
+                            </li>
+                          </>
+                        );
+                      })}
+                    </ul>
+                    <ul
+                      className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                      aria-hidden="true"
+                    >
+                      {allImages?.map((image, index) => {
+                        return (
+                          <>
+                            <li key={index}>
+                              <Image
+                                className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                src={image}
+                                width={150}
+                                height={150}
+                              />
+                            </li>
+                          </>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
     </>
   );
 }

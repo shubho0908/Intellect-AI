@@ -13,8 +13,8 @@ const imageSchema = new Schema(
         ref: "User",
       },
     ],
-    urls: {
-      type: [String],
+    url: {
+      type: String,
       required: true,
     },
     prompt: {

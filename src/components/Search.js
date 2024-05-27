@@ -3,14 +3,16 @@
 import {
   Card,
   CircularProgress,
+  Divider,
   Image,
   Input,
-  useDisclosure,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { IoSearchOutline } from "react-icons/io5";
+import { TbFileSad } from "react-icons/tb";
 
 const poppins = Poppins({
   weight: "400",
@@ -77,15 +79,22 @@ function Search({ close }) {
       <div className="flex w-full mt-8 mb-4">
         <Input
           type="email"
+          isClearable
           variant="bordered"
           placeholder="search for user or posts..."
           onChange={handleChange}
           value={query}
+          size="lg"
+          className="outline-none"
+          onClear={() => setQuery("")}
+          startContent={
+            <IoSearchOutline className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+          }
         />
       </div>
       {user.length > 0 && !loading && (
         <div className="flex flex-col gap-3">
-          <p>Users</p>
+          <p>Users ({user?.length})</p>
           {user.map((user) => (
             <div
               key={user?._id}
@@ -109,10 +118,11 @@ function Search({ close }) {
           ))}
         </div>
       )}
+      {posts.length > 0 && user.length > 0 && !loading && <Divider />}
       {posts.length > 0 && !loading && (
         <>
-          <div className="mt-4">
-            <p>Posts</p>
+          <div>
+            <p>Posts ({posts?.length})</p>
             <div className="flex gap-4 flex-wrap mt-4">
               {posts.map((post) => (
                 <Card
@@ -158,8 +168,23 @@ function Search({ close }) {
         </>
       )}
       <div className="w-full flex justify-center">
-        {loading && <CircularProgress size="lg" aria-label="Loading..." />}
+        {loading && query?.length > 0 && (
+          <CircularProgress
+            size="lg"
+            className="mb-4"
+            aria-label="Loading..."
+          />
+        )}
       </div>
+      {user.length === 0 &&
+        posts.length === 0 &&
+        !loading &&
+        (query?.length > 0) && (
+          <div className="flex fadein flex-col items-center justify-center mb-4">
+            <TbFileSad fontSize={60} className="text-gray-500 mb-2" />
+            <p className="text-gray-400 text-lg">No results found</p>
+          </div>
+        )}
     </>
   );
 }

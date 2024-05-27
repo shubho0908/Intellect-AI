@@ -6,11 +6,11 @@ import {
   Button,
   Image,
   Textarea,
-  Select,
-  SelectItem,
-  Skeleton,
-  CircularProgress,
-  Chip,
+  Modal,
+  ModalContent,
+  ModalBody,
+  Progress,
+  useDisclosure,
 } from "@nextui-org/react";
 import Playground from "@/components/Playground";
 import Modaal from "./Modaal";
@@ -31,15 +31,15 @@ const litePoppins = Poppins({
   weight: "400",
   subsets: ["latin"],
 });
-function page({ ModelData, Accuracy }) {
+function page({ ModelData }) {
   const [modelData, setModelData] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [useAi, setUseAi] = useState(false);
   const [ratio, setRatio] = useState("1:1");
   const [totalImages, setTotalImages] = useState(4);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
-  const [value, setValue] = useState(new Set([]));
   const [isPublished, setIsPublished] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   useEffect(() => {
     if (ModelData !== null) {
@@ -65,7 +65,7 @@ function page({ ModelData, Accuracy }) {
         hour: "numeric",
         minute: "numeric",
         hour12: true,
-      }).format(new Date(modelData?.createdAt))
+      }).format(new Date(modelData && modelData[0]?.createdAt))
     : null;
 
   const generateHeightWidth = () => {
@@ -85,7 +85,7 @@ function page({ ModelData, Accuracy }) {
 
   const generateImage = async () => {
     try {
-      setModelData(null);
+      onOpen();
       setIsBtnLoading(true);
       const { height, width } = generateHeightWidth();
       const response = await fetch("/api/images/text-to-image", {
@@ -98,7 +98,6 @@ function page({ ModelData, Accuracy }) {
           height,
           width,
           numberOfOutputs: totalImages,
-          model: value === "Sdxl-lightning" ? "Sdxl" : "dreamshaper",
         }),
       });
 
@@ -106,13 +105,16 @@ function page({ ModelData, Accuracy }) {
       if (success) {
         setModelData(data);
         setIsBtnLoading(false);
+        onClose();
       } else {
         errorToast(error);
         setIsBtnLoading(false);
+        onClose();
       }
     } catch (error) {
       errorToast("An error occurred:", error.message);
       setIsBtnLoading(false);
+      onClose();
     }
   };
 
@@ -124,7 +126,7 @@ function page({ ModelData, Accuracy }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imageId: modelData?._id,
+          imageId: modelData[0]?._id,
         }),
       });
 
@@ -140,17 +142,6 @@ function page({ ModelData, Accuracy }) {
       errorToast(error.message);
     }
   };
-
-  const models = [
-    {
-      value: "Dreamshaper-xl-turbo",
-      label: "Dreamshaper-xl-turbo",
-    },
-    {
-      value: "Sdxl-lightning",
-      label: "Sdxl-lightning",
-    },
-  ];
 
   const downloadImage = async (img) => {
     const imageUrl = img;
@@ -172,160 +163,122 @@ function page({ ModelData, Accuracy }) {
     }
   };
 
+  const allImages = [
+    "https://replicate.delivery/pbxt/koQLfGV4o8yWGi4reeIvJQwCxmxrD3S7iQFGre8IfISrpnCTC/out-0.png",
+    "https://replicate.delivery/pbxt/CHnlYaFyiezoOyC5RS6qHiK6rKpG3KME2e65dpzDFHtJBVYSA/out-0.png",
+    "https://replicate.delivery/pbxt/mdSJbcSteRwevUIWG1nl5HIPg3DKTtieJxoLAf7JD5eXDpCTC/out-0.png",
+    "https://replicate.delivery/pbxt/mgsk9Y7uzU4hCpoLn8kmeIdHVmdfz9b3DBR276mRd8ie4i2kA/out-0.png",
+    "https://replicate.delivery/pbxt/zN4lsQv0j85WL9ix5WIFJ8ed8tIgdkg9jAVmUI1ie3L109DSA/out-0.png",
+    "https://replicate.delivery/pbxt/JozcWrqHFpIAHdcswjPfWzU3arftr0HmWUWRT1DMJrxn89DSA/out-0.png",
+    "https://replicate.delivery/pbxt/VHFfxS2zJYVMVy4Itjzw4ChNdQtEah9wkcUvyPDcPud72eDSA/out-0.png",
+    "https://replicate.delivery/pbxt/C3TyPTuH1ALBBZ2IcgAcq7H8c2Ednsep2J14EmXyW3WhDnnIA/out-0.png",
+  ];
+
   return (
     <>
       <Toaster />
-      <div className="image-gen flex items-start justify-between">
+      <div className="image-gen fadein flex items-start justify-between">
         <div className="left p-6 relative mt-0 ml-0 sm:ml-[120px] md:ml-[320px]">
           <div className="top ">
             <Modaal title="Generate Image" data={<Playground />} />
 
-            <Skeleton
-              isLoaded={modelData !== null}
-              className="rounded-lg w-fit"
-            >
-              <h1 className={`${poppins.className} w-fit text-2xl`}>
-                Generate Image
-              </h1>
-            </Skeleton>
+            <h1 className={`${poppins.className} w-fit text-2xl`}>
+              Generate Image
+            </h1>
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
-                <Skeleton isLoaded={modelData !== null} className="rounded-lg">
-                  <Image
-                    isZoomed
-                    src={modelData?.urls[0]}
-                    alt="image"
-                    width={500}
-                    height={500}
-                    className="cursor-pointer z-[1]"
-                  />
-                </Skeleton>
+                <Image
+                  isZoomed
+                  src={modelData && modelData[0]?.url}
+                  alt="image"
+                  width={500}
+                  height={500}
+                  className="cursor-pointer z-[1]"
+                />
               </div>
               <div
                 className={`${litePoppins.className} right  py-4 w-[100%] newXL:w-3/4 newXL:px-8 newXL:py-0`}
               >
-                <Skeleton isLoaded={modelData !== null} className="rounded-lg">
-                  <div className="prompt">
-                    <p className="text-gray-400">Prompt</p>
-                    <p className="mt-2">
-                      {modelData?.prompt.length >= 90
-                        ? modelData?.prompt.slice(0, 90) + "..."
-                        : modelData?.prompt}
-                    </p>
-                  </div>
-                </Skeleton>
+                <div className="prompt">
+                  <p className="text-gray-400">Prompt</p>
+                  <p className="mt-2">
+                    {modelData && modelData[0]?.prompt.length >= 90
+                      ? modelData && modelData[0]?.prompt.slice(0, 90) + "..."
+                      : modelData && modelData[0]?.prompt}
+                  </p>
+                </div>
                 <div className="buttons flex flex-wrap gap-4 items-end py-6">
-                  <Skeleton
-                    isLoaded={modelData !== null}
-                    className="rounded-lg mt-2 mb-2 w-fit"
+                  <Button
+                    color="primary"
+                    variant="solid"
+                    className="rounded-lg"
+                    isDisabled={isPublished}
+                    onClick={publishImage}
                   >
-                    <Button
-                      color="primary"
-                      variant="solid"
-                      className="rounded-lg"
-                      isDisabled={isPublished}
-                      onClick={publishImage}
-                    >
-                      {!isPublished ? (
-                        <>
-                          <RxUpload
-                            fontSize={21}
-                            className="text-white xsm:block hidden"
-                          />
-                          Publish
-                        </>
-                      ) : (
-                        <>
-                          <MdOutlineFileDownloadDone
-                            fontSize={21}
-                            className="text-white xsm:block hidden"
-                          />
-                          Published
-                        </>
-                      )}
-                    </Button>
-                  </Skeleton>
-                  <Skeleton
-                    isLoaded={modelData !== null}
-                    className="rounded-lg mt-2 mb-2 w-fit"
+                    {!isPublished ? (
+                      <>
+                        <RxUpload
+                          fontSize={21}
+                          className="text-white xsm:block hidden"
+                        />
+                        Publish
+                      </>
+                    ) : (
+                      <>
+                        <MdOutlineFileDownloadDone
+                          fontSize={21}
+                          className="text-white xsm:block hidden"
+                        />
+                        Published
+                      </>
+                    )}
+                  </Button>
+
+                  <Button
+                    color="primary"
+                    variant="solid"
+                    className="rounded-lg"
+                    onClick={() =>
+                      downloadImage(modelData && modelData[0]?.url)
+                    }
                   >
-                    <Button
-                      color="primary"
-                      variant="solid"
-                      className="rounded-lg"
-                      onClick={() => downloadImage(modelData?.urls[0])}
-                    >
-                      <GoDownload
-                        fontSize={21}
-                        className="text-white xsm:block hidden"
-                      />
-                      Download
-                    </Button>
-                  </Skeleton>
+                    <GoDownload
+                      fontSize={21}
+                      className="text-white xsm:block hidden"
+                    />
+                    Download
+                  </Button>
                 </div>
 
                 <div className="more-details flex items-start gap-[3.8rem]">
                   <div className="left flex flex-col">
-                    <Skeleton
-                      isLoaded={modelData !== null}
-                      className="rounded-lg mt-2 mb-2"
-                    >
-                      <div className="model">
-                        <p className="text-gray-400">Model</p>
-                        <div className="model-name flex items-center">
-                          <PiMagicWand
-                            fontSize={22}
-                            className="text-white mr-2"
-                          />
-                          <p>{modelData?.miscData?.modelName}</p>
-                        </div>
+                    <div className="model">
+                      <p className="text-gray-400">Model</p>
+                      <div className="model-name flex items-center">
+                        <PiMagicWand
+                          fontSize={22}
+                          className="text-white mr-2"
+                        />
+                        <p>{modelData && modelData[0]?.miscData?.modelName}</p>
                       </div>
-                    </Skeleton>
-                    <Skeleton
-                      isLoaded={modelData !== null}
-                      className="rounded-lg mt-2 mb-2"
-                    >
-                      <div className="dimension mt-4">
-                        <p className="text-gray-400">Resolution</p>
-                        <p>{modelData?.miscData?.dimensions}</p>
-                      </div>
-                    </Skeleton>
-                    <Skeleton
-                      isLoaded={modelData !== null}
-                      className="rounded-lg mt-2 mb-2"
-                    >
-                      <div className="created mt-4">
-                        <p className="text-gray-400">Created At</p>
-                        <p>{formattedDate}</p>
-                      </div>
-                    </Skeleton>
-                  </div>
-                  <div className="right flex flex-col items-center">
-                    <Skeleton
-                      isLoaded={modelData !== null}
-                      className="rounded-lg"
-                    >
-                      <p className="text-gray-400 text-center">Accuracy</p>
+                    </div>
 
-                      <CircularProgress
-                        classNames={{
-                          svg: "w-32 h-32 drop-shadow-md",
-                          indicator: "stroke-[#0266D9]",
-                          track: "stroke-white/10",
-                          value: "text-2xl font-semibold text-white",
-                        }}
-                        value={Accuracy}
-                        strokeWidth={4}
-                        showValueLabel={true}
-                      />
-                    </Skeleton>
+                    <div className="dimension mt-4">
+                      <p className="text-gray-400">Resolution</p>
+                      <p>{modelData && modelData[0]?.miscData?.dimensions}</p>
+                    </div>
+
+                    <div className="created mt-4">
+                      <p className="text-gray-400">Created At</p>
+                      <p>{formattedDate}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div className="bottom mt-4">
-            <RelatedImages Data={modelData} />
+            <RelatedImages Data={modelData?.slice(1)} />
           </div>
         </div>
         <div
@@ -444,25 +397,7 @@ function page({ ModelData, Accuracy }) {
                 </p>
               </div>
             </div>
-            <div className="choose-model mt-10">
-              <Select
-                items={models}
-                label="Select Model"
-                defaultSelectedKeys={["Sdxl-lightning"]}
-                selectedKeys={value}
-                onSelectionChange={setValue}
-              >
-                {(model) => (
-                  <SelectItem
-                    className={litePoppins.className}
-                    key={model.value}
-                    value={model.value}
-                  >
-                    {model.label}
-                  </SelectItem>
-                )}
-              </Select>
-            </div>
+
             <Button
               onClick={generateImage}
               color="primary"
@@ -476,6 +411,90 @@ function page({ ModelData, Accuracy }) {
           </div>
         </div>
       </div>
+
+      {/* Modal  */}
+      <Modal
+        backdrop="blur"
+        onOpenChange={onOpenChange}
+        isOpen={isOpen}
+        isDismissable={false}
+        size="2xl"
+        onClose={() => {
+          onClose();
+        }}
+        className={`${litePoppins.className} my-modal`}
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <div className="creating-avatar fadein flex flex-col items-center w-full p-5">
+                  <p className={`${litePoppins.className} text-xl`}>
+                    Generating your image
+                  </p>
+                  <p className={`${litePoppins.className} mt-2 text-gray-400`}>
+                    Please wait... this process may take a while.
+                  </p>
+                  <Progress
+                    size="sm"
+                    isIndeterminate
+                    aria-label="Loading..."
+                    className="max-w-md py-5"
+                  />
+                  <div
+                    x-data="{}"
+                    x-init="$nextTick(() => {
+        let ul = $refs.logos;
+        ul.insertAdjacentHTML('afterend', ul.outerHTML);
+        ul.nextSibling.setAttribute('aria-hidden', 'true');
+    })"
+                    className="sm:w-[80%] w-full mt-6 inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+                  >
+                    <ul
+                      x-ref="logos"
+                      className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                    >
+                      {allImages?.map((image, index) => {
+                        return (
+                          <>
+                            <li key={index}>
+                              <Image
+                                className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                src={image}
+                                width={150}
+                                height={150}
+                              />
+                            </li>
+                          </>
+                        );
+                      })}
+                    </ul>
+                    <ul
+                      className="flex items-center justify-center md:justify-start [&_li]:mx-3 [&_img]:max-w-none animate-infinite-scroll"
+                      aria-hidden="true"
+                    >
+                      {allImages?.map((image, index) => {
+                        return (
+                          <>
+                            <li key={index}>
+                              <Image
+                                className="rounded-xl aspect-square object-cover pointer-events-none xsm:w-[100px] xl:w-[150px]"
+                                src={image}
+                                width={150}
+                                height={150}
+                              />
+                            </li>
+                          </>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

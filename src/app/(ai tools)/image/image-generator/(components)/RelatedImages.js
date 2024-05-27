@@ -16,11 +16,11 @@ import { useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
-import { RxDownload, RxUpload } from "react-icons/rx";
+import { RxDownload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
 import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
-import Menu from "./Menu";
 import Link from "next/link";
+
 const poppins = Poppins({
   weight: "600",
   subsets: ["latin"],
@@ -32,21 +32,11 @@ const litePoppins = Poppins({
 
 function RelatedImages({ Data }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [backdrop, setBackdrop] = useState("blur");
   const [context, setContext] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!isLoading) {
-        setIsLoading(true);
-      }
-    }, 2000);
-  }, [isLoading]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isCopied) {
@@ -55,6 +45,14 @@ function RelatedImages({ Data }) {
       }, 2000);
     }
   }, [isCopied]);
+
+  useEffect(() => {
+    if (Data === null) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [Data]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -70,42 +68,10 @@ function RelatedImages({ Data }) {
     };
 
     getUser();
-  }, [Data]);
+  });
 
-  const backdrops = "blur";
-  const Images = [
-    "https://replicate.delivery/pbxt/MkUfpm9XsUXmTSWf4r37w4rpTmXHWlaMKBoO5ElqN9XWbRbSA/out-0.png",
-    "https://replicate.delivery/pbxt/R08KPL023tIKO59jt3UnbVYfBIWio8A5b6fz60OL4qLkXRbSA/out-0.png",
-    "https://replicate.delivery/pbxt/mgsk9Y7uzU4hCpoLn8kmeIdHVmdfz9b3DBR276mRd8ie4i2kA/out-0.png",
-  ];
-
-  const handleOpen = (backdrop) => {
-    setBackdrop(backdrop);
-    onOpen();
-    if (loading) {
-      const timeoutId = setTimeout(() => {
-        setLoading(false);
-      }, 2000);
-
-      return () => clearTimeout(timeoutId);
-    }
-  };
-
-  if (Data && Data?.urls?.length < 2) {
+  if (Data && Data?.length < 2) {
     return null;
-  }
-
-  let formattedDate;
-  if (Data && Data?.urls.length > 0) {
-    const date = new Date(Data?.createdAt);
-
-    const options = {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-
-    formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
   }
 
   const downloadImage = async (img) => {
@@ -136,33 +102,30 @@ function RelatedImages({ Data }) {
         </Skeleton>
         <div className="images flex items-center justify-start flex-wrap mt-8 gap-4">
           <div className="flex flex-wrap gap-3">
-            {Images?.map((image, index) => (
+            {Data?.map((image, index) => (
               <>
-                <Skeleton isLoaded={Data !== null} className="rounded-lg w-fit">
-                  <Image
-                    isZoomed
-                    key={index}
-                    src={Data?.urls[index + 1]}
-                    alt="image"
-                    width={350}
-                    height={350}
-                    onClick={() => {
-                      handleOpen(backdrops);
-                      setContext(Data?.urls[index + 1]);
-                    }}
-                    className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
-                  />
-                </Skeleton>
+                <Image
+                  isZoomed
+                  key={index}
+                  src={image?.url}
+                  alt="image"
+                  width={350}
+                  height={350}
+                  onClick={() => {
+                    onOpen()
+                    setContext(image);
+                  }}
+                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                />
               </>
             ))}
           </div>
           <Modal
-            backdrop={backdrop}
+            backdrop="blur"
             isOpen={isOpen}
             size="4xl"
             onClose={() => {
               onClose();
-              setLoading(true);
             }}
             className={`${litePoppins.className} my-modal`}
           >
@@ -176,7 +139,7 @@ function RelatedImages({ Data }) {
                         {context && (
                           <>
                             <Image
-                              src={context}
+                              src={context?.url}
                               alt="image"
                               width={500}
                               height={500}
@@ -196,7 +159,10 @@ function RelatedImages({ Data }) {
                       </div>
                       <div className="right w-full md:w-fit ml-0 mt-0 md:mt-0 md:ml-8">
                         <div className="user-data flex items-center gap-4">
-                          <Link href={`/profile/${userData?.username}`} className="flex items-center gap-4">
+                          <Link
+                            href={`/profile/${userData?.username}`}
+                            className="flex items-center gap-4"
+                          >
                             <Avatar
                               color="primary"
                               className="cursor-pointer"
@@ -238,7 +204,7 @@ function RelatedImages({ Data }) {
                         {context && (
                           <>
                             <Image
-                              src={context}
+                              src={context?.url}
                               alt="image"
                               width={500}
                               height={500}
@@ -292,10 +258,10 @@ function RelatedImages({ Data }) {
                             </div>
                           </div>
                           <div className="content mt-4 w-full md:max-w-[350px] text-sm bg-[#27272A] p-3 rounded-lg">
-                            {Data?.prompt.length >= 90 ? (
-                              <p>{Data?.prompt.slice(0, 90)}...</p>
+                            {context?.prompt?.length >= 90 ? (
+                              <p>{context?.prompt?.slice(0, 90)}...</p>
                             ) : (
-                              <p>{Data?.prompt}</p>
+                              <p>{context?.prompt}</p>
                             )}
                           </div>
                         </div>
@@ -306,14 +272,20 @@ function RelatedImages({ Data }) {
                                 Resolution
                               </p>
                               <p className="text-sm mt-1">
-                                {Data?.miscData?.dimensions}
+                                {context?.miscData?.dimensions}
                               </p>
                             </div>
                             <div className="created flex flex-col items-end">
                               <p className="text-sm text-gray-500">
                                 Created At
                               </p>
-                              <p className="text-sm mt-1">{formattedDate}</p>
+                              <p className="text-sm mt-1">
+                                {new Intl.DateTimeFormat("en-GB", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }).format(new Date(context?.createdAt))}
+                              </p>
                             </div>
                           </div>
                           <div className="second mt-4 flex items-center justify-between">
@@ -325,7 +297,7 @@ function RelatedImages({ Data }) {
                                   className="text-white mr-2"
                                 />
                                 <p className="text-sm">
-                                  {Data?.miscData?.modelName}
+                                  {context?.miscData?.modelName}
                                 </p>
                               </div>
                             </div>
@@ -337,7 +309,7 @@ function RelatedImages({ Data }) {
                           <Button
                             color="primary"
                             variant="solid"
-                            onClick={()=>downloadImage(context)}
+                            onClick={() => downloadImage(context?.url)}
                             className="rounded-xl mt-10 w-full"
                           >
                             <RxDownload fontSize={21} className="text-white" />

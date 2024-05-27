@@ -6,12 +6,11 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 import { UploadImage } from "@/lib/cloudinary";
-import { calculateSemanticSimilarity } from "@/lib/accuracy";
 
 export const POST = async (req) => {
   try {
     await ConnectDB();
-    const { prompt, height, width, numberOfOutputs, model } = await req.json();
+    const { prompt, height, width, numberOfOutputs } = await req.json();
 
     const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
@@ -61,46 +60,23 @@ export const POST = async (req) => {
     let allImages;
 
     //Generate image using SDXL
-    if (model === "Sdxl") {
-      allImages = await replicate.run(
-        "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
-        {
-          input: {
-            seed: 2992471961,
-            width,
-            height,
-            prompt,
-            scheduler: "K_EULER",
-            num_outputs: numberOfOutputs,
-            guidance_scale: 0,
-            negative_prompt:
-              "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster",
-            num_inference_steps: 4,
-          },
-        }
-      );
-    }
-
-    //Generate image using Dreamshaper
-    else if (model === "dreamshaper") {
-      allImages = await replicate.run(
-        "lucataco/dreamshaper-xl-turbo:0a1710e0187b01a255302738ca0158ff02a22f4638679533e111082f9dd1b615",
-        {
-          input: {
-            width,
-            height,
-            prompt,
-            scheduler: "K_EULER",
-            num_outputs: numberOfOutputs,
-            guidance_scale: 2,
-            negative_prompt:
-              "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster,ugly, deformed, noisy, blurry, low contrast, text, BadDream, 3d, cgi, render, fake, anime, open mouth, big forehead, long neck",
-            num_inference_steps: 7,
-            apply_watermark: false,
-          },
-        }
-      );
-    }
+    allImages = await replicate.run(
+      "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+      {
+        input: {
+          seed: 2992471961,
+          width,
+          height,
+          prompt,
+          scheduler: "K_EULER",
+          num_outputs: numberOfOutputs,
+          guidance_scale: 0,
+          negative_prompt:
+            "nude, explicit, NSFW, gore, graphic, low quality, blurry, pixelated, low resolution, not good enough, subpar, unacceptable, disappointing, uninspired, underwhelming, unimpressive, uninteresting, boring, lackluster, overexposed, overlit, grainy, noisy, pixelated, low-res, low-quality, low-resolution, blurry, grainy, overexposed, overlit, pixelated, low-resolution, low-quality, low-resolution, uninspiring, disappointing, mediocre, bad, poor, substandard, unacceptable, unimpressive, uninteresting, boring, lackluster",
+          num_inference_steps: 4,
+        },
+      }
+    );
 
     // Upload the generated images to Cloudinary
     const uploadedImages = await Promise.all(
@@ -110,44 +86,35 @@ export const POST = async (req) => {
       })
     );
 
-    //Generate prompt
-    const input = {
-      image: uploadedImages[0],
-    };
+    const newImageIds = [];
 
-    const output = await replicate.run(
-      "methexis-inc/img2prompt:50adaf2d3ad20a6f911a8a9e3ccf777b263b8596fbd2c8fc26e8888f8a0edbb5",
-      { input }
+    const newImages = await Promise.all(
+      uploadedImages.map(async (image) => {
+        const newImage = new Image({
+          userId,
+          url: image,
+          prompt,
+          miscData: {
+            dimensions: `${width}x${height}`,
+            modelName: "Stable Diffusion XL",
+          },
+        });
+        await newImage.save();
+
+        newImageIds.push(newImage._id);
+
+        return newImage;
+      })
     );
 
-    const accuracy = calculateSemanticSimilarity(prompt, output);
-
-    const newImage = new Image({
+    const library = new Library({
       userId,
-      urls: uploadedImages,
-      prompt,
-      miscData: {
-        dimensions: `${width}x${height}`,
-        modelName: "Stable Diffusion XL",
-      },
+      images: newImageIds,
     });
-
-    await newImage.save();
-
-    const library = await Library.findOne({ userId });
-    if (library) {
-      library?.images.push(newImage._id);
-      await library.save();
-    } else {
-      const newLibrary = new Library({
-        userId,
-        images: [newImage._id],
-      });
-      await newLibrary.save();
-    }
+    await library.save();
 
     return NextResponse.json(
-      { success: true, data: newImage, accuracy: accuracy.toFixed(2) },
+      { success: true, data: newImages },
       { status: 201 }
     );
   } catch (error) {

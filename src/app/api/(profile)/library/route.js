@@ -58,12 +58,12 @@ export const GET = async () => {
       );
     }
 
-    const images = await Image.find({ _id: { $in: library.images } }, "urls");
+    const images = await Image.find({ _id: { $in: library.images } }, "url");
 
-    const imageUrls = images.flatMap((img) => img.urls[0]);
+    // const imageUrls = images.flatMap((img) => img.url);
 
     return NextResponse.json(
-      { success: true, data: { library, imageUrls } },
+      { success: true, data: { library, images } },
       { status: 200 }
     );
   } catch (error) {
