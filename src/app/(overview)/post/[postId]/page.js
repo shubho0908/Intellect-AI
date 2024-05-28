@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Button, Divider, Image } from "@nextui-org/react";
+import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
@@ -14,7 +14,8 @@ import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy } from "react-icons/go";
 import { MdOutlineDone } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import Loading from "@/components/loading";
+import Loading from "@/components/Loading";
+import Image from "next/image";
 
 const poppins = Poppins({
   weight: "500",
@@ -294,10 +295,11 @@ function page({ params }) {
                     alt="image"
                     width={800}
                     height={800}
+                    loading="lazy"
                     onContextMenu={(e) => {
                       e.preventDefault();
                     }}
-                    className="cursor-pointer z-[1] object-cover h-[800px] w-[800px]"
+                    className="cursor-pointer rounded-xl z-[1] object-cover h-[800px] w-[800px]"
                   />
                 </>
               )}
@@ -482,7 +484,7 @@ function page({ params }) {
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <Image
-                            className="cursor-pointer"
+                            className="cursor-pointer rounded-xl"
                             src={post?.url}
                             alt="image"
                             width={150}

@@ -1,6 +1,14 @@
 "use client";
 
-import { Image, Button, Avatar } from "@nextui-org/react";
+import {
+  Button,
+  Avatar,
+  Divider,
+  Modal,
+  useDisclosure,
+  ModalBody,
+  ModalContent,
+} from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy, GoDownload } from "react-icons/go";
@@ -10,6 +18,7 @@ import {
   MdOutlineDone,
 } from "react-icons/md";
 import { PiMagicWand } from "react-icons/pi";
+import { FiSend } from "react-icons/fi";
 import { RxDownload } from "react-icons/rx";
 import { IoBookmark, IoBookmarkOutline, IoHeartOutline } from "react-icons/io5";
 import { BiLike, BiSolidLike } from "react-icons/bi";
@@ -17,6 +26,8 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Share from "@/components/Share";
 
 const litePoppins2 = Poppins({
   weight: "400",
@@ -31,6 +42,7 @@ function Modal2({ data }) {
   const [user, setUser] = useState(null);
   const [totalLikes, setTotalLikes] = useState(0);
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   //Toasts
   const successMsg = (msg) =>
@@ -96,29 +108,32 @@ function Modal2({ data }) {
     getTotalLikes();
   }, [data?.imgId, getTotalLikes]);
 
-  const getCollectionData = useCallback(async (imgId) => {
-    try {
-      if (user === null) {
-        return;
-      }
-      const response = await fetch("/api/collections");
-      const { success, data, error } = await response.json();
+  const getCollectionData = useCallback(
+    async (imgId) => {
+      try {
+        if (user === null) {
+          return;
+        }
+        const response = await fetch("/api/collections");
+        const { success, data, error } = await response.json();
 
-      if (success) {
-        const imageIDs = data?.collections.flatMap((collection) =>
-          collection?.data.map((item) => item?.imageID)
-        );
+        if (success) {
+          const imageIDs = data?.collections.flatMap((collection) =>
+            collection?.data.map((item) => item?.imageID)
+          );
 
-        setIsSaved(imageIDs.includes(imgId));
-      } else {
-        errorMsg(error);
+          setIsSaved(imageIDs.includes(imgId));
+        } else {
+          errorMsg(error);
+          setIsSaved(false);
+        }
+      } catch (error) {
+        errorMsg(error.message);
         setIsSaved(false);
       }
-    } catch (error) {
-      errorMsg(error.message);
-      setIsSaved(false);
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
   useEffect(() => {
     getCollectionData(data?.imgId);
@@ -289,7 +304,7 @@ function Modal2({ data }) {
                 onContextMenu={(e) => {
                   e.preventDefault();
                 }}
-                className="cursor-pointer z-[1] object-cover h-[450px] w-[450px]"
+                className="cursor-pointer rounded-lg z-[1] object-cover h-[450px] w-[450px]"
               />
             </>
 
@@ -433,10 +448,12 @@ function Modal2({ data }) {
                 color="default"
                 variant="ghost"
                 className="rounded-xl w-fit"
-                onClick={downloadImage}
+                onClick={() => {
+                  onOpen();
+                }}
               >
-                <RxDownload fontSize={21} className="text-white" />
-                Download
+                <FiSend fontSize={21} className="text-white" />
+                Share this
               </Button>
               <Button
                 color="default"
@@ -458,9 +475,39 @@ function Modal2({ data }) {
                 )}
               </Button>
             </div>
+            <Button
+              color="primary"
+              className="rounded-xl w-full mt-4"
+              onClick={downloadImage}
+            >
+              <RxDownload fontSize={21} className="text-white" />
+              Download
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Modal  */}
+
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        size="xl"
+        onClose={() => {
+          onClose();
+        }}
+        className={`${litePoppins2.className} my-modal modal-body`}
+      >
+        <ModalContent className="modal-body">
+          {(onClose) => (
+            <>
+              <ModalBody className="mb-5">
+                <Share />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

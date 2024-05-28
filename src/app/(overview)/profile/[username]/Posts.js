@@ -3,19 +3,14 @@
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 import {
   Card,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
   useDisclosure,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
+import Image from "next/image";
 import { useState } from "react";
-
-const poppins = Poppins({
-  weight: "500",
-  subsets: ["latin"],
-});
 
 const litePoppins = Poppins({
   weight: "400",
@@ -83,6 +78,8 @@ function Posts({ userPosts, userData }) {
                       alt="Card background"
                       className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
                       src={data?.url}
+                      width={250}
+                      height={250}
                     />
                   </Card>
                 </div>

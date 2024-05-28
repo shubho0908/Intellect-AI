@@ -2,7 +2,7 @@
 
 function Loading() {
   return (
-    <div class="pyramid-loader">
+    <div class="pyramid-loader fadein">
       <div class="wrapper">
         <span class="side side1"></span>
         <span class="side side2"></span>

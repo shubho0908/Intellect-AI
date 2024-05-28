@@ -105,13 +105,13 @@ function Profile({ params }) {
         }),
       });
 
-      const { success, data, error } = await response.json();
-      if (success && data === "Unfollowed successfully") {
+      const { success, message, error } = await response.json();
+      if (success && message === "Unfollowed successfully") {
         setIsFollowed(false);
-        successMsg(data);
-      } else if (success && data === "Followed successfully") {
+        successMsg(message);
+      } else if (success && message === "Followed successfully") {
         setIsFollowed(true);
-        successMsg(data);
+        successMsg(message);
       }
       if (error) {
         errorMsg(error);

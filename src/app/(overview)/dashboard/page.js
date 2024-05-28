@@ -1,9 +1,12 @@
 "use client";
-import { Button, Card, Image } from "@nextui-org/react";
+import { Button, Card } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import { useCallback, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
+import { RiShareForwardBoxLine } from "react-icons/ri";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const poppins = Poppins({
   weight: "500",
@@ -18,6 +21,8 @@ const litePoppins = Poppins({
 function page() {
   const [library, setLibrary] = useState(null);
   const [imageIds, setImageIds] = useState([]);
+
+  const router = useRouter();
 
   //Toasts
   const successMsg = (msg) =>
@@ -98,6 +103,16 @@ function page() {
                   <div key={index}>
                     <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
                       <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
+                        <Button
+                          isIconOnly
+                          className="absolute right-0"
+                          onClick={() =>
+                            router.push(`/post/${imageIds[index]}`)
+                          }
+                          color="primary"
+                        >
+                          <RiShareForwardBoxLine fontSize={20} color="white" />
+                        </Button>
                         <div className="bottom px-4 gap-4 w-full h-full flex flex-col items-center justify-center">
                           <p
                             className={`${litePoppins.className} text-sm text-center text-white`}
@@ -121,6 +136,8 @@ function page() {
                         removeWrapper
                         alt="Card background"
                         className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.3]"
+                        width={300}
+                        height={300}
                         src={data?.url}
                       />
                     </Card>
