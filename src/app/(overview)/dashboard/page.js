@@ -35,7 +35,7 @@ function page() {
       const response = await fetch("/api/library");
       const { success, data, error } = await response.json();
       if (success) {
-        setLibrary(data?.imageUrls);
+        setLibrary(data?.images);
         setImageIds(data?.library?.images);
       } else {
         console.error("Error fetching user data:", error);
@@ -121,7 +121,7 @@ function page() {
                         removeWrapper
                         alt="Card background"
                         className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.3]"
-                        src={data}
+                        src={data?.url}
                       />
                     </Card>
                   </div>

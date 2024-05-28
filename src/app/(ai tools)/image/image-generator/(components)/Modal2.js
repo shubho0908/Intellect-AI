@@ -51,7 +51,7 @@ function Modal2({ data }) {
     }
   }, [isCopied]);
 
-  const getUserLikeData = async () => {
+  const getUserLikeData = useCallback(async () => {
     try {
       if (user === null) {
         return;
@@ -68,13 +68,13 @@ function Modal2({ data }) {
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [data?.imgId, user]);
 
   useEffect(() => {
     getUserLikeData();
-  }, [data?.imgId]);
+  }, [data?.imgId, getUserLikeData]);
 
-  const getTotalLikes = async () => {
+  const getTotalLikes = useCallback(async () => {
     try {
       if (user === null) {
         return;
@@ -90,13 +90,13 @@ function Modal2({ data }) {
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [data?.imgId, isLiked, user]);
 
   useEffect(() => {
     getTotalLikes();
-  }, [data?.imgId, isLiked]);
+  }, [data?.imgId, getTotalLikes]);
 
-  const getCollectionData = async (imgId) => {
+  const getCollectionData = useCallback(async (imgId) => {
     try {
       if (user === null) {
         return;
@@ -118,11 +118,11 @@ function Modal2({ data }) {
       errorMsg(error.message);
       setIsSaved(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     getCollectionData(data?.imgId);
-  }, [data?.imgId]);
+  }, [data?.imgId, getCollectionData]);
 
   const fetchUserData = useCallback(async () => {
     try {

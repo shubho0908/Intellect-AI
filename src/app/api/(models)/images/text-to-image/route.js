@@ -107,10 +107,16 @@ export const POST = async (req) => {
       })
     );
 
-    const library = new Library({
-      userId,
-      images: newImageIds,
-    });
+    const library = await Library.findOne({ userId });
+    if (!library) {
+      const newLibrary = new Library({
+        userId,
+        images: newImageIds,
+      });
+      await newLibrary.save();
+    }
+
+    library?.images.push(...newImageIds);
     await library.save();
 
     return NextResponse.json(

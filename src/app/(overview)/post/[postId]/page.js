@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, Button, Divider, Image } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
@@ -29,11 +29,17 @@ function page({ params }) {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   const router = useRouter();
 
   const errorMsg = (msg) =>
     toast.error(msg, {
+      className: `${poppins.className} text-sm`,
+    });
+
+  const successMsg = (msg) =>
+    toast.success(msg, {
       className: `${poppins.className} text-sm`,
     });
 
@@ -89,6 +95,117 @@ function page({ params }) {
       fetchUserData();
     }
   }, [postData]);
+
+  const getUserLikeData = useCallback(async () => {
+    try {
+      if (myData === null) {
+        return;
+      }
+      const response = await fetch(
+        `/api/images/check-like?imageId=${postData?._id}`
+      );
+      const { message } = await response.json();
+      if (message === "Image liked") {
+        setIsLiked(true);
+      } else {
+        setIsLiked(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, [myData, postData?._id]);
+
+  useEffect(() => {
+    if (postData) {
+      getUserLikeData();
+    }
+  }, [postData?._id, getUserLikeData]);
+
+  const getCollectionData = useCallback(
+    async (imgId) => {
+      try {
+        if (myData === null) {
+          return;
+        }
+        const response = await fetch("/api/collections");
+        const { success, data, error } = await response.json();
+
+        if (success) {
+          const imageIDs = data?.collections.flatMap((collection) =>
+            collection?.data.map((item) => item?.imageID)
+          );
+
+          setIsSaved(imageIDs.includes(imgId));
+        } else {
+          errorMsg(error);
+          setIsSaved(false);
+        }
+      } catch (error) {
+        errorMsg(error.message);
+        setIsSaved(false);
+      }
+    },
+    [myData, errorMsg]
+  );
+
+  useEffect(() => {
+    if (postData) {
+      getCollectionData(postData?._id);
+    }
+  }, [postData?._id, getCollectionData]);
+
+  const getTotalLikes = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/images/like?id=${postData?._id}`);
+      const { success, likes, error } = await response.json();
+      if (success) {
+        setTotalLikes(likes);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, [postData?._id, isLiked]);
+
+  useEffect(() => {
+    if (postData) {
+      getTotalLikes();
+    }
+  }, [postData?._id, isLiked, getTotalLikes]);
+
+  const LikePost = async () => {
+    try {
+      if (myData === null) {
+        errorMsg("Please login to like");
+        return router.push("/login");
+      }
+      const response = await fetch("/api/images/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: postData?._id,
+        }),
+      });
+      const { success, message, error } = await response.json();
+      if (success && message === "Image liked") {
+        successMsg(message + " successfully!");
+        setIsLiked(true);
+      } else if (success && message === "Image disliked") {
+        setIsLiked(false);
+      }
+      if (error) {
+        setIsLiked(false);
+        errorMsg(error);
+      }
+    } catch (error) {
+      setIsLiked(false);
+      errorMsg(error.message);
+    }
+  };
 
   if (!postData || !userData) {
     return (
@@ -234,22 +351,17 @@ function page({ params }) {
                     color="default"
                     variant="ghost"
                     className="rounded-xl w-fit"
-                    // isDisabled={!user?.userId && !data?.imgId}
-                    onClick={() => {
-                      if (!myData) {
-                        router.push("/login");
-                      }
-                    }}
+                    onClick={LikePost}
                   >
                     {isLiked ? (
                       <>
                         <BiSolidLike fontSize={21} className="text-white" />
-                        Liked
+                        {totalLikes}
                       </>
                     ) : (
                       <>
                         <BiLike fontSize={21} className="text-white" />
-                        {postData?.likes?.length}
+                        {totalLikes}
                       </>
                     )}
                   </Button>
