@@ -9,11 +9,12 @@ import { PiMagicWand } from "react-icons/pi";
 import { RxDownload } from "react-icons/rx";
 import { FiSend } from "react-icons/fi";
 import { BiLike, BiSolidLike } from "react-icons/bi";
-import { IoBookmarkOutline } from "react-icons/io5";
+import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy } from "react-icons/go";
 import { MdOutlineDone } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/loading";
 
 const poppins = Poppins({
   weight: "500",
@@ -207,13 +208,71 @@ function page({ params }) {
     }
   };
 
+  const SavePost = async (Data) => {
+    try {
+      if (myData === null) {
+        errorMsg("Please login to save");
+        return router.push("/login");
+      }
+      const response = await fetch("/api/collections", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: postData?._id,
+          type: "image",
+        }),
+      });
+      const { success, error, message } = await response.json();
+      if (success && message === "Data added to collection") {
+        setIsSaved(true);
+        successMsg(message);
+      } else if (success && message === "Data removed from collection") {
+        setIsSaved(false);
+      }
+      if (error) {
+        setIsSaved(false);
+        errorMsg(error);
+      }
+    } catch (error) {
+      setIsSaved(false);
+      errorMsg(error.message);
+    }
+  };
+
+  const downloadImage = async () => {
+    const imageUrl = postData?.url;
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = "download.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(downloadLink.href);
+    } catch (error) {
+      errorMsg(error.message);
+    }
+  };
+
   if (!postData || !userData) {
     return (
       <>
         <div
           className={`${poppins.className} sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
         >
-          <div className="postloading">Loading...</div>
+          <div className="flex flex-col items-center justify-center h-screen">
+            <Loading />
+            <p className="text-lg relative bottom-14 text-gray-300">
+              Hang tight while we load your post...
+            </p>
+          </div>
         </div>
       </>
     );
@@ -223,7 +282,7 @@ function page({ params }) {
     <>
       <Toaster />
       <div
-        className={`${poppins.className} sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
+        className={`${poppins.className} fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
       >
         <div className="post flex flex-col items-center justify-center h-screen">
           <div className="items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start p-5 rounded-xl bg-[#181818]">
@@ -369,7 +428,7 @@ function page({ params }) {
                     color="default"
                     variant="ghost"
                     className="rounded-xl w-fit"
-                    // onClick={downloadImage}
+                    onClick={downloadImage}
                   >
                     <RxDownload fontSize={21} className="text-white" />
                     Download
@@ -378,7 +437,6 @@ function page({ params }) {
                     color="default"
                     variant="ghost"
                     className="rounded-xl w-fit"
-                    // onClick={downloadImage}
                   >
                     <FiSend fontSize={21} className="text-white" />
                     Share
@@ -388,11 +446,7 @@ function page({ params }) {
                     variant="ghost"
                     // isDisabled={!user?.userId && !data?.imgId}
                     className="rounded-xl w-fit"
-                    onClick={() => {
-                      if (!myData) {
-                        router.push("/login");
-                      }
-                    }}
+                    onClick={SavePost}
                   >
                     {isSaved ? (
                       <>

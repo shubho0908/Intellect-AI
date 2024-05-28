@@ -107,7 +107,7 @@ function page() {
                         removeWrapper
                         alt="Card background"
                         className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.3]"
-                        src={data.urls[0]}
+                        src={data.url}
                       />
                     </Card>
                   </div>
