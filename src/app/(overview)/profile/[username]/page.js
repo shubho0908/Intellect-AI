@@ -11,7 +11,7 @@ import {
   Skeleton,
   Image,
 } from "@nextui-org/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Poppins } from "next/font/google";
 import { FiEdit3 } from "react-icons/fi";
@@ -74,8 +74,9 @@ function Profile({ params }) {
       const { success, data, error } = await response.json();
       if (success) {
         setMyData(data);
-      } else {
-        errorMsg(error);
+      }
+      if (error === "Missing refresh token") {
+        setMyData(null);
       }
     } catch (error) {
       errorMsg(error.message);
@@ -126,15 +127,15 @@ function Profile({ params }) {
   };
 
   const professions = {
-    "Designer": "🎨",
-    "Developer": "💻",
-    "Freelancer": "👨🏻‍💻",
+    Designer: "🎨",
+    Developer: "💻",
+    Freelancer: "👨🏻‍💻",
     "Content Creator": "🎥",
-    "Musician": "🎶",
-    "Photographer": "📷",
-    "Writer": "📝",
-    "Others": "🤙🏻",
-  }
+    Musician: "🎶",
+    Photographer: "📷",
+    Writer: "📝",
+    Others: "🤙🏻",
+  };
 
   return (
     <>
@@ -172,7 +173,7 @@ function Profile({ params }) {
                   {!isFollowed ? (
                     <Button
                       color="primary"
-                      isDisabled={user?._id === myData?._id}
+                      isDisabled={user?._id === myData?._id || !myData}
                       onClick={FollowUser}
                       className={`rounded-full ml-4 ${litePoppins.className}`}
                     >

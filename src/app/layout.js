@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Providers } from "./providers";
 import Sidebar from "@/components/Sidebar";
-import Sidebar2 from "@/components/Sidebar2";
+// import Sidebar2 from "@/components/Sidebar2";
 
 
 export const metadata = {
@@ -20,9 +20,9 @@ export default function RootLayout({ children }) {
               <div className="web-sidebar hidden sm:block">
                 <Sidebar />
               </div>
-              <div className="mob-sidebar block sm:hidden">
+              {/* <div className="mob-sidebar block sm:hidden">
                 <Sidebar2 />
-              </div>
+              </div> */}
             </div>
             <div className="right w-full">
               <div className="right-content">

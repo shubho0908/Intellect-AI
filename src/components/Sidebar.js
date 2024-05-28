@@ -11,7 +11,7 @@ import {
   IoImageOutline,
   IoSearchOutline,
 } from "react-icons/io5";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Avatar,
   Button,
@@ -38,6 +38,7 @@ function Sidebar() {
   });
   const pathname = usePathname();
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   //Toasts
   const successMsg = (msg) =>
@@ -53,9 +54,12 @@ function Sidebar() {
   const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch("/api/login");
-      const { success, data } = await response.json();
+      const { success, data, error } = await response.json();
       if (success) {
         setUser(data);
+      }
+      if (error === "Missing refresh token") {
+        setUser("invalid");
       }
     } catch (error) {
       errorMsg(error.message);
@@ -78,9 +82,7 @@ function Sidebar() {
       const { success } = await response.json();
       if (success) {
         successMsg("Logged out successfully");
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        router.push("/login");
       } else {
         errorMsg("Something went wrong");
       }
@@ -96,7 +98,9 @@ function Sidebar() {
   return (
     <>
       <Toaster />
-      <div className="sidebar-wrapper h-[100vh] shadow-xl bg-[#120f0f70] border-gray-800 border-r-2 backdrop-blur-xl z-[21] fixed overflow-auto scrollbar-hide">
+      <div
+        className={`sidebar-wrapper h-[100vh] shadow-xl bg-[#120f0f70] border-gray-800 border-r-2 backdrop-blur-xl z-[21] fixed overflow-auto scrollbar-hide`}
+      >
         <div
           className={`sidebar z-[21] flex flex-col w-fit p-6 md:px-10 ${poppins.className}`}
         >
@@ -110,7 +114,11 @@ function Sidebar() {
               <Image src="/logo2.png" width={50} height={50} alt="Logo" />
             </Link>
           </div>
-          <Link href={`/profile/${user?.username}`}>
+          <Link
+            href={`${
+              user === "invalid" ? "/signup" : `/profile/${user?.username}`
+            }`}
+          >
             <div className="flex mt-6 cursor-pointer bg-gray-700/40 hover:bg-gray-700/80 transition-all px-6 py-3 rounded-xl items-center justify-center gap-4">
               <div className="flex items-center gap-4">
                 <Avatar
@@ -119,21 +127,24 @@ function Sidebar() {
                   src={user?.profileImg}
                 />
               </div>
-              <Skeleton isLoaded={user} className="rounded-lg min-w-[100px]">
-                <div className="data">
-                  <p>
-                    {user?.name?.length > 10
-                      ? `${user?.name.slice(0, 10)}...`
-                      : user?.name}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    @
-                    {user?.username?.length > 10
-                      ? `${user?.username.slice(0, 10)}...`
-                      : user?.username}
-                  </p>
-                </div>
-              </Skeleton>
+              {user !== "invalid" && (
+                <Skeleton isLoaded={user} className="rounded-lg min-w-[100px]">
+                  <div className="data">
+                    <p>
+                      {user?.name?.length > 10
+                        ? `${user?.name.slice(0, 10)}...`
+                        : user?.name}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      @
+                      {user?.username?.length > 10
+                        ? `${user?.username.slice(0, 10)}...`
+                        : user?.username}
+                    </p>
+                  </div>
+                </Skeleton>
+              )}
+              {user === "invalid" && <p>Signup</p>}
             </div>
           </Link>
 
@@ -158,7 +169,7 @@ function Sidebar() {
               <p className="hidden md:block">Search</p>
             </div>
             <Link
-              href="/dashboard"
+              href={`${user === "invalid" ? "/login" : "/dashboard"}`}
               className={`hover:bg-[#0266D9] ${
                 pathname === "/dashboard" && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
@@ -167,7 +178,7 @@ function Sidebar() {
               <p className="hidden md:block">Dashboard</p>
             </Link>
             <Link
-              href="/collections"
+              href={`${user === "invalid" ? "/login" : "/collections"}`}
               className={`hover:bg-[#0266D9] cursor-pointer ${
                 pathname.includes("/collections") && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all my-1`}
@@ -207,7 +218,9 @@ function Sidebar() {
             {isDown.image ? (
               <div className="hidden py-2 image-tools md:flex flex-col relative left-10 leading-10">
                 <Link
-                  href="/image/image-generator"
+                  href={`${
+                    user === "invalid" ? "/login" : "/image/image-generator"
+                  }`}
                   className={`${
                     pathname.includes("/image-generator")
                       ? "text-white"
@@ -217,7 +230,9 @@ function Sidebar() {
                   Image Generator
                 </Link>
                 <Link
-                  href="/image/image-upscaler"
+                  href={`${
+                    user === "invalid" ? "/login" : "/image/image-upscaler"
+                  }`}
                   className={`${
                     pathname.includes("/image-upscaler")
                       ? "text-white"
@@ -228,7 +243,7 @@ function Sidebar() {
                 </Link>
 
                 <Link
-                  href="/image/avatar"
+                  href={`${user === "invalid" ? "/login" : "/image/avatar"}`}
                   className={`${
                     pathname.includes("/avatar")
                       ? "text-white"
@@ -238,7 +253,9 @@ function Sidebar() {
                   AI Avatar Creator
                 </Link>
                 <Link
-                  href="/image/magic-expand"
+                  href={`${
+                    user === "invalid" ? "/login" : "/image/magic-expand"
+                  }`}
                   className={`${
                     pathname.includes("/magic-expand")
                       ? "text-white"
@@ -280,7 +297,9 @@ function Sidebar() {
             {isDown.video ? (
               <div className="hidden py-2 md:flex video-tools flex-col relative left-10 leading-10">
                 <Link
-                  href="/video/image-to-motion"
+                  href={`${
+                    user === "invalid" ? "/login" : "/video/image-to-motion"
+                  }`}
                   className={`${
                     pathname.includes("/image-to-motion")
                       ? "text-white"
@@ -291,7 +310,9 @@ function Sidebar() {
                 </Link>
 
                 <Link
-                  href="/video/video-caption"
+                  href={`${
+                    user === "invalid" ? "/login" : "/video/video-caption"
+                  }`}
                   className={`${
                     pathname.includes("/video-caption")
                       ? "text-white"
@@ -301,7 +322,9 @@ function Sidebar() {
                   Video Caption
                 </Link>
                 <Link
-                  href="/video/video-upscaler"
+                  href={`${
+                    user === "invalid" ? "/login" : "/video/video-upscaler"
+                  }`}
                   className={`${
                     pathname.includes("/video-upscaler")
                       ? "text-white"
@@ -316,6 +339,7 @@ function Sidebar() {
           <Button
             onClick={Logout}
             variant="ghost"
+            isDisabled={!user || user === "invalid"}
             className="justify-start text-md p-6 border-none"
           >
             <FiMinusCircle fontSize={23} className="text-white mr-5" />

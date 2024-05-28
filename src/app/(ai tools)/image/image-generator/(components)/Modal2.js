@@ -16,6 +16,7 @@ import { BiLike, BiSolidLike } from "react-icons/bi";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Poppins } from "next/font/google";
+import { useRouter } from "next/navigation";
 
 const litePoppins2 = Poppins({
   weight: "400",
@@ -29,6 +30,7 @@ function Modal2({ data }) {
   const [isSaved, setIsSaved] = useState(false);
   const [user, setUser] = useState(null);
   const [totalLikes, setTotalLikes] = useState(0);
+  const router = useRouter();
 
   //Toasts
   const successMsg = (msg) =>
@@ -49,8 +51,11 @@ function Modal2({ data }) {
     }
   }, [isCopied]);
 
-  const getUserLikeData = useCallback(async () => {
+  const getUserLikeData = async () => {
     try {
+      if (user === null) {
+        return;
+      }
       const response = await fetch(
         `/api/images/check-like?imageId=${data?.imgId}`
       );
@@ -63,14 +68,17 @@ function Modal2({ data }) {
     } catch (error) {
       console.log(error.message);
     }
-  });
+  };
 
   useEffect(() => {
     getUserLikeData();
   }, [data?.imgId]);
 
-  const getTotalLikes = useCallback(async () => {
+  const getTotalLikes = async () => {
     try {
+      if (user === null) {
+        return;
+      }
       const response = await fetch(`/api/images/like?id=${data?.imgId}`);
       const { success, likes, error } = await response.json();
       if (success) {
@@ -82,14 +90,17 @@ function Modal2({ data }) {
     } catch (error) {
       console.log(error.message);
     }
-  });
+  };
 
   useEffect(() => {
     getTotalLikes();
   }, [data?.imgId, isLiked]);
 
-  const getCollectionData = useCallback(async (imgId) => {
+  const getCollectionData = async (imgId) => {
     try {
+      if (user === null) {
+        return;
+      }
       const response = await fetch("/api/collections");
       const { success, data, error } = await response.json();
 
@@ -107,7 +118,7 @@ function Modal2({ data }) {
       errorMsg(error.message);
       setIsSaved(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     getCollectionData(data?.imgId);
@@ -119,8 +130,9 @@ function Modal2({ data }) {
       const { success, data, error } = await response.json();
       if (success) {
         setUser(data);
-      } else {
-        errorMsg(error);
+      }
+      if (error === "Missing refresh token") {
+        setUser(null);
       }
     } catch (error) {
       errorMsg(error.message);
@@ -153,6 +165,10 @@ function Modal2({ data }) {
 
   const LikePost = async () => {
     try {
+      if (user === null) {
+        errorMsg("Please login to like");
+        return router.push("/login");
+      }
       const response = await fetch("/api/images/like", {
         method: "POST",
         headers: {
@@ -181,6 +197,10 @@ function Modal2({ data }) {
 
   const SavePost = async (Data) => {
     try {
+      if (user === null) {
+        errorMsg("Please login to save");
+        return router.push("/login");
+      }
       const response = await fetch("/api/collections", {
         method: "POST",
         headers: {
@@ -191,7 +211,7 @@ function Modal2({ data }) {
           type: "image",
         }),
       });
-      const { success, data, error, message } = await response.json();
+      const { success, error, message } = await response.json();
       if (success && message === "Data added to collection") {
         setIsSaved(true);
         successMsg(message);
@@ -222,6 +242,9 @@ function Modal2({ data }) {
 
   const FollowUser = async () => {
     try {
+      if (user === null) {
+        return router.push("/login");
+      }
       const response = await fetch("/api/follow", {
         method: "POST",
         headers: {
@@ -295,7 +318,7 @@ function Modal2({ data }) {
                 <Button
                   color="primary"
                   className="rounded-full ml-4"
-                  isDisabled={data?.userId === user?._id}
+                  isDisabled={data?.userId === user?._id || !user}
                   onPress={FollowUser}
                 >
                   <RiUserFollowLine fontSize={18} className="text-white" />

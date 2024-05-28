@@ -8,7 +8,6 @@ import {
   ModalFooter,
   Select,
   SelectItem,
-  Switch,
   Textarea,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";

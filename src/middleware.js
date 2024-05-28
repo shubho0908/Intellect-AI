@@ -5,14 +5,23 @@ export function middleware(request) {
   const currentUrl = request.nextUrl.pathname;
   const accessToken = cookies().get("accessToken");
 
-  const publicRoutes = ["/login", "/signup"];
+  const authRoutes = ["/login", "/signup"];
+  const publicRoutes = ["/home", "/post", "/profile"];
 
-  if (!accessToken && !publicRoutes.includes(currentUrl) || currentUrl === "/") {
+  if (!accessToken && publicRoutes.some((url) => currentUrl.includes(url))) {
+    return NextResponse.next();
+  }
+
+  if (
+    !accessToken &&
+    !publicRoutes.some((url) => currentUrl.includes(url)) &&
+    !authRoutes.some((url) => currentUrl.includes(url))
+  ) {
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl.href);
   }
 
-  if (accessToken && publicRoutes.includes(currentUrl)) {
+  if (accessToken && authRoutes.some((url) => currentUrl.includes(url))) {
     const homeUrl = new URL("/home", request.url);
     return NextResponse.redirect(homeUrl.href);
   }

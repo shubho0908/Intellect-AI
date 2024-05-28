@@ -129,26 +129,18 @@ function Search({ close }) {
                   key={post?._id}
                   className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group"
                 >
-                  <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
-                    <div className="flex top items-center justify-between w-full px-4">
-                      {/* <Button
-                  isIconOnly
-                  variant="ghost"
-                  className="border-none"
-                >
-                  <IoBookmarkOutline
-                    className="text-white"
-                    fontSize={26}
-                  />
-                </Button> */}
-                      {/* <p className={`${poppins.className} text-sm text-white`}>
-                    {formattedDate}
-                  </p> */}
-                    </div>
+                  <div
+                    onClick={() => {
+                      router.push(`/post/${post?._id}`);
+                      close();
+                    }}
+                    className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start"
+                  >
+                    <div className="flex top items-center justify-between w-full px-4"></div>
                     <div className="bottom px-4 absolute bottom-3">
                       <p className={`${poppins.className} text-sm mt-2`}>
                         "
-                        {post?.prompt.length > 50
+                        {post?.prompt?.length > 50
                           ? post?.prompt?.slice(0, 50) + "..."
                           : post?.prompt}
                         "
@@ -159,7 +151,7 @@ function Search({ close }) {
                     removeWrapper
                     alt="Card background"
                     className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.5]"
-                    src={post?.urls[0]}
+                    src={post?.url}
                   />
                 </Card>
               ))}
@@ -179,7 +171,7 @@ function Search({ close }) {
       {user.length === 0 &&
         posts.length === 0 &&
         !loading &&
-        (query?.length > 0) && (
+        query?.length > 0 && (
           <div className="flex fadein flex-col items-center justify-center mb-4">
             <TbFileSad fontSize={60} className="text-gray-500 mb-2" />
             <p className="text-gray-400 text-lg">No results found</p>

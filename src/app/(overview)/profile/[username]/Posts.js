@@ -7,7 +7,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  Skeleton,
   useDisclosure,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -43,7 +42,7 @@ function Posts({ userPosts, userData }) {
   const modalData = {
     imgId: imgData?._id,
     userId: userData?._id,
-    img: imgData?.urls[0],
+    img: imgData?.url,
     name: userData?.name,
     prompt: imgData?.prompt,
     dimensions: imgData?.miscData?.dimensions,
@@ -83,7 +82,7 @@ function Posts({ userPosts, userData }) {
                       removeWrapper
                       alt="Card background"
                       className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
-                      src={data?.urls[0]}
+                      src={data?.url}
                     />
                   </Card>
                 </div>
