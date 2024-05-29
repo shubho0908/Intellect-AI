@@ -58,7 +58,7 @@ export const POST = async (req) => {
 
     const newImage = new Image({
       userId,
-      urls: [removedImg],
+      url: removedImg,
       miscData: {
         dimensions: ratio,
         modelName: "Generative Fill",

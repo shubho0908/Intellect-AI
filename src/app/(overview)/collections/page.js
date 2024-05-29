@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/components/Loading";
 import { Button, Card } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
 import Image from "next/image";
@@ -73,6 +74,23 @@ function page() {
       errorMsg(error.message);
     }
   };
+
+  if (!collections) {
+    return (
+      <>
+        <div
+          className={`${litePoppins.className} sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
+        >
+          <div className="flex flex-col items-center justify-center h-screen">
+            <Loading />
+            <p className="text-lg relative bottom-14 text-gray-300">
+              Hang tight while we load all the posts...
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

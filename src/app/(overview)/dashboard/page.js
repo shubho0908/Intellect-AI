@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { RiShareForwardBoxLine } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Loading from "@/components/Loading";
 
 const poppins = Poppins({
   weight: "500",
@@ -77,6 +78,23 @@ function page() {
       errorMsg(error.message);
     }
   };
+
+  if (!library) {
+    return (
+      <>
+        <div
+          className={`${litePoppins.className} sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
+        >
+          <div className="flex flex-col items-center justify-center h-screen">
+            <Loading />
+            <p className="text-lg relative bottom-14 text-gray-300">
+              Hang tight while we load all the posts...
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

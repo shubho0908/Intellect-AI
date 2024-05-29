@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 import { Toaster } from "react-hot-toast";
 import Image from "next/image";
+import Loading from "@/components/Loading";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -113,6 +114,23 @@ function Home() {
     } else {
       return `${years} y`;
     }
+  }
+
+  if (!homeData) {
+    return (
+      <>
+        <div
+          className={`${litePoppins.className} sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4`}
+        >
+          <div className="flex flex-col items-center justify-center h-screen">
+            <Loading />
+            <p className="text-lg relative bottom-14 text-gray-300">
+              Hang tight while we load all the posts...
+            </p>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (
