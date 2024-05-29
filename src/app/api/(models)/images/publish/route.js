@@ -1,6 +1,7 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Image } from "@/models/images.models";
+import { User } from "@/models/user.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -46,6 +47,25 @@ export const POST = async (req) => {
     if (!userId) {
       return NextResponse.json(
         { success: false, error: "Invalid tokens" },
+        { status: 401 }
+      );
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    if (user?.visibility === false) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Private accounts are not allowed to publish images.",
+        },
         { status: 401 }
       );
     }

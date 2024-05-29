@@ -1,5 +1,6 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
+import { User } from "@/models/user.models";
 import { Video } from "@/models/videos.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -60,6 +61,25 @@ export const POST = async (req) => {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 404 }
+      );
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    if (user.privacy === false) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Private accounts are not allowed to publish videos.",
+        },
+        { status: 401 }
       );
     }
 

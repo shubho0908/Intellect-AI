@@ -129,7 +129,7 @@ function Home() {
               creatives.
             </p>
             <div className="all-posts relative z-0 flex items-start flex-wrap gap-5 mt-8">
-              {homeData?.reverse()?.map((data, index) => {
+              {homeData?.map((data, index) => {
                 const formattedDate = getTimeSince(data?.createdAt);
                 return (
                   <>
