@@ -106,12 +106,12 @@ function Sidebar() {
         >
           <div className="logo-section hidden md:block">
             <Link href="/home">
-              <Image src="/logo1.png" width={220} height={220} alt="Logo" />
+              <Image src="/logo1.PNG" width={220} height={220} alt="Logo" />
             </Link>
           </div>
           <div className="logo-section block md:hidden">
             <Link href="/home">
-              <Image src="/logo2.png" width={50} height={50} alt="Logo" />
+              <Image src="/logo2.PNG" width={50} height={50} alt="Logo" />
             </Link>
           </div>
           <Link

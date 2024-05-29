@@ -76,7 +76,7 @@ function Login() {
       <div className="login fadein flex flex-col items-center justify-center h-[100vh] w-full">
         <div className="top flex items-center flex-col">
           <Image
-            src="/logo2.png"
+            src="/logo2.PNG"
             width={80}
             height={80}
             alt="logo"
