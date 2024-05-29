@@ -8,6 +8,7 @@ import { Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { LuCopy, LuCopyCheck } from "react-icons/lu";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
   weight: "400",
@@ -16,6 +17,7 @@ const poppins = Poppins({
 function Share({ id }) {
   const URL = "http://localhost:3000/post/" + id;
   const [isCopied, setIsCopied] = useState(false);
+  const router = useRouter();
 
   //Toasts
   const successMsg = (msg) =>
@@ -37,23 +39,28 @@ function Share({ id }) {
     }
   }, [isCopied]);
 
-  const handleShare = async () => {
-    const shareData = {
-      title: "Check out this post",
-      text: "Here is an interesting post I found",
-      url: URL,
-    };
+  const handleFBShare = async () => {
+    return router.push(
+      `https://www.facebook.com/dialog/share?app_id=87741124305&href=${URL}`
+    );
+  };
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        console.log("Content shared successfully");
-      } catch (error) {
-        console.error("Error sharing content:", error);
-      }
-    } else {
-      console.log("Web Share API not supported in this browser");
-    }
+  const handleWPShare = async () => {
+    return router.push(
+      `https://api.whatsapp.com/send?text=Check%20out%20this%20amazing%20post:%20${URL}`
+    );
+  };
+
+  const handleXShare = async () => {
+    return router.push(
+      `https://x.com/intent/tweet?text=Check%20out%20this%20amazing%20post:%20${URL}`
+    );
+  };
+
+  const handleMailShare = async () => {
+    return router.push(
+      `mailto:?subject=Check%20out%20this%20amazing%20post&body=I%20thought%20you%20might%20find%20this%20post%20interesting:%20${URL}`
+    );
   };
 
   return (
@@ -61,25 +68,25 @@ function Share({ id }) {
       <div className="socials flex items-center gap-4 justify-between">
         <div
           className="wp cursor-pointer p-4 rounded-full bg-gray-700/30 w-fit"
-          onClick={handleShare}
+          onClick={handleWPShare}
         >
           <FaWhatsapp fontSize={40} className="text-gray-300" />
         </div>
         <div
           className="fb cursor-pointer p-4 rounded-full bg-gray-700/30 w-fit"
-          onClick={handleShare}
+          onClick={handleFBShare}
         >
           <FaFacebookSquare fontSize={40} className="text-gray-300" />
         </div>
         <div
           className="tw cursor-pointer p-4 rounded-full bg-gray-700/30 w-fit"
-          onClick={handleShare}
+          onClick={handleXShare}
         >
           <FaSquareXTwitter fontSize={40} className="text-gray-300" />
         </div>
         <div
+          onClick={handleMailShare}
           className="mail cursor-pointer p-4 rounded-full bg-gray-700/30 w-fit"
-          onClick={handleShare}
         >
           <IoIosMail fontSize={40} className="text-gray-300" />
         </div>

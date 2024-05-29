@@ -1,6 +1,15 @@
 "use client";
 
-import { Avatar, Button, Divider } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
@@ -16,6 +25,7 @@ import { MdOutlineDone } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import Image from "next/image";
+import Share from "@/components/Share";
 
 const poppins = Poppins({
   weight: "500",
@@ -32,6 +42,7 @@ function page({ params }) {
   const [isCopied, setIsCopied] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
   const [totalLikes, setTotalLikes] = useState(0);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const router = useRouter();
 
@@ -44,6 +55,14 @@ function page({ params }) {
     toast.success(msg, {
       className: `${poppins.className} text-sm`,
     });
+
+  useEffect(() => {
+    if (isCopied) {
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    }
+  }, [isCopied]);
 
   const getPostData = async () => {
     try {
@@ -262,6 +281,12 @@ function page({ params }) {
     }
   };
 
+  const copyToClipboard = () => {
+    setIsCopied(true);
+    successMsg("Copied to clipboard");
+    navigator.clipboard.writeText(postData?.prompt);
+  };
+
   if (!postData || !userData) {
     return (
       <>
@@ -358,7 +383,7 @@ function page({ params }) {
                     <Button
                       isIconOnly
                       variant="bordered"
-                      // onClick={handleCopyprompt}
+                      onClick={copyToClipboard}
                       className="rounded-lg ml-2 border-none text-white"
                     >
                       {!isCopied ? (
@@ -438,6 +463,7 @@ function page({ params }) {
                   <Button
                     color="default"
                     variant="ghost"
+                    onClick={onOpen}
                     className="rounded-xl w-fit"
                   >
                     <FiSend fontSize={21} className="text-white" />
@@ -500,6 +526,31 @@ function page({ params }) {
           </div>
         </div>
       </div>
+
+      {/* Modal  */}
+
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen}
+        size="md"
+        onClose={() => {
+          onClose();
+        }}
+        className={`${poppins.className} my-modal modal-body`}
+      >
+        <ModalContent className="modal-body border-2 border-gray-800">
+          {(onClose) => (
+            <>
+              <ModalHeader className="modal-header">
+                <p className="text-md font-normal">Share this image</p>
+              </ModalHeader>
+              <ModalBody className="mb-5">
+                <Share id={postData?._id} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

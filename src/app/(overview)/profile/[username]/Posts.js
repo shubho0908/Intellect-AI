@@ -17,7 +17,7 @@ const litePoppins = Poppins({
   subsets: ["latin"],
 });
 
-function Posts({ userPosts, userData }) {
+function Posts({ userPosts, userData, myData }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [imgData, setImgData] = useState(null);
 
@@ -45,6 +45,79 @@ function Posts({ userPosts, userData }) {
     created: formattedDate,
     profile: userData?.profileImg,
   };
+
+  if (userData?._id !== myData?._id && userPosts?.length > 0) {
+    const filteredPosts = userPosts?.filter(
+      (data) => data?.visibility === true
+    );
+
+    if (filteredPosts?.length > 0) {
+      return (
+        <>
+          <div className="all-posts relative z-0 flex items-center gap-6 flex-wrap">
+            {filteredPosts?.map((data, index) => {
+              return (
+                <>
+                  {data?.miscData?.modelName === "Instant ID" ||
+                  data?.miscData?.modelName === "Stable Diffusion XL" ? (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        onOpen();
+                        setImgData(data);
+                      }}
+                    >
+                      <Card className="col-span-12 cursor-pointer sm:col-span-4 h-[300px] w-[300px] relative group">
+                        <div className="group-hover:opacity-100 opacity-0 m-2 transition-opacity duration-300 absolute inset-0 z-10 top-1 flex flex-col items-start">
+                          <div className="bottom px-4 absolute bottom-3">
+                            <p
+                              className={`${litePoppins.className} text-sm mt-2`}
+                            >
+                              "
+                              {data?.prompt?.length > 50
+                                ? data?.prompt?.slice(0, 50) + "..."
+                                : data?.prompt}
+                              "
+                            </p>
+                          </div>
+                        </div>
+                        <Image
+                          removeWrapper
+                          alt="Card background"
+                          className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.4]"
+                          src={data?.url}
+                          width={250}
+                          height={250}
+                        />
+                      </Card>
+                    </div>
+                  ) : null}
+                </>
+              );
+            })}
+          </div>
+          <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            size="4xl"
+            onOpenChange={onOpenChange}
+            className={`${litePoppins.className}`}
+          >
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalBody className="mb-5">
+                    <Modal2 data={modalData} />
+                  </ModalBody>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
+      );
+    }
+    return <>Sorry No data</>;
+  }
 
   return (
     <>

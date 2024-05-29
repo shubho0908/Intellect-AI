@@ -8,6 +8,7 @@ import {
   ModalFooter,
   Select,
   SelectItem,
+  Switch,
   Textarea,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -25,7 +26,6 @@ function EditAccount({ userData, close }) {
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
 
-  const [isSelected, setIsSelected] = useState(userData?.visibility);
   const [changes, setChanges] = useState(false);
   const [firstname, setFirstname] = useState(firstName);
   const [lastname, setLastname] = useState(lastName);
@@ -36,6 +36,7 @@ function EditAccount({ userData, close }) {
   const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [profileImg, setProfileImg] = useState(userData?.profileImg);
+  const [isPublic, setIsPublic] = useState(userData?.visibility);
 
   useEffect(() => {
     if (
@@ -43,7 +44,7 @@ function EditAccount({ userData, close }) {
       summary !== userData?.summary ||
       firstname !== firstName ||
       lastname !== lastName ||
-      !isSelected ||
+      !isPublic ||
       professionValue?.currentKey !== undefined
     ) {
       setChanges(true);
@@ -56,7 +57,7 @@ function EditAccount({ userData, close }) {
     firstName,
     lastname,
     lastName,
-    isSelected,
+    isPublic,
     professionValue?.currentKey,
   ]);
 
@@ -110,7 +111,7 @@ function EditAccount({ userData, close }) {
           username: userName,
           summary,
           profile: newImage ? newImage : userData?.profileImg,
-          visibility: isSelected,
+          visibility: isPublic,
           profession: professionValue?.currentKey,
         }),
       });
@@ -285,6 +286,12 @@ function EditAccount({ userData, close }) {
                   </SelectItem>
                 ))}
               </Select>
+              <div className={`${poppins.className} flex flex-col gap-2 ml-8`}>
+                <p className="text-sm">Visibility</p>
+                <Switch isSelected={isPublic} onValueChange={setIsPublic}>
+                  <p className="text-sm"> {isPublic ? "Public" : "Private"}</p>
+                </Switch>
+              </div>
             </div>
             <div className={`${poppins.className} summary mt-6`}>
               <Textarea

@@ -4,10 +4,10 @@ import {
   Card,
   CircularProgress,
   Divider,
-  Image,
   Input,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -150,6 +150,8 @@ function Search({ close }) {
                   <Image
                     removeWrapper
                     alt="Card background"
+                    width={300}
+                    height={300}
                     className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.5]"
                     src={post?.url}
                   />
