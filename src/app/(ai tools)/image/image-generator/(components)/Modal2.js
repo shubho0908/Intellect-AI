@@ -3,11 +3,11 @@
 import {
   Button,
   Avatar,
-  Divider,
   Modal,
   useDisclosure,
   ModalBody,
   ModalContent,
+  ModalHeader,
 } from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
@@ -492,17 +492,20 @@ function Modal2({ data }) {
       <Modal
         backdrop="blur"
         isOpen={isOpen}
-        size="xl"
+        size="md"
         onClose={() => {
           onClose();
         }}
         className={`${litePoppins2.className} my-modal modal-body`}
       >
-        <ModalContent className="modal-body">
+        <ModalContent className="modal-body border-2 border-gray-800">
           {(onClose) => (
             <>
+              <ModalHeader className="modal-header">
+                <p className="text-md font-normal">Share this image</p>
+              </ModalHeader>
               <ModalBody className="mb-5">
-                <Share />
+                <Share id={data?.imgId} />
               </ModalBody>
             </>
           )}

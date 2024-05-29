@@ -21,7 +21,10 @@ export function middleware(request) {
     return NextResponse.redirect(loginUrl.href);
   }
 
-  if (accessToken && authRoutes.some((url) => currentUrl.includes(url))) {
+  if (
+    (accessToken && authRoutes.some((url) => currentUrl.includes(url))) ||
+    currentUrl === "/"
+  ) {
     const homeUrl = new URL("/home", request.url);
     return NextResponse.redirect(homeUrl.href);
   }
