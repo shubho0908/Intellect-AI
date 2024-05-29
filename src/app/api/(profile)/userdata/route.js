@@ -15,7 +15,7 @@ export const GET = async (req) => {
         { status: 400 }
       );
     }
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ _id: userId }).select("-password -refreshToken -tokens");
 
     if (!user) {
       return NextResponse.json(

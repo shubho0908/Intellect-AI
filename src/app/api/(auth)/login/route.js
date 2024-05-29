@@ -58,7 +58,10 @@ export const POST = async (req) => {
     delete userResponse?.refreshToken;
     delete userResponse?.tokens;
 
-    return NextResponse.json({ success: true, data: userResponse }, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: userResponse },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
@@ -101,7 +104,9 @@ export const GET = async () => {
         { status: 401 }
       );
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select(
+      "-password -refreshToken -tokens"
+    );
 
     if (!user) {
       return NextResponse.json(

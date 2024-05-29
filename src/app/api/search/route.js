@@ -17,7 +17,7 @@ export const GET = async (req) => {
         { username: { $regex: Query, $options: "i" } },
         { name: { $regex: Query, $options: "i" } },
       ],
-    });
+    }).select("-password -refreshToken -tokens");
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },

@@ -55,7 +55,12 @@ export const POST = async (req) => {
     await user.save();
     await library.save();
 
-    return NextResponse.json({ success: true, data: user }, { status: 201 });
+    const userResponse = user.toObject();
+    delete userResponse?.password;
+    delete userResponse?.refreshToken;
+    delete userResponse?.tokens;
+
+    return NextResponse.json({ success: true, data: userResponse }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },

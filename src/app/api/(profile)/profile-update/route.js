@@ -88,7 +88,12 @@ export async function PUT(req) {
 
     await user.save();
 
-    return NextResponse.json({ sucess: true, data: user }, { status: 200 });
+    const userResponse = user.toObject();
+    delete userResponse?.password;
+    delete userResponse?.refreshToken;
+    delete userResponse?.tokens;
+
+    return NextResponse.json({ sucess: true, data: userResponse }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
