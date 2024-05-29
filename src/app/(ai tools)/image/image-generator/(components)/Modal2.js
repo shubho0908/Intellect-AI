@@ -502,7 +502,7 @@ function Modal2({ data }) {
           {(onClose) => (
             <>
               <ModalHeader className="modal-header">
-                <p className="text-md font-normal">Share this image</p>
+                <p className="text-md font-normal">Share this post</p>
               </ModalHeader>
               <ModalBody className="mb-5">
                 <Share id={data?.imgId} />

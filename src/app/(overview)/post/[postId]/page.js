@@ -228,7 +228,13 @@ function page({ params }) {
     }
   };
 
-  const SavePost = async (Data) => {
+  useEffect(() => {
+    if (myData?.following.includes(userData?._id)) {
+      setIsFollowed(true);
+    }
+  }, [myData?.following, userData?._id]);
+
+  const SavePost = async () => {
     try {
       if (myData === null) {
         errorMsg("Please login to save");
@@ -257,6 +263,34 @@ function page({ params }) {
       }
     } catch (error) {
       setIsSaved(false);
+      errorMsg(error.message);
+    }
+  };
+
+  const FollowUser = async () => {
+    try {
+      const response = await fetch("/api/follow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userID: userData?._id,
+        }),
+      });
+
+      const { success, message, error } = await response.json();
+      if (success && message === "Unfollowed successfully") {
+        setIsFollowed(false);
+        successMsg(message);
+      } else if (success && message === "Followed successfully") {
+        setIsFollowed(true);
+        successMsg(message);
+      }
+      if (error) {
+        errorMsg(error);
+      }
+    } catch (error) {
       errorMsg(error.message);
     }
   };
@@ -304,6 +338,27 @@ function page({ params }) {
     );
   }
 
+  if (postData?.visibility === false && postData?.userId !== myData?._id) {
+    return (
+      <>
+        <div className="not-found fadein sm:ml-[120px] md:ml-[170px] mr-0 sm:mr-4 flex flex-col items-center justify-center w-screen h-screen">
+          <Image
+            src="/unavailable.png"
+            width={400}
+            height={400}
+            alt="Not found"
+            className="relative right-6"
+          />
+          <p
+            className={`${poppins.className} text-xl w-2/3 text-center text-gray-300`}
+          >
+            Oops! The post you're looking for is not available.
+          </p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Toaster />
@@ -345,15 +400,10 @@ function page({ params }) {
                 <div>
                   {!isFollowed ? (
                     <Button
-                      onClick={() => {
-                        if (!myData) {
-                          router.push("/login");
-                        }
-                      }}
                       color="primary"
                       className="rounded-full ml-4"
                       isDisabled={postData?.userId === myData?._id || !myData}
-                      // onPress={FollowUser}
+                      onClick={FollowUser}
                     >
                       <RiUserFollowLine fontSize={18} className="text-white" />
                       Follow
@@ -364,7 +414,7 @@ function page({ params }) {
                       isDisabled={postData?.userId === myData?._id}
                       variant="bordered"
                       className="rounded-full ml-4 border-gray-600 text-white"
-                      // onPress={FollowUser}
+                      onClick={FollowUser}
                     >
                       <RiUserUnfollowLine
                         fontSize={18}
@@ -542,7 +592,7 @@ function page({ params }) {
           {(onClose) => (
             <>
               <ModalHeader className="modal-header">
-                <p className="text-md font-normal">Share this image</p>
+                <p className="text-md font-normal">Share this post</p>
               </ModalHeader>
               <ModalBody className="mb-5">
                 <Share id={postData?._id} />

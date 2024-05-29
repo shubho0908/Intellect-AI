@@ -2,9 +2,7 @@
 import { Poppins } from "next/font/google";
 import {
   Avatar,
-  Button,
   Card,
-  Image,
   Modal,
   ModalContent,
   ModalBody,
@@ -13,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import Modal2 from "@/app/(ai tools)/image/image-generator/(components)/Modal2";
 import { Toaster } from "react-hot-toast";
+import Image from "next/image";
 
 const litePoppins = Poppins({
   weight: "500",
@@ -69,7 +68,7 @@ function Home() {
     }
 
     const newData = {
-      img: data?.urls[0],
+      img: data?.url,
       imgId: data?._id,
       userId: data?.userId?._id,
       name: data?.userId?.name,
@@ -188,8 +187,10 @@ function Home() {
                         <Image
                           removeWrapper
                           alt="Card background"
+                          width={350}
+                          height={350}
                           className="z-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-[.2]"
-                          src={data?.urls[0]}
+                          src={data?.url}
                         />
                       </Card>
                     </div>

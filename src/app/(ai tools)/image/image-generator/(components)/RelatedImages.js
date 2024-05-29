@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Image,
   Modal,
   ModalContent,
   ModalHeader,
@@ -18,8 +17,15 @@ import { GoCopy, GoDownload } from "react-icons/go";
 import { PiMagicWand } from "react-icons/pi";
 import { RxDownload } from "react-icons/rx";
 import { MdOutlineDone } from "react-icons/md";
-import { MdOutlineBookmarkAdd, MdDeleteOutline } from "react-icons/md";
+import {
+  MdOutlineBookmarkAdd,
+  MdDeleteOutline,
+  MdOutlineFileDownloadDone,
+} from "react-icons/md";
 import Link from "next/link";
+import Image from "next/image";
+import { LuUpload } from "react-icons/lu";
+import toast from "react-hot-toast";
 
 const poppins = Poppins({
   weight: "600",
@@ -37,6 +43,19 @@ function RelatedImages({ Data }) {
   const [isCopied, setIsCopied] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+
+  //Toasts
+  const successMsg = (msg) =>
+    toast.success(msg, {
+      className: `${litePoppins.className} text-sm`,
+    });
+
+  const errorMsg = (msg) =>
+    toast.error(msg, {
+      className: `${litePoppins.className} text-sm`,
+    });
 
   useEffect(() => {
     if (isCopied) {
@@ -94,6 +113,35 @@ function RelatedImages({ Data }) {
     }
   };
 
+  const publishImage = async () => {
+    try {
+      setIsBtnLoading(true);
+      const response = await fetch("/api/images/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: context?._id,
+        }),
+      });
+
+      const { success, message, error } = await response.json();
+      if (success && message === "Image published!") {
+        successMsg(message);
+        setIsPublished(true);
+        setIsBtnLoading(false);
+      }
+      if (error) {
+        errorMsg(error);
+        setIsBtnLoading(false);
+      }
+    } catch (error) {
+      errorMsg(error.message);
+      setIsBtnLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="related-images">
@@ -105,17 +153,16 @@ function RelatedImages({ Data }) {
             {Data?.map((image, index) => (
               <>
                 <Image
-                  isZoomed
                   key={index}
                   src={image?.url}
                   alt="image"
                   width={350}
                   height={350}
                   onClick={() => {
-                    onOpen()
+                    onOpen();
                     setContext(image);
                   }}
-                  className="cursor-pointer z-[1] max-w-full lg:max-w-[350px]"
+                  className="cursor-pointer rounded-xl z-[1] max-w-full lg:max-w-[350px]"
                 />
               </>
             ))}
@@ -126,14 +173,16 @@ function RelatedImages({ Data }) {
             size="4xl"
             onClose={() => {
               onClose();
+              setIsBtnLoading(false)
+              setIsPublished(false)
+
             }}
             className={`${litePoppins.className} my-modal`}
           >
             <ModalContent className="modal-body">
               {(onClose) => (
                 <>
-                  <ModalHeader className="flex flex-col gap-1 "></ModalHeader>
-                  <ModalBody className="mb-5">
+                  <ModalBody className="my-5">
                     <div className="modal-body items-center h-[600px] md:h-auto overflow-auto md:overflow-hidden flex flex-col md:flex-row md:items-start">
                       <div className="left hidden md:block">
                         {context && (
@@ -146,7 +195,7 @@ function RelatedImages({ Data }) {
                               onContextMenu={(e) => {
                                 e.preventDefault();
                               }}
-                              className="cursor-pointer z-[1]"
+                              className="cursor-pointer rounded-xl z-[1]"
                             />
                           </>
 
@@ -306,15 +355,45 @@ function RelatedImages({ Data }) {
                               <p className="text-sm mt-2">Image tool</p>
                             </div>
                           </div>
+                          <div className="btn flex gap-4 mt-10 items-center justify-between">
                           <Button
                             color="primary"
                             variant="solid"
                             onClick={() => downloadImage(context?.url)}
-                            className="rounded-xl mt-10 w-full"
+                            className="rounded-xl w-full"
                           >
                             <RxDownload fontSize={21} className="text-white" />
                             Download
                           </Button>
+                          <Button
+                            color="primary"
+                            variant="solid"
+                            isDisabled={isPublished}
+                            isLoading={isBtnLoading}
+                            onClick={publishImage}
+                            className="rounded-xl w-full"
+                          >
+                            {isPublished ? (
+                              <>
+                                <MdOutlineFileDownloadDone
+                                  fontSize={21}
+                                  className="text-white"
+                                />
+                                Published
+                              </>
+                            ) : (
+                              <>
+                                <LuUpload
+                                  fontSize={21}
+                                  className={`${
+                                    isBtnLoading ? "hidden" : "text-white"
+                                  }`}
+                                />
+                                Publish
+                              </>
+                            )}
+                          </Button>
+                          </div>
                         </div>
                       </div>
                     </div>

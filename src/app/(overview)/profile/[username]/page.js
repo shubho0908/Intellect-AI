@@ -138,10 +138,14 @@ function Profile({ params }) {
     Others: "🤙🏻",
   };
 
-  if (user?.visibility === false && user?._id !== myData?._id) {
+  if (
+    user?.visibility === false &&
+    user?._id !== myData?._id &&
+    !user?.followers?.includes(myData?._id)
+  ) {
     return (
       <>
-        <div className="profile py-4 fadein sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
+        <div className="profile py-4 sm:ml-[120px] md:ml-[320px] mr-0 sm:mr-4">
           <div className="user-data">
             <div className="banner">
               <div className="bg-gradient-to-br from-pink-300 to-blue-400 h-[220px] w-full rounded-lg"></div>
@@ -414,7 +418,11 @@ function Profile({ params }) {
                   }`}
                 >
                   {userPosts?.length > 0 ? (
-                    <Posts myData={myData} userPosts={userPosts} userData={user} />
+                    <Posts
+                      myData={myData}
+                      userPosts={userPosts}
+                      userData={user}
+                    />
                   ) : (
                     <>
                       <Skeleton

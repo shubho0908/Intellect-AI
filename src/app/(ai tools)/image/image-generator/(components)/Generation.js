@@ -188,7 +188,6 @@ function page({ ModelData }) {
             <div className="generated-image flex-wrap newXL:flex-nowrap py-6 flex items-start">
               <div className="left border-2 border-gray-800 p-4 rounded-lg">
                 <Image
-                  isZoomed
                   src={modelData && modelData[0]?.url}
                   alt="image"
                   width={500}

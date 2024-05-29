@@ -6,6 +6,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  Skeleton,
   useDisclosure,
 } from "@nextui-org/react";
 import { Poppins } from "next/font/google";
@@ -46,7 +47,12 @@ function Posts({ userPosts, userData, myData }) {
     profile: userData?.profileImg,
   };
 
-  if (userData?._id !== myData?._id && userPosts?.length > 0) {
+  if (
+    (myData?._id !== userData?._id &&
+      !userData?.follower?.includes(myData?._id) &&
+      userPosts?.length > 0) ||
+    !myData
+  ) {
     const filteredPosts = userPosts?.filter(
       (data) => data?.visibility === true
     );
@@ -116,7 +122,28 @@ function Posts({ userPosts, userData, myData }) {
         </>
       );
     }
-    return <>Sorry No data</>;
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center w-full">
+          <Skeleton
+            isLoaded={userData !== null}
+            className={`rounded-lg ${!userData ? "w-full h-[250px]" : "w-fit"}`}
+          >
+            <div className="flex flex-col items-center">
+              <Image
+                src="/nothing.png"
+                width={250}
+                height={250}
+                alt="No post"
+              />
+              <p className={`${litePoppins.className} text-gray-400`}>
+                User don't have any posts.
+              </p>
+            </div>
+          </Skeleton>
+        </div>
+      </>
+    );
   }
 
   return (
