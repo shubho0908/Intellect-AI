@@ -4,7 +4,6 @@ import { Poppins } from "next/font/google";
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Image,
   Textarea,
   Modal,
   ModalContent,
@@ -21,7 +20,7 @@ import { prompts } from "@/others/Prompts";
 import toast, { Toaster } from "react-hot-toast";
 import { GoDownload } from "react-icons/go";
 import { MdOutlineFileDownloadDone } from "react-icons/md";
-import { set } from "mongoose";
+import Image from "next/image";
 
 const poppins = Poppins({
   weight: "600",

@@ -158,15 +158,15 @@ function Home() {
                           <div className="flex top items-center justify-between w-full px-4">
                             <div className="flex items-center gap-4">
                               <Avatar
-                                size="md"
+                                size="sm"
                                 src={data?.userId?.profileImg}
                                 className="z-0"
                               />
                               <p
-                                className={`${litePoppins.className} text-white font-medium`}
+                                className={`${litePoppins.className} text-white text-sm font-medium`}
                               >
-                                {data?.userId?.username?.length > 10
-                                  ? `${data?.userId?.username.slice(0, 10)}...`
+                                {data?.userId?.username?.length > 7
+                                  ? `${data?.userId?.username.slice(0, 7)}...`
                                   : data?.userId?.username}
                               </p>
                             </div>
