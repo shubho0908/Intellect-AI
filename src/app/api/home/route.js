@@ -1,5 +1,6 @@
 import { ConnectDB } from "@/database";
 import { Image } from "@/models/images.models";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export const GET = async () => {
@@ -18,6 +19,8 @@ export const GET = async () => {
         { status: 404 }
       );
     }
+
+    revalidatePath("/api/home");
 
     return NextResponse.json({
       success: true,
