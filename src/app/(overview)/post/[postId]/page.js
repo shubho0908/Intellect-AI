@@ -9,8 +9,12 @@ import {
   ModalContent,
   ModalHeader,
   useDisclosure,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
@@ -21,11 +25,12 @@ import { BiLike, BiSolidLike } from "react-icons/bi";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { GoCopy } from "react-icons/go";
-import { MdOutlineDone } from "react-icons/md";
+import { MdOutlineDone, MdOutlinePublic } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import Image from "next/image";
 import Share from "@/components/Share";
+import { FaLock } from "react-icons/fa6";
 
 const poppins = Poppins({
   weight: "500",
@@ -43,8 +48,20 @@ function page({ params }) {
   const [userPosts, setUserPosts] = useState([]);
   const [totalLikes, setTotalLikes] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+  const [privacyLoading, setPrivacyLoading] = useState(false);
 
   const router = useRouter();
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
+  );
+
+  useEffect(() => {
+    if (postData) {
+      setSelectedKeys(new Set([`${postData?.visibility}`]));
+    }
+  }, [postData]);
 
   const errorMsg = (msg) =>
     toast.error(msg, {
@@ -292,6 +309,35 @@ function page({ params }) {
       }
     } catch (error) {
       errorMsg(error.message);
+    }
+  };
+
+  const ChangePostPrivacy = async (visibility) => {
+    try {
+      setPrivacyLoading(true);
+      const response = await fetch("/api/images/change-privacy", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: postData?._id,
+          visibility,
+          postUserId: userData?._id,
+        }),
+      });
+
+      const { success, error, message } = await response.json();
+      if (success) {
+        successMsg(message);
+        setPrivacyLoading(false);
+      } else {
+        errorMsg(error);
+        setPrivacyLoading(false);
+      }
+    } catch (error) {
+      errorMsg(error.message);
+      setPrivacyLoading(false);
     }
   };
 
@@ -550,6 +596,56 @@ function page({ params }) {
                       </>
                     )}
                   </Button>
+                  {/* Dropdown  */}
+                  {userData?._id === myData?._id ? (
+                    <>
+                      <Dropdown>
+                        <DropdownTrigger className="w-fit">
+                          <Button
+                            isIconOnly
+                            variant="bordered"
+                            isLoading={privacyLoading}
+                            className="w-[50px]"
+                          >
+                            {selectedValue === "true" ? (
+                              <MdOutlinePublic
+                                fontSize={23}
+                                className="text-white"
+                              />
+                            ) : (
+                              <FaLock fontSize={18} className="text-white" />
+                            )}
+                          </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu
+                          aria-label="Single selection example"
+                          variant="flat"
+                          disallowEmptySelection
+                          selectionMode="single"
+                          selectedKeys={selectedKeys}
+                          onSelectionChange={setSelectedKeys}
+                          className={poppins.className}
+                        >
+                          <DropdownItem
+                            onClick={() => {
+                              ChangePostPrivacy(true);
+                            }}
+                            key="true"
+                          >
+                            Public
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              ChangePostPrivacy(false);
+                            }}
+                            key="false"
+                          >
+                            Private
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </>
+                  ) : null}
                 </div>
               </div>
               <Divider />
@@ -592,19 +688,20 @@ function page({ params }) {
                       </div>
                     </>
                   )}
-                  {userPosts?.length === 1 && userPosts[0]?._id === postData?._id && (
-                    <>
-                      <div className="flex items-center relative top-10 justify-center w-full h-full">
-                        <Image
-                          className="cursor-pointer rounded-xl"
-                          src="/empty.png"
-                          alt="image"
-                          width={200}
-                          height={200}
-                        />
-                      </div>
-                    </>
-                  )}
+                  {userPosts?.length === 1 &&
+                    userPosts[0]?._id === postData?._id && (
+                      <>
+                        <div className="flex items-center relative top-10 justify-center w-full h-full">
+                          <Image
+                            className="cursor-pointer rounded-xl"
+                            src="/empty.png"
+                            alt="image"
+                            width={200}
+                            height={200}
+                          />
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             </div>

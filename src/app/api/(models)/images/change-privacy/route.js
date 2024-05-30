@@ -1,15 +1,13 @@
 import { ConnectDB } from "@/database";
 import { generateAccessToken, verifyToken } from "@/lib/token";
 import { Image } from "@/models/images.models";
-import { Library } from "@/models/library.models";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export const POST = async (req) => {
+export async function PATCH(req) {
   try {
     await ConnectDB();
-    const { image, ratio } = await req.json();
-
+    const { postId, visibility, postUserId } = await req.json();
     const accessTokenValue = cookies().get("accessToken")?.value;
     const refreshTokenValue = cookies().get("refreshToken")?.value;
 
@@ -51,29 +49,30 @@ export const POST = async (req) => {
       );
     }
 
-    //Upscale Image using Cloudinary
-    const extract = image.split("upload/");
-    const removedImg =
-      extract[0] + `upload/c_pad,ar_${ratio},g_center,b_gen_fill/` + extract[1];
+    if (postUserId !== userId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 401 }
+      );
+    }
 
-    const newImage = new Image({
-      userId,
-      url: removedImg,
-      miscData: {
-        dimensions: ratio,
-        modelName: "Generative Fill",
-      },
-    });
+    const image = await Image.findOne({ _id: postId });
 
-    await newImage.save();
+    if (!image) {
+      return NextResponse.json(
+        { success: false, error: "Image not found" },
+        { status: 404 }
+      );
+    }
 
-    const library = await Library.findOne({ userId });
-    library.images.push(newImage._id);
-    await library.save();
+    image.visibility = visibility;
+    await image.save();
 
     return NextResponse.json(
-      { success: true, data: newImage?.url },
-      { status: 201 }
+      { success: true, message: "Privacy changed successfully" },
+      {
+        status: 200,
+      }
     );
   } catch (error) {
     return NextResponse.json(
@@ -81,4 +80,4 @@ export const POST = async (req) => {
       { status: 500 }
     );
   }
-};
+}
