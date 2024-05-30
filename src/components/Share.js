@@ -15,7 +15,7 @@ const poppins = Poppins({
   subsets: ["latin"],
 });
 function Share({ id }) {
-  const URL = "http://localhost:3000/post/" + id;
+  const URL = "https://intellect-ai.vercel.app/post/" + id;
   const [isCopied, setIsCopied] = useState(false);
   const router = useRouter();
 

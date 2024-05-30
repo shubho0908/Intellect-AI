@@ -321,6 +321,15 @@ function page({ params }) {
     navigator.clipboard.writeText(postData?.prompt);
   };
 
+  useEffect(() => {
+    if (userPosts?.length > 0 && myData?._id !== postData?.userId) {
+      const filteredPosts = userPosts.filter(
+        (post) => post.visibility === true
+      );
+      setUserPosts(filteredPosts);
+    }
+  }, [userPosts, myData?._id, postData?.userId]);
+
   if (!postData || !userData) {
     return (
       <>
@@ -570,6 +579,32 @@ function page({ params }) {
                       </div>
                     );
                   })}
+                  {userPosts?.length < 1 && (
+                    <>
+                      <div className="flex items-center relative top-10 justify-center w-full h-full">
+                        <Image
+                          className="cursor-pointer rounded-xl"
+                          src="/empty.png"
+                          alt="image"
+                          width={200}
+                          height={200}
+                        />
+                      </div>
+                    </>
+                  )}
+                  {userPosts?.length === 1 && userPosts[0]?._id === postData?._id && (
+                    <>
+                      <div className="flex items-center relative top-10 justify-center w-full h-full">
+                        <Image
+                          className="cursor-pointer rounded-xl"
+                          src="/empty.png"
+                          alt="image"
+                          width={200}
+                          height={200}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
