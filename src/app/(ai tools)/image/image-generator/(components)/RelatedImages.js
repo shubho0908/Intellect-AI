@@ -74,7 +74,7 @@ function RelatedImages({ Data }) {
   }, [Data]);
 
   useEffect(() => {
-    const getUser = async () => {
+    const fetchUserData = async () => {
       try {
         const response = await fetch("/api/login");
         const { success, data, error } = await response.json();
@@ -82,12 +82,14 @@ function RelatedImages({ Data }) {
           setUserData(data);
         }
       } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
       }
     };
 
-    getUser();
-  });
+    if (!userData) {
+      fetchUserData();
+    }
+  }, [userData]);
 
   if (Data && Data?.length < 2) {
     return null;

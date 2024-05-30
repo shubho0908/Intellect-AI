@@ -32,11 +32,7 @@ function Home() {
     try {
       const response = await fetch("/api/home", {
         method: "GET",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-        },
+        cache:"no-store"
       });
       const { success, data, error } = await response.json();
       if (success) {
