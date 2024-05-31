@@ -85,7 +85,7 @@ export const POST = async (req) => {
     await library.save();
 
     return NextResponse.json(
-      { success: true, data: newImage?.urls[0] },
+      { success: true, data: newImage?.url },
       { status: 201 }
     );
   } catch (error) {
