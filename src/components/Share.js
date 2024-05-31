@@ -39,26 +39,29 @@ function Share({ id }) {
     }
   }, [isCopied]);
 
-  const handleFBShare = async () => {
-    return router.push(
-      `https://www.facebook.com/dialog/share?app_id=87741124305&href=${URL}`
+  const handleFBShare = () => {
+    window.open(
+      `https://www.facebook.com/dialog/share?app_id=87741124305&href=${URL}`,
+      "_blank"
     );
   };
 
-  const handleWPShare = async () => {
-    return router.push(
-      `https://api.whatsapp.com/send?text=Check%20out%20this%20amazing%20post:%20${URL}`
+  const handleWPShare = () => {
+    window.open(
+      `https://api.whatsapp.com/send?text=Check%20out%20this%20amazing%20post:%20${URL}`,
+      "_blank"
     );
   };
 
-  const handleXShare = async () => {
-    return router.push(
-      `https://x.com/intent/tweet?text=Check%20out%20this%20amazing%20post:%20${URL}`
+  const handleXShare = () => {
+    window.open(
+      `https://x.com/intent/tweet?text=Check%20out%20this%20amazing%20post:%20${URL}`,
+      "_blank"
     );
   };
 
-  const handleMailShare = async () => {
-    return router.push(
+  const handleMailShare = () => {
+    window.open(
       `mailto:?subject=Check%20out%20this%20amazing%20post&body=I%20thought%20you%20might%20find%20this%20post%20interesting:%20${URL}`
     );
   };

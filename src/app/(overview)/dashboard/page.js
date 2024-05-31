@@ -22,6 +22,7 @@ const litePoppins = Poppins({
 function page() {
   const [library, setLibrary] = useState(null);
   const [imageIds, setImageIds] = useState([]);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const router = useRouter();
 
@@ -57,6 +58,7 @@ function page() {
 
   const DeletePost = async (id) => {
     try {
+      setDeleteLoading(true);
       const response = await fetch(`api/images/delete?postId=${id}`, {
         method: "DELETE",
         headers: {
@@ -67,15 +69,18 @@ function page() {
       const { success, message, error } = await response.json();
       if (success && message === "Image deleted") {
         successMsg(message + " successfully!");
+        setDeleteLoading(false);
         setTimeout(() => {
           window.location.reload();
         }, 500);
       }
       if (error) {
         errorMsg(error);
+        setDeleteLoading(false);
       }
     } catch (error) {
       errorMsg(error.message);
+      setDeleteLoading(false);
     }
   };
 
@@ -138,7 +143,7 @@ function page() {
                             Do you want to delete this post forever?
                           </p>
                           <Button
-                            isIconOnly
+                            isLoading={deleteLoading}
                             onClick={() => DeletePost(imageIds[index])}
                             className={`${litePoppins.className} w-1/2 bg-red-600`}
                           >
