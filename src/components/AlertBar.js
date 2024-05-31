@@ -24,7 +24,8 @@ function AlertBar() {
         <span className="sr-only">Info</span>
         <div>
           <span className="font-medium">Warning alert!</span> This model needs
-          high processing power to run and may take a long time to load.
+          high processing power to run and may take a long time to load. You'll
+          receive an email when your generation is ready.
         </div>
       </div>
     </>

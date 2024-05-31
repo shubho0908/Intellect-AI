@@ -183,7 +183,7 @@ function page({ params }) {
         setIsSaved(false);
       }
     },
-    [myData, errorMsg]
+    [myData]
   );
 
   useEffect(() => {

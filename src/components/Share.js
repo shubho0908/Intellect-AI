@@ -15,7 +15,7 @@ const poppins = Poppins({
   subsets: ["latin"],
 });
 function Share({ id }) {
-  const URL = "https://intellect-ai.vercel.app/post/" + id;
+  const URL = process.env.NEXT_PUBLIC_APP_URL + "/post/" + id;
   const [isCopied, setIsCopied] = useState(false);
   const router = useRouter();
 
@@ -93,29 +93,28 @@ function Share({ id }) {
       </div>
       <div className="link mt-6">
         <p>Page Link</p>
-        <Input
-          type="text"
-          isReadOnly
-          className={`mt-3 ${
-            isCopied ? "border-2 border-blue-600 rounded-xl" : ""
-          } cursor-pointer`}
-          value={URL && URL.length > 40 ? URL?.slice(0, 40) + "..." : URL}
-          labelPlacement="outside"
-          onClick={copyToClipboard}
-          endContent={
-            isCopied ? (
-              <LuCopyCheck
-                onClick={copyToClipboard}
-                className="text-2xl cursor-pointer text-default-400 flex-shrink-0"
-              />
-            ) : (
-              <LuCopy
-                onClick={copyToClipboard}
-                className="text-2xl cursor-pointer text-default-400 pointer-events-none flex-shrink-0"
-              />
-            )
-          }
-        />
+        <div className="inp flex items-center gap-3">
+          <Input
+            type="text"
+            isReadOnly
+            className={`mt-3 ${
+              isCopied ? "border-2 border-blue-600 rounded-xl" : ""
+            } cursor-pointer`}
+            value={URL && URL.length > 40 ? URL?.slice(0, 40) + "..." : URL}
+            labelPlacement="outside"
+          />
+          {isCopied ? (
+            <LuCopyCheck
+              onClick={copyToClipboard}
+              className="text-2xl relative top-1 cursor-pointer text-default-400 flex-shrink-0"
+            />
+          ) : (
+            <LuCopy
+              onClick={copyToClipboard}
+              className="text-2xl relative top-1 cursor-pointer text-default-400"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

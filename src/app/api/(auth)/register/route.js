@@ -4,6 +4,7 @@ import { Library } from "@/models/library.models";
 import { User } from "@/models/user.models";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 
 export const POST = async (req) => {
   try {
@@ -60,7 +61,53 @@ export const POST = async (req) => {
     delete userResponse?.refreshToken;
     delete userResponse?.tokens;
 
-    return NextResponse.json({ success: true, data: userResponse }, { status: 201 });
+    // Nodemailer configuration
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.APP_PASSWORD,
+      },
+    });
+
+    const websiteUrl = process.env.APP_URL + "/home";
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: `Welcome to Intellect.AI 🤖`,
+      html: `
+      <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+      <h2 style="color: #333;">Welcome ${userResponse?.name}!</h2>
+      <p style="color: #555;">Welcome to Intellect.AI, your new AI companion! We're thrilled to have you on board. May your journey be filled with enlightening and exciting experiences with the power of AI.</p>
+      <p style="margin: 20px 0;">
+        <a href="${websiteUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Start Creating</a>
+      </p>
+      <p style="color: #888;">Best regards,<br/>Shubhojeet Bera</p>
+    </div>
+        `,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Error sending email",
+          },
+          { status: 404 }
+        );
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
+    return NextResponse.json(
+      { success: true, data: userResponse },
+      { status: 201 }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
