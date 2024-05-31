@@ -99,7 +99,7 @@ export const POST = async (req) => {
     const user = await User.findOne({ _id: userId });
     const mailOptions = {
       from: process.env.EMAIL,
-      to: email,
+      to: user?.email,
       subject: `Your Video is upscaled successfully 🤘🏻`,
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">

@@ -115,9 +115,8 @@ function Sidebar() {
             </Link>
           </div>
           <Link
-            href={`${
-              user === "invalid" ? "/signup" : `/profile/${user?.username}`
-            }`}
+            href={user !== "invalid" ? `/profile/${user?.username}` : "/signup"}
+            prefetch={false}
           >
             <div className="flex mt-6 cursor-pointer bg-gray-700/40 hover:bg-gray-700/80 transition-all px-6 py-3 rounded-xl items-center justify-center gap-4">
               <div className="flex items-center gap-4">
@@ -153,6 +152,7 @@ function Sidebar() {
               OVERVIEW
             </p>
             <Link
+              prefetch={false}
               href="/home"
               className={`hover:bg-[#0266D9] ${
                 pathname === "/home" && "bg-[#0266D9]"
@@ -169,7 +169,8 @@ function Sidebar() {
               <p className="hidden md:block">Search</p>
             </div>
             <Link
-              href={`${user === "invalid" ? "/login" : "/dashboard"}`}
+              href="/dashboard"
+              prefetch={false}
               className={`hover:bg-[#0266D9] ${
                 pathname === "/dashboard" && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all flex items-center my-1`}
@@ -178,7 +179,8 @@ function Sidebar() {
               <p className="hidden md:block">Dashboard</p>
             </Link>
             <Link
-              href={`${user === "invalid" ? "/login" : "/collections"}`}
+              href="/collections"
+              prefetch={false}
               className={`hover:bg-[#0266D9] cursor-pointer ${
                 pathname.includes("/collections") && "bg-[#0266D9]"
               } p-3 w-fit md:w-full md:py-3 md:px-6 rounded-lg transition-all my-1`}
@@ -218,9 +220,8 @@ function Sidebar() {
             {isDown.image ? (
               <div className="hidden py-2 image-tools md:flex flex-col relative left-10 leading-10">
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/image/image-generator"
-                  }`}
+                  href="/image/image-generator"
+                  prefetch={false}
                   className={`${
                     pathname.includes("/image-generator")
                       ? "text-white"
@@ -230,9 +231,8 @@ function Sidebar() {
                   Image Generator
                 </Link>
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/image/image-upscaler"
-                  }`}
+                  href="/image/image-upscaler"
+                  prefetch={false}
                   className={`${
                     pathname.includes("/image-upscaler")
                       ? "text-white"
@@ -243,7 +243,8 @@ function Sidebar() {
                 </Link>
 
                 <Link
-                  href={`${user === "invalid" ? "/login" : "/image/avatar"}`}
+                  href="/image/avatar"
+                  prefetch={false}
                   className={`${
                     pathname.includes("/avatar")
                       ? "text-white"
@@ -253,9 +254,8 @@ function Sidebar() {
                   AI Avatar Creator
                 </Link>
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/image/magic-expand"
-                  }`}
+                  prefetch={false}
+                  href="/image/magic-expand"
                   className={`${
                     pathname.includes("/magic-expand")
                       ? "text-white"
@@ -297,9 +297,8 @@ function Sidebar() {
             {isDown.video ? (
               <div className="hidden py-2 md:flex video-tools flex-col relative left-10 leading-10">
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/video/image-to-motion"
-                  }`}
+                  href="/video/image-to-motion"
+                  prefetch={false}
                   className={`${
                     pathname.includes("/image-to-motion")
                       ? "text-white"
@@ -310,9 +309,8 @@ function Sidebar() {
                 </Link>
 
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/video/video-caption"
-                  }`}
+                  href="/video/video-caption"
+                  prefetch={false}
                   className={`${
                     pathname.includes("/video-caption")
                       ? "text-white"
@@ -322,9 +320,8 @@ function Sidebar() {
                   Video Caption
                 </Link>
                 <Link
-                  href={`${
-                    user === "invalid" ? "/login" : "/video/video-upscaler"
-                  }`}
+                  prefetch={false}
+                  href="/video/video-upscaler"
                   className={`${
                     pathname.includes("/video-upscaler")
                       ? "text-white"
@@ -361,7 +358,7 @@ function Sidebar() {
         <ModalContent className="modal-body">
           {(onClose) => (
             <>
-              <ModalBody className="">
+              <ModalBody>
                 <Search close={onClose} />
               </ModalBody>
             </>

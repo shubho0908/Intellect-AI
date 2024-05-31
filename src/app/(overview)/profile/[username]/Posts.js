@@ -64,8 +64,7 @@ function Posts({ userPosts, userData, myData }) {
             {filteredPosts?.map((data, index) => {
               return (
                 <>
-                  {data?.miscData?.modelName === "Instant ID" ||
-                  data?.miscData?.modelName === "Stable Diffusion XL" ? (
+                 
                     <div
                       key={index}
                       onClick={() => {
@@ -97,7 +96,6 @@ function Posts({ userPosts, userData, myData }) {
                         />
                       </Card>
                     </div>
-                  ) : null}
                 </>
               );
             })}
@@ -152,8 +150,7 @@ function Posts({ userPosts, userData, myData }) {
         {userPosts?.map((data, index) => {
           return (
             <>
-              {data?.miscData?.modelName === "Instant ID" ||
-              data?.miscData?.modelName === "Stable Diffusion XL" ? (
+              
                 <div
                   key={index}
                   onClick={() => {
@@ -166,7 +163,7 @@ function Posts({ userPosts, userData, myData }) {
                       <div className="bottom px-4 absolute bottom-3">
                         <p className={`${litePoppins.className} text-sm mt-2`}>
                           "
-                          {data?.prompt?.length > 50
+                          {data?.prompt && data?.prompt?.length > 50
                             ? data?.prompt?.slice(0, 50) + "..."
                             : data?.prompt}
                           "
@@ -181,9 +178,9 @@ function Posts({ userPosts, userData, myData }) {
                       width={250}
                       height={250}
                     />
+                    <img src={data?.url} alt="Card background" />
                   </Card>
                 </div>
-              ) : null}
             </>
           );
         })}
@@ -198,7 +195,7 @@ function Posts({ userPosts, userData, myData }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalBody className="mb-5">
+              <ModalBody>
                 <Modal2 data={modalData} />
               </ModalBody>
             </>
