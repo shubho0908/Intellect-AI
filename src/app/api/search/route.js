@@ -1,9 +1,11 @@
+import { ConnectDB } from "@/database";
 import { Image } from "@/models/images.models";
 import { User } from "@/models/user.models";
 import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
+    await ConnectDB();
     const Query = req.nextUrl.searchParams.get("q");
     if (!Query || Query === "") {
       return NextResponse.json(
@@ -26,7 +28,10 @@ export const GET = async (req) => {
     }
 
     const posts = await Image.find({
-      prompt: { $regex: Query, $options: "i" },
+      $and: [
+        { prompt: { $regex: Query, $options: "i" } },
+        { visibility: true },
+      ],
     });
 
     return NextResponse.json(
@@ -35,8 +40,8 @@ export const GET = async (req) => {
     );
   } catch (error) {
     return NextResponse.json(
-      { success: false, error: "Missing query" },
-      { status: 400 }
+      { success: false, error: "Something went wrong" },
+      { status: 500 }
     );
   }
 };
