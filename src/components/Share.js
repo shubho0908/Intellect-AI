@@ -100,7 +100,7 @@ function Share({ id }) {
             className={`mt-3 ${
               isCopied ? "border-2 border-blue-600 rounded-xl" : ""
             } cursor-pointer`}
-            value={URL && URL.length > 40 ? URL?.slice(0, 40) + "..." : URL}
+            value={URL && URL.length > 45 ? URL?.slice(0, 45) + "..." : URL}
             labelPlacement="outside"
           />
           {isCopied ? (
