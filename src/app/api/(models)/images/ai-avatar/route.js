@@ -111,7 +111,7 @@ export const POST = async (req) => {
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: email,
+      to: user?.email,
       subject: `Your AI Avatar is ready 🤘🏻`,
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">

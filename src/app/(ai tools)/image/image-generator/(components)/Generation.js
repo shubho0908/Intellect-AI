@@ -420,6 +420,7 @@ function page({ ModelData }) {
         size="2xl"
         onClose={() => {
           onClose();
+          setIsPublished(false);
         }}
         className={`${litePoppins.className} my-modal`}
       >

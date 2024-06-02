@@ -72,7 +72,7 @@ export const POST = async (req) => {
 
     const newImage = new Image({
       userId,
-      urls: [output],
+      url: output,
       miscData: {
         modelName: "real-esrgan",
       },

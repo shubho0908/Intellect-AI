@@ -244,7 +244,7 @@ function Home() {
         <ModalContent className="modal-body">
           {(onClose) => (
             <>
-              <ModalBody>
+              <ModalBody className="mb-4">
                 <Modal2 data={selectedData} />
               </ModalBody>
             </>

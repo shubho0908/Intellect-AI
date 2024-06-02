@@ -195,7 +195,7 @@ function Posts({ userPosts, userData, myData }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalBody>
+              <ModalBody className="mb-4">
                 <Modal2 data={modalData} />
               </ModalBody>
             </>
