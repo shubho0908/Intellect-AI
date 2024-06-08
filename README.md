@@ -78,7 +78,8 @@ Run the command ```npm run dev``` to start the development server. This will sta
 * Start the Production Server:
 Run the command ```npm run ready``` to start the production server. This will start the application in production mode, and you can access it at http://localhost:3000 in your browser.
 * Docker:
-Run the command
+  Start the docker
+  Run the command
 ```bash
   docker run -it -e MONGODB_URI="value" -e JWT_SECRET="value" -e REPLICATE_API_TOKEN="value" -e CLOUDINARY_CLOUD_NAME="value" -e NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="value" -e CLOUDINARY_APIKEY="value" -e NEXT_PUBLIC_CLOUDINARY_API_KEY="value" -e NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="value" -e CLOUDINARY_API_SECRET="value" -e APP_PASSWORD="value" -e EMAIL="value" -e APP_URL="value" -e NEXT_PUBLIC_APP_URL="value" -p 3000:3000 shubhobera09/intellect-ai
 ```
