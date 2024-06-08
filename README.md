@@ -3,6 +3,10 @@
 
 Intellect AI is a comprehensive AI-driven solution designed to revolutionize the digital content landscape. This project aims to simplify the content creation process by integrating advanced AI tools for video and image enhancement, making high-quality content creation accessible to a broader audience.
 
+## Demo
+
+https://github.com/shubho0908/Intellect-AI/assets/81776711/29c8520b-a662-44cd-bb74-273bd6961f88
+
 # Key Features
 
 ## Video Tools:
