@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Intellect AI
 
-First, run the development server:
+Intellect AI is a comprehensive AI-driven solution designed to revolutionize the digital content landscape. This project aims to simplify the content creation process by integrating advanced AI tools for video and image enhancement, making high-quality content creation accessible to a broader audience.
+
+## Demo
+
+https://github.com/shubho0908/Intellect-AI/assets/81776711/29c8520b-a662-44cd-bb74-273bd6961f88
+
+# Key Features
+
+## Video Tools:
+* Convert images to videos
+* Add subtitles for accessibility
+* Upscale video quality
+
+## Image Tools:
+* Text to Image Generation
+* Image Restoration
+* Image Upscaling
+* Avatar Generation
+* Generative Fill
+
+## Community Features:
+* Public sharing of images and videos
+* Social media integration
+* User profiles
+* Following each others
+* Collections for organizing posts
+
+## Tech Stack
+
+**Client:** Next.js, TailwindCSS, Next.ui, Cloudinary.
+
+**Server:** Next.js, MongoDB, JWT, Nodemailer, Replicate (for **AI Models**).
+
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`MONGODB_URI`
+
+`JWT_SECRET`
+
+`REPLICATE_API_TOKEN`
+
+`CLOUDINARY_CLOUD_NAME`
+
+`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`
+
+`CLOUDINARY_APIKEY`
+
+`NEXT_PUBLIC_CLOUDINARY_API_KEY`
+
+`NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
+
+`CLOUDINARY_API_SECRET`
+
+`APP_PASSWORD`
+
+`EMAIL`
+
+`APP_URL`
+
+`NEXT_PUBLIC_APP_URL`
+## Installation:
+
+* Clone this repository
+* Install necessary packages
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  npm install 
+```
+## Running the Project:
+* Start the Development Server:
+Run the command ```npm run dev``` to start the development server. This will start the application in development mode, and you can access it at http://localhost:3000 in your browser.
+* Start the Production Server:
+Run the command ```npm run ready``` to start the production server. This will start the application in production mode, and you can access it at http://localhost:3000 in your browser.
+* Docker:
+Run the command
+```bash
+  docker run -it -e MONGODB_URI="value" -e JWT_SECRET="value" -e REPLICATE_API_TOKEN="value" -e CLOUDINARY_CLOUD_NAME="value" -e NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="value" -e CLOUDINARY_APIKEY="value" -e NEXT_PUBLIC_CLOUDINARY_API_KEY="value" -e NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="value" -e CLOUDINARY_API_SECRET="value" -e APP_PASSWORD="value" -e EMAIL="value" -e APP_URL="value" -e NEXT_PUBLIC_APP_URL="value" -p 3000:3000 shubhobera09/intellect-ai
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

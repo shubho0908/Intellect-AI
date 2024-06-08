@@ -395,7 +395,7 @@ function Modal2({ data }) {
               </div>
             </div>
             <div className="content mt-4 w-full md:max-w-[400px] text-sm bg-[#27272A] p-3 rounded-lg">
-              {data?.prompt.length > 100
+              {data?.prompt?.length > 100
                 ? data?.prompt?.slice(0, 100) + "..."
                 : data?.prompt}
             </div>

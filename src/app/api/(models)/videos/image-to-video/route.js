@@ -103,14 +103,14 @@ export const POST = async (req) => {
     const user = await User.findOne({ _id: userId });
     const mailOptions = {
       from: process.env.EMAIL,
-      to: email,
+      to: user?.email,
       subject: `Your Image2Motion video is ready 🤘🏻`,
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
         <h2 style="color: #333;">Hello ${user?.name}!</h2>
         <p style="color: #555;">Your Image2Motion video is ready! You can use it to create your own content with the power of AI.</p>
         <p style="margin: 20px 0;">
-          <a href="${videoUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Access your Image2Motion video</a>
+          <a href="${videoUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Access your video</a>
         </p>
         <p style="color: #888;">Best regards,<br/>Shubhojeet Bera</p>
       </div>

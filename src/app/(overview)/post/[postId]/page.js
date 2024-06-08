@@ -661,7 +661,7 @@ function page({ params }) {
                         }`}
                       >
                         <Link
-                          href={`/post/${post._id}`}
+                          href={`/post/${post?._id}`}
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <Image
