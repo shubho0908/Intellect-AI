@@ -1,0 +1,30 @@
+FROM node
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+ENV MONGODB_URI=value
+ENV JWT_SECRET=value
+ENV REPLICATE_API_TOKEN=value
+ENV CLOUDINARY_CLOUD_NAME=value
+ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=value
+ENV CLOUDINARY_APIKEY=value
+ENV NEXT_PUBLIC_CLOUDINARY_API_KEY=value
+ENV NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=value
+ENV CLOUDINARY_API_SECRET=value
+ENV APP_PASSWORD=value
+ENV EMAIL=value
+ENV APP_URL=http://localhost:3000
+ENV NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+RUN npm run build
+
+EXPOSE 3000
+
+# Run the app
+CMD [ "npm", "run", "start" ]
