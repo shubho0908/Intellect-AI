@@ -1,8 +1,7 @@
 import "./globals.css";
 import { Providers } from "./providers";
 import Sidebar from "@/components/Sidebar";
-// import Sidebar2 from "@/components/Sidebar2";
-
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Intellect AI",
@@ -32,12 +31,12 @@ export default function RootLayout({ children }) {
                 <div className="bottom w-full">
                   <div className="data relative w-full">
                     {children}
+                    <Analytics />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
         </Providers>
       </body>
     </html>
